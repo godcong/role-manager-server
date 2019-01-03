@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/options"
 	"github.com/mongodb/mongo-go-driver/mongo/readpref"
 	"time"
 )
@@ -83,10 +82,6 @@ func Reconnect() error {
 	return nil
 }
 
-func Collection(name string) *mongo.Collection {
+func C(name string) *mongo.Collection {
 	return DB().Collection(name)
-}
-
-func InsertOne(name string, v interface{}, ops ...*options.InsertOneOptions) (*mongo.InsertOneResult, error) {
-	return Collection(name).InsertOne(context.TODO(), v, ops...)
 }

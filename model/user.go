@@ -1,12 +1,12 @@
 package model
 
 import (
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"log"
 )
 
 type User struct {
-	*Model
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
 	Name          string
 	Username      string
 	Email         string
@@ -16,29 +16,39 @@ type User struct {
 	Association   string
 	Password      string
 	Token         string
+	Model
+}
+
+func (u *User) _Name() string {
+	return "user"
 }
 
 func (u *User) Update() error {
-	panic("implement me")
+	_, err := UpdateOne(C(u._Name()), u.ID, u)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *User) Delete() error {
-	panic("implement me")
-}
-
-func (u *User) Find() error {
-	panic("implement me")
-}
-
-func (u *User) Collection() *mongo.Collection {
-	return Collection("user")
-}
-
-func (u *User) Create() error {
-	one, err := InsertOne("user", u)
+	one, err := DeleteByID(C(u._Name()), u.ID)
 	log.Println(one)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (u *User) Create() error {
+	u.BeforeInsert()
+	_, err := InsertOne(C(u._Name()), "user", u)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *User) FindByID(id string) error {
+	return FindByID(C(u._Name()), id, u)
 }
