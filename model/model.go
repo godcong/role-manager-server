@@ -72,7 +72,7 @@ func DeleteByID(collection *mongo.Collection, id primitive.ObjectID, ops ...*opt
 
 func FindByID(collection *mongo.Collection, id string, v interface{}, ops ...*options.FindOneOptions) error {
 	ids, _ := primitive.ObjectIDFromHex(id)
-	return collection.FindOne(context.TODO(), bson.M{
+	return collection.FindOne(mgo.TimeOut(), bson.M{
 		"_id": ids,
 	}, ops...).Decode(v)
 }

@@ -28,7 +28,7 @@ func TestUser_Delete(t *testing.T) {
 		ID: id,
 	}
 	//t.Log(user.Delete())
-	e := user.Find()
+	e := user.FindByID("5c2dd3c5819e895f7c1af1d4")
 	t.Log(e)
 	t.Log(user)
 }

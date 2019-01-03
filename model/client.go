@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-const DefaultInterval = 5
+const DefaultInterval = 5 * time.Second
 
 type MongoDB struct {
-	//ctx    context.Context
-	host   string
-	client *mongo.Client
-	*mongo.Database
+	ctx  context.Context
+	host string
+	*mongo.Client
+	//*mongo.Database
 	Interval time.Duration
-	//Database string
+	database string
 	//*mongo.Client
 }
 
@@ -29,25 +29,27 @@ func newMongoDB() *MongoDB {
 	//ctx, _ := context.WithCancel(context.Background())
 
 	return &MongoDB{
-		//ctx:      ctx,
-		host:     "",
+		ctx:      context.Background(),
+		host:     "mongodb://localhost:27017",
+		database: "database",
 		Interval: DefaultInterval,
 	}
 }
 
 func defaultDB() *MongoDB {
 	db := newMongoDB()
-	client, err := InitClient(db.TimeOut(), "mongodb://localhost:27017")
+	client, err := InitClient(db.ctx, db.host)
 	if err != nil {
 		panic(err)
 	}
-	db.client = client
-	db.Database = client.Database("db1")
+
+	db.Client = client
+	//db.Database = client.Database("db1")
 	return db
 }
 
 func (m *MongoDB) TimeOut() context.Context {
-	ctx, _ := context.WithTimeout(context.TODO(), m.Interval)
+	ctx, _ := context.WithTimeout(m.ctx, m.Interval)
 	return ctx
 }
 
@@ -56,6 +58,10 @@ func DB() *MongoDB {
 		return mgo
 	}
 	return defaultDB()
+}
+
+func (m *MongoDB) D() *mongo.Database {
+	return m.Database(m.database)
 }
 
 func InitClient(ctx context.Context, ip string) (*mongo.Client, error) {
@@ -72,16 +78,16 @@ func InitClient(ctx context.Context, ip string) (*mongo.Client, error) {
 }
 
 func Ping() error {
-	return mgo.client.Ping(mgo.TimeOut(), readpref.Primary())
+	return mgo.Ping(mgo.TimeOut(), readpref.Primary())
 }
 
 func Reconnect() error {
 	if err := Ping(); err != nil {
-		return mgo.client.Connect(mgo.TimeOut())
+		return mgo.Connect(mgo.TimeOut())
 	}
 	return nil
 }
 
 func C(name string) *mongo.Collection {
-	return DB().Collection(name)
+	return DB().D().Collection(name)
 }
