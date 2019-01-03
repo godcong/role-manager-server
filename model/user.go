@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
+)
+
 type User struct {
 	*Model
 	Name          string
@@ -25,10 +30,15 @@ func (u *User) Find() error {
 	panic("implement me")
 }
 
-func (u *User) CollectionName() string {
-	return "user"
+func (u *User) Collection() *mongo.Collection {
+	return Collection("user")
 }
 
-func (u *User) Create() {
-	mgo.Client.Database("")
+func (u *User) Create() error {
+	one, err := InsertOne("user", u)
+	log.Println(one)
+	if err != nil {
+		return err
+	}
+	return nil
 }
