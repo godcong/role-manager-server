@@ -1,6 +1,9 @@
 package model
 
-import "github.com/mongodb/mongo-go-driver/bson/primitive"
+import (
+	"errors"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+)
 
 // PermissionRole ...
 type PermissionRole struct {
@@ -13,8 +16,21 @@ type PermissionRole struct {
 }
 
 // Role ...
-func (r *PermissionRole) Role() *Role {
-	return r.role
+func (r *PermissionRole) Role() (*Role, error) {
+	if r.ID == primitive.NilObjectID {
+		return nil, errors.New("id is null")
+	}
+	if r.RoleID != primitive.NilObjectID {
+		role := NewRole()
+		role.ID = r.RoleID
+		err := role.Find()
+		if err != nil {
+			return nil, err
+		}
+		r.role = role
+		return role, nil
+	}
+	return nil, errors.New("role not found")
 }
 
 // SetRole ...
@@ -24,8 +40,21 @@ func (r *PermissionRole) SetRole(role *Role) {
 }
 
 // Permission ...
-func (r *PermissionRole) Permission() *Permission {
-	return r.permission
+func (r *PermissionRole) Permission() (*Permission, error) {
+	if r.ID == primitive.NilObjectID {
+		return nil, errors.New("id is null")
+	}
+	if r.PermissionID != primitive.NilObjectID {
+		per := NewPermission()
+		per.ID = r.PermissionID
+		err := per.Find()
+		if err != nil {
+			return nil, err
+		}
+		r.permission = per
+		return per, nil
+	}
+	return nil, errors.New("permission not found")
 }
 
 // SetPermission ...

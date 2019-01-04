@@ -102,7 +102,7 @@ func (r *RoleUser) Role() (*Role, error) {
 	}
 	if r.RoleID != primitive.NilObjectID {
 		role := NewRole()
-		role.ID = r.UserID
+		role.ID = r.RoleID
 		err := role.Find()
 		if err != nil {
 			return nil, err

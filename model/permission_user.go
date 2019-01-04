@@ -1,6 +1,9 @@
 package model
 
-import "github.com/mongodb/mongo-go-driver/bson/primitive"
+import (
+	"errors"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+)
 
 // PermissionUser ...
 type PermissionUser struct {
@@ -13,8 +16,21 @@ type PermissionUser struct {
 }
 
 // User ...
-func (r *PermissionUser) User() *User {
-	return r.user
+func (r *PermissionUser) User() (*User, error) {
+	if r.ID == primitive.NilObjectID {
+		return nil, errors.New("id is null")
+	}
+	if r.UserID != primitive.NilObjectID {
+		user := NewUser()
+		user.ID = r.UserID
+		err := user.Find()
+		if err != nil {
+			return nil, err
+		}
+		r.user = user
+		return user, nil
+	}
+	return nil, errors.New("user not found")
 }
 
 // SetUser ...
@@ -24,8 +40,21 @@ func (r *PermissionUser) SetUser(user *User) {
 }
 
 // Permission ...
-func (r *PermissionUser) Permission() *Permission {
-	return r.permission
+func (r *PermissionUser) Permission() (*Permission, error) {
+	if r.ID == primitive.NilObjectID {
+		return nil, errors.New("id is null")
+	}
+	if r.PermissionID != primitive.NilObjectID {
+		per := NewPermission()
+		per.ID = r.PermissionID
+		err := per.Find()
+		if err != nil {
+			return nil, err
+		}
+		r.permission = per
+		return per, nil
+	}
+	return nil, errors.New("permission not found")
 }
 
 // SetPermission ...
