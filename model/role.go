@@ -11,26 +11,30 @@ type Role struct {
 	Model
 }
 
-func (Role) CollectionName() string {
-	panic("implement me")
+func (r *Role) SetID(id primitive.ObjectID) {
+	r.ID = id
 }
 
-func (Role) Create() error {
-	panic("implement me")
+func (r *Role) Create() error {
+	return InsertOne(r)
 }
 
-func (Role) Update() error {
-	panic("implement me")
+func (r *Role) Update() error {
+	return UpdateOne(r)
 }
 
-func (Role) Delete() error {
-	panic("implement me")
+func (r *Role) Delete() error {
+	return DeleteByID(r)
 }
 
-func (Role) FindByID(id string) error {
-	panic("implement me")
+func (r *Role) Find() error {
+	return FindByID(r)
 }
 
-func (Role) _Name() string {
-	panic("implement me")
+func (r *Role) _Name() string {
+	return "role"
+}
+
+func (r *Role) GetID() primitive.ObjectID {
+	return r.ID
 }

@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"log"
 )
 
 type User struct {
@@ -32,30 +31,19 @@ func (u *User) _Name() string {
 }
 
 func (u *User) Update() error {
-	_, err := UpdateOne(u, u.ID, u)
-	if err != nil {
-		return err
-	}
-	return nil
+	return UpdateOne(u)
 }
 
 func (u *User) Delete() error {
-	one, err := DeleteByID(u, u.ID)
-	log.Println(one)
-	if err != nil {
-		return err
-	}
-	return nil
+	return DeleteByID(u)
+
 }
 
 func (u *User) Create() error {
-	_, err := InsertOne(u, u)
-	if err != nil {
-		return err
-	}
-	return nil
+	return InsertOne(u)
+
 }
 
-func (u *User) FindByID(id string) error {
-	return FindByID(u, id, u)
+func (u *User) Find() error {
+	return FindByID(u)
 }

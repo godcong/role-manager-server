@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/options"
 	"log"
 	"time"
@@ -41,10 +40,11 @@ type BaseAble interface {
 }
 
 type Model struct {
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time
-	Version   int
+	softDelete bool
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  *time.Time
+	Version    int
 }
 
 type Before interface {
@@ -68,7 +68,8 @@ type Modeler interface {
 	Create() error
 	Update() error
 	Delete() error
-	FindByID(id string) error
+	Find() error
+	SoftDelete() bool
 }
 
 func ID(s string) primitive.ObjectID {
@@ -79,35 +80,70 @@ func ID(s string) primitive.ObjectID {
 	return ids
 }
 
-func UpdateOne(m Modeler, id primitive.ObjectID, v interface{}, ops ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
+func UpdateOne(m Modeler, ops ...*options.UpdateOptions) error {
 	m.BeforeUpdate()
-	return C(m._Name()).UpdateOne(context.TODO(), bson.M{
-		"_id": id,
-	}, v, ops...)
+	result, err := C(m._Name()).UpdateOne(context.TODO(), bson.M{
+		"_id": m.GetID(),
+	}, bson.M{
+		"$set": m,
+	}, ops...)
+	if err == nil {
+		log.Println(result.UpsertedID, result.MatchedCount, result.ModifiedCount)
+	}
+
+	return err
 }
 
-func InsertOne(m Modeler, v interface{}, ops ...*options.InsertOneOptions) (*mongo.InsertOneResult, error) {
+func InsertOne(m Modeler, ops ...*options.InsertOneOptions) error {
 	m.BeforeInsert()
-	result, err := C(m._Name()).InsertOne(context.TODO(), v, ops...)
+	result, err := C(m._Name()).InsertOne(context.TODO(), m, ops...)
 	if err == nil {
 		if v, b := result.InsertedID.(primitive.ObjectID); b {
 			m.SetID(v)
 		}
 	}
 
-	return result, err
+	return err
 }
 
-func DeleteByID(m Modeler, id primitive.ObjectID, ops ...*options.DeleteOptions) (*mongo.DeleteResult, error) {
-	return C(m._Name()).DeleteOne(context.TODO(), bson.M{
-		"_id": id,
+func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
+	if m.SoftDelete() {
+		err := m.Find()
+		if err != nil {
+			return err
+		}
+		m.BeforeDelete()
+		return UpdateOne(m)
+	}
+
+	result, err := C(m._Name()).DeleteOne(context.TODO(), bson.M{
+		"_id": m.GetID(),
 	}, ops...)
+	if err == nil {
+		log.Println(result.DeletedCount)
+	}
+
+	return err
 }
 
-func FindByID(m Modeler, id string, v interface{}, ops ...*options.FindOneOptions) error {
+func FindByID(m Modeler, ops ...*options.FindOneOptions) error {
+	if m.SoftDelete() {
+		return C(m._Name()).FindOne(mgo.TimeOut(), bson.M{
+			"_id":             m.GetID(),
+			"model.deletedat": nil,
+		}, ops...).Decode(m)
+	}
 	return C(m._Name()).FindOne(mgo.TimeOut(), bson.M{
-		"_id": ID(id),
-	}, ops...).Decode(v)
+		"_id": m.GetID(),
+	}, ops...).Decode(m)
+}
+
+func (m *Model) SoftDelete() bool {
+	return m.softDelete
+}
+
+func (m *Model) SetSoftDelete(b bool) {
+	m.softDelete = b
 }
 
 func (m *Model) BeforeInsert() {
@@ -117,10 +153,13 @@ func (m *Model) BeforeInsert() {
 }
 
 func (m *Model) BeforeUpdate() {
+	m.UpdatedAt = time.Now()
 	m.Version += 1
 }
 
 func (m *Model) BeforeDelete() {
+	t := time.Now()
+	m.DeletedAt = &t
 	return
 }
 

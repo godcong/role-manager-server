@@ -23,12 +23,31 @@ func TestUser_Create(t *testing.T) {
 }
 
 func TestUser_Delete(t *testing.T) {
-	id, _ := primitive.ObjectIDFromHex("5c2dd3c5819e895f7c1af1d4")
+	id, _ := primitive.ObjectIDFromHex("5c2eeb5bb69c469e69c79a26")
 	user := User{
 		ID: id,
 	}
 	//t.Log(user.Delete())
-	e := user.FindByID("5c2dd3c5819e895f7c1af1d4")
+	user.SetSoftDelete(true)
+	e := user.Delete()
 	t.Log(e)
+	t.Log(user)
+
+	e = user.Find()
+	t.Log(e)
+	t.Log(user)
+
+}
+
+func TestUser_Update(t *testing.T) {
+	user := User{
+		ID: ID("5c2eea9a3db6598a9c25c65c"),
+	}
+	user.softDelete = true
+	user.Find()
+
+	user.Username = "SSSSSSSSSSSSSSSSSSSS"
+	err := user.Update()
+	t.Log(err)
 	t.Log(user)
 }
