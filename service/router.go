@@ -22,7 +22,7 @@ func Router(eng *gin.Engine) {
 
 // RegisterPOST ...
 func RegisterPOST(ver string) gin.HandlerFunc {
-
+	//组织注册
 	return func(ctx *gin.Context) {
 
 	}
@@ -31,10 +31,7 @@ func RegisterPOST(ver string) gin.HandlerFunc {
 // AddUserPOST ...
 func AddUserPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		err := addUser(ctx)
-		if err != nil {
 
-		}
 	}
 }
 
