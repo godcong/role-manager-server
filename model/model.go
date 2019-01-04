@@ -147,17 +147,39 @@ func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 	return err
 }
 
+// Find ...
+func Find(m Modeler, v bson.M, output interface{}, ops ...*options.FindOptions) error {
+	if m.SoftDelete() {
+		v["model.deletedat"] = nil
+	}
+	find, err := C(m._Name()).Find(mgo.TimeOut(), v, ops...)
+	if err != nil {
+		return err
+	}
+	err = find.Decode(output)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FindOne ...
+func FindOne(m Modeler, v bson.M, ops ...*options.FindOneOptions) error {
+	if m.SoftDelete() {
+		v["model.deletedat"] = nil
+	}
+	return C(m._Name()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
+}
+
 // FindByID ...
 func FindByID(m Modeler, ops ...*options.FindOneOptions) error {
-	if m.SoftDelete() {
-		return C(m._Name()).FindOne(mgo.TimeOut(), bson.M{
-			"_id":             m.GetID(),
-			"model.deletedat": nil,
-		}, ops...).Decode(m)
-	}
-	return C(m._Name()).FindOne(mgo.TimeOut(), bson.M{
+	v := bson.M{
 		"_id": m.GetID(),
-	}, ops...).Decode(m)
+	}
+	if m.SoftDelete() {
+		v["model.deletedat"] = nil
+	}
+	return C(m._Name()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
 }
 
 // SoftDelete ...

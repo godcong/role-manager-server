@@ -4,7 +4,9 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"fmt"
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"log"
 	"strings"
 )
 
@@ -83,4 +85,29 @@ func PWD(pwd string) string {
 	m.Write([]byte(pwd))
 	m.Write(salt)
 	return strings.ToUpper(fmt.Sprintf("%x", m.Sum(nil)))
+}
+
+// Roles ...
+func (u *User) Roles() ([]*Role, error) {
+	var list []*RoleUser
+
+	ru := NewRoleUser()
+	err := Find(ru, bson.M{
+		"userid": u.ID,
+	}, &list)
+	if err != nil {
+		return nil, err
+	}
+	var roles []*Role
+	for _, val := range list {
+		role := NewRole()
+		role.ID = val.RoleID
+		err := role.Find()
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		roles = append(roles, role)
+	}
+	return roles, nil
 }
