@@ -18,6 +18,8 @@ func init() {
 }
 
 func Start() {
+	Router(server.Engine)
+
 	go func() {
 		log.Printf("[GIN-debug] Listening and serving HTTP on %s\n", server.Server.Addr)
 		if err := server.Server.ListenAndServe(); err != nil {
