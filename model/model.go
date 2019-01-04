@@ -9,28 +9,34 @@ import (
 	"time"
 )
 
+// SyncAble ...
 type SyncAble interface {
 	Sync() error
 }
 
+// CountAble ...
 type CountAble interface {
 	Count() (int64, error)
 }
 
+// CreateAble ...
 type CreateAble interface {
 	Create() (int64, error)
 }
 
+// GetAble ...
 type GetAble interface {
 	Get() (bool, error)
 	List(v interface{}) error
 }
 
+// UpdateAble ...
 type UpdateAble interface {
 	Update() (int64, error)
 	UpdateOnly(cols ...string) (int64, error)
 }
 
+// BaseAble ...
 type BaseAble interface {
 	SyncAble
 	CountAble
@@ -39,6 +45,7 @@ type BaseAble interface {
 	UpdateAble
 }
 
+// Model ...
 type Model struct {
 	softDelete bool
 	CreatedAt  time.Time
@@ -47,24 +54,28 @@ type Model struct {
 	Version    int
 }
 
+// NewModel ...
 func NewModel() *Model {
 	return &Model{
 		softDelete: true,
 	}
 }
 
+// Before ...
 type Before interface {
 	BeforeInsert()
 	BeforeUpdate()
 	BeforeDelete()
 }
 
+// After ...
 type After interface {
 	AfterInsert()
 	AfterUpdate()
 	AfterDelete()
 }
 
+// Modeler ...
 type Modeler interface {
 	_Name() string
 	Before
@@ -78,6 +89,7 @@ type Modeler interface {
 	SoftDelete() bool
 }
 
+// ID ...
 func ID(s string) primitive.ObjectID {
 	ids, err := primitive.ObjectIDFromHex(s)
 	if err != nil {
@@ -86,6 +98,7 @@ func ID(s string) primitive.ObjectID {
 	return ids
 }
 
+// UpdateOne ...
 func UpdateOne(m Modeler, ops ...*options.UpdateOptions) error {
 	m.BeforeUpdate()
 	result, err := C(m._Name()).UpdateOne(context.TODO(), bson.M{
@@ -100,6 +113,7 @@ func UpdateOne(m Modeler, ops ...*options.UpdateOptions) error {
 	return err
 }
 
+// InsertOne ...
 func InsertOne(m Modeler, ops ...*options.InsertOneOptions) error {
 	m.BeforeInsert()
 	result, err := C(m._Name()).InsertOne(context.TODO(), m, ops...)
@@ -112,9 +126,10 @@ func InsertOne(m Modeler, ops ...*options.InsertOneOptions) error {
 	return err
 }
 
+// DeleteByID ...
 func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 	if m.SoftDelete() {
-		err := m.Find()
+		err := FindByID(m)
 		if err != nil {
 			return err
 		}
@@ -132,6 +147,7 @@ func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 	return err
 }
 
+// FindByID ...
 func FindByID(m Modeler, ops ...*options.FindOneOptions) error {
 	if m.SoftDelete() {
 		return C(m._Name()).FindOne(mgo.TimeOut(), bson.M{
@@ -144,39 +160,47 @@ func FindByID(m Modeler, ops ...*options.FindOneOptions) error {
 	}, ops...).Decode(m)
 }
 
+// SoftDelete ...
 func (m *Model) SoftDelete() bool {
 	return m.softDelete
 }
 
+// SetSoftDelete ...
 func (m *Model) SetSoftDelete(b bool) {
 	m.softDelete = b
 }
 
+// BeforeInsert ...
 func (m *Model) BeforeInsert() {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = m.CreatedAt
 	m.Version = 1
 }
 
+// BeforeUpdate ...
 func (m *Model) BeforeUpdate() {
 	m.UpdatedAt = time.Now()
-	m.Version += 1
+	m.Version++
 }
 
+// BeforeDelete ...
 func (m *Model) BeforeDelete() {
 	t := time.Now()
 	m.DeletedAt = &t
 	return
 }
 
+// AfterInsert ...
 func (m *Model) AfterInsert() {
 	return
 }
 
+// AfterUpdate ...
 func (m *Model) AfterUpdate() {
 	return
 }
 
+// AfterDelete ...
 func (m *Model) AfterDelete() {
 	return
 }

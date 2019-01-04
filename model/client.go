@@ -7,8 +7,10 @@ import (
 	"time"
 )
 
+// DefaultInterval ...
 const DefaultInterval = 5 * time.Second
 
+// MongoDB ...
 type MongoDB struct {
 	ctx  context.Context
 	host string
@@ -48,11 +50,13 @@ func defaultDB() *MongoDB {
 	return db
 }
 
+// TimeOut ...
 func (m *MongoDB) TimeOut() context.Context {
 	ctx, _ := context.WithTimeout(m.ctx, m.Interval)
 	return ctx
 }
 
+// DB ...
 func DB() *MongoDB {
 	if mgo != nil {
 		return mgo
@@ -60,10 +64,12 @@ func DB() *MongoDB {
 	return defaultDB()
 }
 
+// D ...
 func (m *MongoDB) D() *mongo.Database {
 	return m.Database(m.database)
 }
 
+// InitClient ...
 func InitClient(ctx context.Context, ip string) (*mongo.Client, error) {
 	client, err := mongo.NewClient(ip)
 	if err != nil {
@@ -77,10 +83,12 @@ func InitClient(ctx context.Context, ip string) (*mongo.Client, error) {
 	return client, nil
 }
 
+// Ping ...
 func Ping() error {
 	return mgo.Ping(mgo.TimeOut(), readpref.Primary())
 }
 
+// Reconnect ...
 func Reconnect() error {
 	if err := Ping(); err != nil {
 		return mgo.Connect(mgo.TimeOut())
@@ -88,6 +96,7 @@ func Reconnect() error {
 	return nil
 }
 
+// C ...
 func C(name string) *mongo.Collection {
 	return DB().D().Collection(name)
 }
