@@ -1,6 +1,10 @@
 package model
 
-import "github.com/mongodb/mongo-go-driver/bson/primitive"
+import (
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
+)
 
 // SlugGenesis ...
 const (
@@ -34,6 +38,23 @@ type Role struct {
 	Description string
 	Level       int
 	*Model
+}
+
+// FindGenesis ...
+func FindGenesis() ([]*Role, error) {
+	var roles []*Role
+	role := NewRole()
+	e := Find(role, bson.M{
+		"slug": SlugGenesis,
+	}, func(cursor mongo.Cursor) error {
+		role := NewRole()
+		e := cursor.Decode(&role)
+		if e == nil {
+			roles = append(roles, role)
+		}
+		return nil
+	})
+	return roles, e
 }
 
 // CreateIfNotExist ...

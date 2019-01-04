@@ -89,3 +89,8 @@ func TestRoleUser_Create(t *testing.T) {
 	e := ru.CreateIfNotExist()
 	t.Log(ru, e)
 }
+
+// TestFindGenesis ...
+func TestFindGenesis(t *testing.T) {
+	t.Log(FindGenesis())
+}

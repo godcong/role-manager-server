@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	"log"
 	"strings"
 )
@@ -92,7 +93,14 @@ func (u *User) Roles() ([]*Role, error) {
 	ru := NewRoleUser()
 	err := Find(ru, bson.M{
 		"userid": u.ID,
-	}, &list)
+	}, func(cursor mongo.Cursor) error {
+		ru := NewRoleUser()
+		e := cursor.Decode(&ru)
+		if e == nil {
+			list = append(list, ru)
+		}
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}

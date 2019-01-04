@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/options"
 	"log"
 	"time"
@@ -150,8 +151,11 @@ func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 	return err
 }
 
+// FindDecode ...
+type FindDecode func(cursor mongo.Cursor) error
+
 // Find ...
-func Find(m Modeler, v bson.M, output interface{}, ops ...*options.FindOptions) error {
+func Find(m Modeler, v bson.M, dec FindDecode, ops ...*options.FindOptions) error {
 	if m.SoftDelete() {
 		v["model.deletedat"] = nil
 	}
@@ -159,9 +163,11 @@ func Find(m Modeler, v bson.M, output interface{}, ops ...*options.FindOptions) 
 	if err != nil {
 		return err
 	}
-	err = find.Decode(output)
-	if err != nil {
-		return err
+	for find.Next(mgo.TimeOut()) {
+		err := dec(find)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
