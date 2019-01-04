@@ -8,5 +8,39 @@ type Permission struct {
 	Slug            string
 	Description     string
 	PermissionModel string
-	Model
+	*Model
+}
+
+func NewPermission() *Permission {
+	return &Permission{
+		Model: NewModel(),
+	}
+}
+
+func (p *Permission) GetID() primitive.ObjectID {
+	return p.ID
+}
+
+func (p *Permission) SetID(id primitive.ObjectID) {
+	p.ID = id
+}
+
+func (p *Permission) Create() error {
+	return InsertOne(p)
+}
+
+func (p *Permission) Update() error {
+	return UpdateOne(p)
+}
+
+func (p *Permission) Delete() error {
+	return DeleteByID(p)
+}
+
+func (p *Permission) Find() error {
+	return FindByID(p)
+}
+
+func (p *Permission) _Name() string {
+	return "permission"
 }

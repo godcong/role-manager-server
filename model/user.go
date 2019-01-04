@@ -15,7 +15,13 @@ type User struct {
 	Association   string
 	Password      string
 	Token         string
-	Model
+	*Model
+}
+
+func NewUser() *User {
+	return &User{
+		Model: NewModel(),
+	}
 }
 
 func (u *User) GetID() primitive.ObjectID {

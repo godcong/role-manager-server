@@ -47,6 +47,12 @@ type Model struct {
 	Version    int
 }
 
+func NewModel() *Model {
+	return &Model{
+		softDelete: true,
+	}
+}
+
 type Before interface {
 	BeforeInsert()
 	BeforeUpdate()

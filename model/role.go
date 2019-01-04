@@ -2,13 +2,26 @@ package model
 
 import "github.com/mongodb/mongo-go-driver/bson/primitive"
 
+const (
+	LevelGenesis = 0
+	LevelAdmin   = iota
+	LevelOrg     = iota
+	Levelmonitor = iota
+)
+
 type Role struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty"`
 	Name        string
 	Slug        string
 	Description string
 	Level       int
-	Model
+	*Model
+}
+
+func NewRole() *Role {
+	return &Role{
+		Model: NewModel(),
+	}
 }
 
 func (r *Role) SetID(id primitive.ObjectID) {
