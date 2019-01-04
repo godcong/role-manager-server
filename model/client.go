@@ -15,10 +15,8 @@ type MongoDB struct {
 	ctx  context.Context
 	host string
 	*mongo.Client
-	//*mongo.Database
 	Interval time.Duration
 	database string
-	//*mongo.Client
 }
 
 var mgo *MongoDB
@@ -46,7 +44,6 @@ func defaultDB() *MongoDB {
 	}
 
 	db.Client = client
-	//db.Database = client.Database("db1")
 	return db
 }
 
@@ -96,7 +93,7 @@ func Reconnect() error {
 	return nil
 }
 
-// C ...
+// C return a collection
 func C(name string) *mongo.Collection {
 	return DB().D().Collection(name)
 }

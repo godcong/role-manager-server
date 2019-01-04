@@ -10,7 +10,9 @@ func Router(eng *gin.Engine) {
 
 	verV0 := "v0"
 	g0 := eng.Group(verV0)
+	//登录
 	g0.POST("login", LoginPOST(verV0))
+	//组织注册
 	g0.POST("register", RegisterPOST(verV0))
 
 	v0 := g0.Group("")
@@ -20,11 +22,16 @@ func Router(eng *gin.Engine) {
 
 }
 
+//组织
 // RegisterPOST ...
 func RegisterPOST(ver string) gin.HandlerFunc {
-	//组织注册
 	return func(ctx *gin.Context) {
-
+		ctx.PostForm("applyName")     //商户名称
+		ctx.PostForm("applyCode")     //社会统一信用代码
+		ctx.PostForm("applyContact")  //商户联系人
+		ctx.PostForm("applyPosition") //联系人职位
+		ctx.PostForm("applyPhone")    //联系人手机号
+		ctx.PostForm("applyMailbox")  //联系人邮箱
 	}
 }
 

@@ -20,7 +20,7 @@ type User struct {
 	Mobile        string
 	IDCardFacade  string
 	IDCardObverse string
-	Association   string
+	Organization  string
 	Password      string
 	Token         string
 	*Model
