@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// GinServer ...
 type GinServer struct {
 	*gin.Engine
 	Server *http.Server
@@ -17,6 +18,7 @@ func init() {
 	server = defaultEngine()
 }
 
+// Start ...
 func Start() {
 	Router(server.Engine)
 
@@ -29,6 +31,7 @@ func Start() {
 
 }
 
+// Stop ...
 func Stop() error {
 	return server.Server.Shutdown(nil)
 }

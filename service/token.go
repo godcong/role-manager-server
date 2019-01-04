@@ -1,5 +1,6 @@
 package service
 
+// Token ...
 type Token struct {
 	OID           string `json:"oid"`
 	Name          string `json:"name"`

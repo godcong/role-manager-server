@@ -23,6 +23,7 @@ func failed(ctx *gin.Context, message string) {
 	result(ctx, -1, message, nil)
 }
 
+// LoginPOST ...
 func LoginPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.PostForm("username")

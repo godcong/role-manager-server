@@ -6,6 +6,7 @@ import (
 	"github.com/json-iterator/go"
 )
 
+// LoginCheck ...
 func LoginCheck(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.Request.Header.Get("token")

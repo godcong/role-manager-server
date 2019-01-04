@@ -2,6 +2,7 @@ package service
 
 import "github.com/gin-gonic/gin"
 
+// Router ...
 func Router(eng *gin.Engine) {
 
 	verV0 := "v0"
@@ -16,12 +17,17 @@ func Router(eng *gin.Engine) {
 
 }
 
+// RegisterPOST ...
 func RegisterPOST(ver string) gin.HandlerFunc {
-
+	return nil
 }
 
+// AddUserPOST ...
 func AddUserPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		err := addUser(ctx)
+		if err != nil {
 
+		}
 	}
 }
