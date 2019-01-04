@@ -6,6 +6,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/options"
+	"log"
 	"time"
 )
 
@@ -46,34 +47,66 @@ type Model struct {
 	Version   int
 }
 
+type Before interface {
+	BeforeInsert()
+	BeforeUpdate()
+	BeforeDelete()
+}
+
+type After interface {
+	AfterInsert()
+	AfterUpdate()
+	AfterDelete()
+}
+
 type Modeler interface {
-	CollectionName() string
+	_Name() string
+	Before
+	After
+	GetID() primitive.ObjectID
+	SetID(id primitive.ObjectID)
 	Create() error
 	Update() error
 	Delete() error
-	Find() error
+	FindByID(id string) error
 }
 
-func UpdateOne(collection *mongo.Collection, id primitive.ObjectID, v interface{}, ops ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
-	return collection.UpdateOne(context.TODO(), bson.M{
+func ID(s string) primitive.ObjectID {
+	ids, err := primitive.ObjectIDFromHex(s)
+	if err != nil {
+		log.Println(err)
+	}
+	return ids
+}
+
+func UpdateOne(m Modeler, id primitive.ObjectID, v interface{}, ops ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
+	m.BeforeUpdate()
+	return C(m._Name()).UpdateOne(context.TODO(), bson.M{
 		"_id": id,
 	}, v, ops...)
 }
 
-func InsertOne(collection *mongo.Collection, name string, v interface{}, ops ...*options.InsertOneOptions) (*mongo.InsertOneResult, error) {
-	return collection.InsertOne(context.TODO(), v, ops...)
+func InsertOne(m Modeler, v interface{}, ops ...*options.InsertOneOptions) (*mongo.InsertOneResult, error) {
+	m.BeforeInsert()
+	result, err := C(m._Name()).InsertOne(context.TODO(), v, ops...)
+	if err == nil {
+		if v, b := result.InsertedID.(primitive.ObjectID); b {
+			m.SetID(v)
+		}
+	}
+
+	return result, err
 }
 
-func DeleteByID(collection *mongo.Collection, id primitive.ObjectID, ops ...*options.DeleteOptions) (*mongo.DeleteResult, error) {
-	return collection.DeleteOne(context.TODO(), bson.M{
+func DeleteByID(m Modeler, id primitive.ObjectID, ops ...*options.DeleteOptions) (*mongo.DeleteResult, error) {
+	return C(m._Name()).DeleteOne(context.TODO(), bson.M{
 		"_id": id,
 	}, ops...)
 }
 
-func FindByID(collection *mongo.Collection, id string, v interface{}, ops ...*options.FindOneOptions) error {
-	ids, _ := primitive.ObjectIDFromHex(id)
-	return collection.FindOne(mgo.TimeOut(), bson.M{
-		"_id": ids,
+func FindByID(m Modeler, id string, v interface{}, ops ...*options.FindOneOptions) error {
+	return C(m._Name()).FindOne(mgo.TimeOut(), bson.M{
+		"_id": ID(id),
 	}, ops...).Decode(v)
 }
 
@@ -81,4 +114,24 @@ func (m *Model) BeforeInsert() {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = m.CreatedAt
 	m.Version = 1
+}
+
+func (m *Model) BeforeUpdate() {
+	m.Version += 1
+}
+
+func (m *Model) BeforeDelete() {
+	return
+}
+
+func (m *Model) AfterInsert() {
+	return
+}
+
+func (m *Model) AfterUpdate() {
+	return
+}
+
+func (m *Model) AfterDelete() {
+	return
 }

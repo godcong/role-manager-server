@@ -18,8 +18,8 @@ var user = User{
 }
 
 func TestUser_Create(t *testing.T) {
-
 	t.Log(user.Create())
+	t.Log(user)
 }
 
 func TestUser_Delete(t *testing.T) {

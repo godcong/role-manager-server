@@ -19,12 +19,20 @@ type User struct {
 	Model
 }
 
+func (u *User) GetID() primitive.ObjectID {
+	return u.ID
+}
+
+func (u *User) SetID(id primitive.ObjectID) {
+	u.ID = id
+}
+
 func (u *User) _Name() string {
 	return "user"
 }
 
 func (u *User) Update() error {
-	_, err := UpdateOne(C(u._Name()), u.ID, u)
+	_, err := UpdateOne(u, u.ID, u)
 	if err != nil {
 		return err
 	}
@@ -32,7 +40,7 @@ func (u *User) Update() error {
 }
 
 func (u *User) Delete() error {
-	one, err := DeleteByID(C(u._Name()), u.ID)
+	one, err := DeleteByID(u, u.ID)
 	log.Println(one)
 	if err != nil {
 		return err
@@ -41,8 +49,7 @@ func (u *User) Delete() error {
 }
 
 func (u *User) Create() error {
-	u.BeforeInsert()
-	_, err := InsertOne(C(u._Name()), "user", u)
+	_, err := InsertOne(u, u)
 	if err != nil {
 		return err
 	}
@@ -50,5 +57,5 @@ func (u *User) Create() error {
 }
 
 func (u *User) FindByID(id string) error {
-	return FindByID(C(u._Name()), id, u)
+	return FindByID(u, id, u)
 }

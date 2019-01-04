@@ -10,3 +10,27 @@ type Role struct {
 	Level       int
 	Model
 }
+
+func (Role) CollectionName() string {
+	panic("implement me")
+}
+
+func (Role) Create() error {
+	panic("implement me")
+}
+
+func (Role) Update() error {
+	panic("implement me")
+}
+
+func (Role) Delete() error {
+	panic("implement me")
+}
+
+func (Role) FindByID(id string) error {
+	panic("implement me")
+}
+
+func (Role) _Name() string {
+	panic("implement me")
+}
