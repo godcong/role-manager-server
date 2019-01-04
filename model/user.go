@@ -25,11 +25,9 @@ type User struct {
 	*Model
 }
 
-// NewUser ...
-func NewUser() *User {
-	return &User{
-		Model: NewModel(),
-	}
+// CreateIfNotExist ...
+func (u *User) CreateIfNotExist() error {
+	return CreateIfNotExist(u)
 }
 
 // GetID ...
@@ -110,4 +108,11 @@ func (u *User) Roles() ([]*Role, error) {
 		roles = append(roles, role)
 	}
 	return roles, nil
+}
+
+// NewUser ...
+func NewUser() *User {
+	return &User{
+		Model: NewModel(),
+	}
 }

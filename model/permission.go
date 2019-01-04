@@ -12,6 +12,11 @@ type Permission struct {
 	*Model
 }
 
+// CreateIfNotExist ...
+func (p *Permission) CreateIfNotExist() error {
+	return CreateIfNotExist(p)
+}
+
 // NewPermission ...
 func NewPermission() *Permission {
 	return &Permission{

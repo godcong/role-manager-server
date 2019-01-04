@@ -1,7 +1,7 @@
 package model
 
 import (
-	"context"
+	"errors"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo/options"
@@ -80,8 +80,11 @@ type Modeler interface {
 	_Name() string
 	Before
 	After
+
+	IsExist() bool
 	GetID() primitive.ObjectID
 	SetID(id primitive.ObjectID)
+	CreateIfNotExist() error
 	Create() error
 	Update() error
 	Delete() error
@@ -101,7 +104,7 @@ func ID(s string) primitive.ObjectID {
 // UpdateOne ...
 func UpdateOne(m Modeler, ops ...*options.UpdateOptions) error {
 	m.BeforeUpdate()
-	result, err := C(m._Name()).UpdateOne(context.TODO(), bson.M{
+	result, err := C(m._Name()).UpdateOne(mgo.TimeOut(), bson.M{
 		"_id": m.GetID(),
 	}, bson.M{
 		"$set": m,
@@ -116,7 +119,7 @@ func UpdateOne(m Modeler, ops ...*options.UpdateOptions) error {
 // InsertOne ...
 func InsertOne(m Modeler, ops ...*options.InsertOneOptions) error {
 	m.BeforeInsert()
-	result, err := C(m._Name()).InsertOne(context.TODO(), m, ops...)
+	result, err := C(m._Name()).InsertOne(mgo.TimeOut(), m, ops...)
 	if err == nil {
 		if v, b := result.InsertedID.(primitive.ObjectID); b {
 			m.SetID(v)
@@ -137,7 +140,7 @@ func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 		return UpdateOne(m)
 	}
 
-	result, err := C(m._Name()).DeleteOne(context.TODO(), bson.M{
+	result, err := C(m._Name()).DeleteOne(mgo.TimeOut(), bson.M{
 		"_id": m.GetID(),
 	}, ops...)
 	if err == nil {
@@ -180,6 +183,31 @@ func FindByID(m Modeler, ops ...*options.FindOneOptions) error {
 		v["model.deletedat"] = nil
 	}
 	return C(m._Name()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
+}
+
+// IsExist ...
+func IsExist(m Modeler, v bson.M) bool {
+	if m.SoftDelete() {
+		v["model.deletedat"] = nil
+	}
+	result := C(m._Name()).FindOne(mgo.TimeOut(), v)
+	if result != nil && result.Err() == nil {
+		return true
+	}
+	return false
+}
+
+// CreateIfNotExist ...
+func CreateIfNotExist(m Modeler) error {
+	if !m.IsExist() {
+		return m.Create()
+	}
+	return errors.New(m._Name() + " is exist")
+}
+
+// IsExist ...
+func (m *Model) IsExist() bool {
+	return false
 }
 
 // SoftDelete ...

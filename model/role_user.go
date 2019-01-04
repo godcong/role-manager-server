@@ -43,6 +43,19 @@ func (r *RoleUser) Create() error {
 	return InsertOne(r)
 }
 
+// CreateIfNotExist ...
+func (r *RoleUser) CreateIfNotExist() error {
+	return CreateIfNotExist(r)
+}
+
+// IsExist ...
+func (r *RoleUser) IsExist() bool {
+	return IsExist(r, bson.M{
+		"roleid": r.RoleID,
+		"userid": r.UserID,
+	})
+}
+
 // Update ...
 func (r *RoleUser) Update() error {
 	return UpdateOne(r)

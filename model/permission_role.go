@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 )
 
@@ -13,6 +14,19 @@ type PermissionRole struct {
 	permission   *Permission
 	role         *Role
 	*Model
+}
+
+// CreateIfNotExist ...
+func (r *PermissionRole) CreateIfNotExist() error {
+	return CreateIfNotExist(r)
+}
+
+// IsExist ...
+func (r *PermissionRole) IsExist() bool {
+	return IsExist(r, bson.M{
+		"permissionid": r.PermissionID,
+		"roleid":       r.RoleID,
+	})
 }
 
 // Role ...

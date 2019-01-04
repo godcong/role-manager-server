@@ -36,6 +36,45 @@ type Role struct {
 	*Model
 }
 
+// CreateIfNotExist ...
+func (r *Role) CreateIfNotExist() error {
+	return CreateIfNotExist(r)
+}
+
+// SetID ...
+func (r *Role) SetID(id primitive.ObjectID) {
+	r.ID = id
+}
+
+// Create ...
+func (r *Role) Create() error {
+	return InsertOne(r)
+}
+
+// Update ...
+func (r *Role) Update() error {
+	return UpdateOne(r)
+}
+
+// Delete ...
+func (r *Role) Delete() error {
+	return DeleteByID(r)
+}
+
+// Find ...
+func (r *Role) Find() error {
+	return FindByID(r)
+}
+
+func (r *Role) _Name() string {
+	return "role"
+}
+
+// GetID ...
+func (r *Role) GetID() primitive.ObjectID {
+	return r.ID
+}
+
 // NewGenesis ...
 func NewGenesis() *Role {
 	role := NewRole()
@@ -77,38 +116,4 @@ func NewRole() *Role {
 	return &Role{
 		Model: NewModel(),
 	}
-}
-
-// SetID ...
-func (r *Role) SetID(id primitive.ObjectID) {
-	r.ID = id
-}
-
-// Create ...
-func (r *Role) Create() error {
-	return InsertOne(r)
-}
-
-// Update ...
-func (r *Role) Update() error {
-	return UpdateOne(r)
-}
-
-// Delete ...
-func (r *Role) Delete() error {
-	return DeleteByID(r)
-}
-
-// Find ...
-func (r *Role) Find() error {
-	return FindByID(r)
-}
-
-func (r *Role) _Name() string {
-	return "role"
-}
-
-// GetID ...
-func (r *Role) GetID() primitive.ObjectID {
-	return r.ID
 }
