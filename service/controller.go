@@ -38,9 +38,23 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	user.Mobile = ctx.PostForm("mobile")
 	user.IDCardFacade = ctx.PostForm("idCardFacade")
 	user.IDCardObverse = ctx.PostForm("idCardObverse")
-	user.Association = ctx.PostForm("association")
+	user.Organization = ctx.PostForm("organization")
 	user.SetPassword(ctx.PostForm("password"))
 	err := user.Create()
 	return user, err
 
+}
+
+// AccessControlAllow ...
+func AccessControlAllow(ctx *gin.Context) {
+	origin := ctx.Request.Header.Get("origin")
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+	ctx.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, XMLHttpRequest, "+
+		"Accept-Encoding, X-CSRF-Token, Authorization")
+	if ctx.Request.Method == "OPTIONS" {
+		ctx.String(200, "ok")
+		return
+	}
+	ctx.Next()
 }
