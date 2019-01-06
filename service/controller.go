@@ -3,13 +3,19 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
+	"github.com/godcong/role-manager-server/util"
+	"gopkg.in/square/go-jose.v2"
+	"gopkg.in/square/go-jose.v2/jwt"
 	"net/http"
+	"time"
 )
 
 // LoginPOST ...
 func LoginPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.PostForm("username")
+
+		jose.New
 	}
 }
 
@@ -57,4 +63,23 @@ func AccessControlAllow(ctx *gin.Context) {
 		return
 	}
 	ctx.Next()
+}
+
+// EncryptJWT ...
+func EncryptJWT(key []byte, sub []byte) (string, error) {
+	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.HS256, Key: key}, (&jose.SignerOptions{}).WithType("JWT"))
+	if err != nil {
+		panic(err)
+	}
+	cl := jwt.Claims{
+		Subject:   string(sub),
+		Issuer:    "godcong",
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		Expiry:    jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 14)),
+		NotBefore: jwt.NewNumericDate(time.Now()),
+		ID:        util.GenerateRandomString(16),
+	}
+
+	raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
+	return raw, err
 }
