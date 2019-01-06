@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-// GinServer ...
-type GinServer struct {
+// service ...
+type service struct {
 	*gin.Engine
 	Server *http.Server
 }
 
-var server *GinServer
+var server *service
 
 func init() {
 	server = defaultEngine()
@@ -36,9 +36,9 @@ func Stop() error {
 	return server.Server.Shutdown(nil)
 }
 
-func defaultEngine() *GinServer {
+func defaultEngine() *service {
 	eng := gin.Default()
-	return &GinServer{
+	return &service{
 		Engine: eng,
 		Server: &http.Server{
 			Addr:    ":7788",
