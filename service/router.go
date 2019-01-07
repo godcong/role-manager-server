@@ -40,12 +40,12 @@ func Router(eng *gin.Engine) {
 	//登录
 	g0.POST("login", LoginPOST(verV0))
 	//组织注册
-	g0.POST("register", RegisterPOST(verV0))
 
 	g0.GET("genesis", GenesisGET(verV0))
 
 	v0 := g0.Group("")
 	v0.Use(LoginCheck(verV0))
+	v0.POST("register", RegisterPOST(verV0))
 	v0.POST("addAdmin", AddAdminPOST(verV0))
 	v0.POST("addOrg", AddOrgPOST(verV0))
 	v0.POST("addUser", AddUserPOST(verV0))
