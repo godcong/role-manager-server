@@ -204,7 +204,8 @@ func Count(m Modeler, v bson.M) (int64, error) {
 // IsExist ...
 func IsExist(m Modeler, v bson.M) bool {
 	i, err := Count(m, v)
-	if err != nil && i != 0 {
+	log.Println(i, err)
+	if err == nil && i != 0 {
 		return true
 	}
 	return false

@@ -102,6 +102,15 @@ func (r *Role) GetID() primitive.ObjectID {
 	return r.ID
 }
 
+// RoleBySlug ...
+func RoleBySlug(slug string) (*Role, error) {
+	r := NewRole()
+	err := FindOne(r, bson.M{
+		"slug": slug,
+	})
+	return r, err
+}
+
 // NewGenesis ...
 func NewGenesis() *Role {
 	role := NewRole()
