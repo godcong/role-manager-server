@@ -191,14 +191,19 @@ func FindByID(m Modeler, ops ...*options.FindOneOptions) error {
 	return C(m._Name()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
 }
 
-// IsExist ...
-func IsExist(m Modeler, v bson.M) bool {
+// Count ...
+func Count(m Modeler, v bson.M) (int64, error) {
 	if m.SoftDelete() {
 		v["model.deletedat"] = nil
 	}
-	log.Println(m._Name(), v)
 	//result := C(m._Name()).FindOne(mgo.TimeOut(), v)
-	i, err := C(m._Name()).Count(mgo.TimeOut(), v)
+	return C(m._Name()).Count(mgo.TimeOut(), v)
+
+}
+
+// IsExist ...
+func IsExist(m Modeler, v bson.M) bool {
+	i, err := Count(m, v)
 	if err != nil && i != 0 {
 		return true
 	}

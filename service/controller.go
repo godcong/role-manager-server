@@ -9,7 +9,6 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/util"
 	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 	"net/http"
@@ -20,39 +19,26 @@ import (
 const globalKey = ""
 const globalSalt = ""
 
-// GenesisGet ...
-func GenesisGet(ver string) gin.HandlerFunc {
+// GenesisGET ...
+func GenesisGET(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		role := model.NewGenesis()
 		err := model.FindOne(role, bson.M{
 			"slug": role.Slug,
 		})
-		if err != nil && role.ID != primitive.NilObjectID {
-			failed(ctx, "genesis is created")
+		ru := model.NewRoleUser()
+		if model.IsExist(ru, bson.M{
+			"roleid": role.ID,
+		}) {
+			failed(ctx, "genesis is exist")
 			return
 		}
-		passwd := util.GenerateRandomString(16)
+
+		passwd := "123456"
 		user := model.NewUser()
 		user.Name = "genesis"
 		user.SetPassword(PWD(passwd))
-		err = model.Transaction(func() error {
-			err := role.Create()
-			if err != nil {
-				return err
-			}
-			err = user.Create()
-			if err != nil {
-				return err
-			}
-			ru := model.NewRoleUser()
-			ru.SetUser(user)
-			ru.SetRole(role)
-			err = ru.CreateIfNotExist()
-			if err != nil {
-				return err
-			}
-			return nil
-		})
+		err = makeUser(user, role)
 		if err != nil {
 			failed(ctx, err.Error())
 			return
@@ -80,7 +66,15 @@ func RegisterPOST(ver string) gin.HandlerFunc {
 // AddUserPOST ...
 func AddUserPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, "logined")
+		user, err := addUser(ctx)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, gin.H{
+			"Name":     user.Name,
+			"Password": user.Password,
+		})
 	}
 }
 
@@ -126,10 +120,43 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	user.IDCardFacade = ctx.PostForm("idCardFacade")
 	user.IDCardObverse = ctx.PostForm("idCardObverse")
 	user.Organization = ctx.PostForm("organization")
-	user.SetPassword(ctx.PostForm("password"))
+	user.SetPassword(PWD(ctx.PostForm("password")))
 	err := user.Create()
+	user.Password = ctx.PostForm("password")
 	return user, err
+	//nextRole := model.NewRole()
+	//if my, b := ctx.Get("user"); b {
+	//	if myUser, b := my.(*model.User); b {
+	//		role, _ := myUser.Role()
+	//		switch role.Slug {
+	//		case model.SlugGenesis:
+	//			nextRole = model.NewAdmin()
+	//		case model.SlugAdmin:
+	//			nextRole = model.NewOrg()
+	//		}
+	//	}
+	//}
+	//err := makeUser(user, nextRole)
+	//return user, err
 
+}
+
+func makeUser(user *model.User, role *model.Role) error {
+	err := model.Transaction(func() error {
+		err := user.Create()
+		if err != nil {
+			return err
+		}
+		ru := model.NewRoleUser()
+		ru.SetUser(user)
+		ru.SetRole(role)
+		err = ru.CreateIfNotExist()
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
 }
 
 // AccessControlAllow ...

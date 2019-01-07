@@ -19,11 +19,34 @@ func Router(eng *gin.Engine) {
 	//组织注册
 	g0.POST("register", RegisterPOST(verV0))
 
-	g0.GET("genesis", GenesisGet(verV0))
+	g0.GET("genesis", GenesisGET(verV0))
 
 	v0 := g0.Group("")
 	v0.Use(LoginCheck(verV0))
-
+	v0.POST("addAdmin", AddAdminPOST(verV0))
+	v0.POST("addOrg", AddOrgPOST(verV0))
 	v0.POST("addUser", AddUserPOST(verV0))
+	v0.POST("add", AddPOST(verV0))
 
+}
+
+// AddPOST ...
+func AddPOST(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// AddOrgPOST ...
+func AddOrgPOST(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// AddAdminPOST ...
+func AddAdminPOST(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
 }

@@ -73,6 +73,21 @@ func (u *User) ValidatePassword(pwd string) bool {
 	return u.Password == pwd
 }
 
+// Role ...
+func (u *User) Role() (*Role, error) {
+	ru := NewRoleUser()
+	err := FindOne(ru, bson.M{
+		"userid": u.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	role := NewRole()
+	role.ID = ru.RoleID
+	err = role.Find()
+	return role, err
+}
+
 // Roles ...
 func (u *User) Roles() ([]*Role, error) {
 	var list []*RoleUser

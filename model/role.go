@@ -30,6 +30,12 @@ const (
 	NameMonitor = "监督"
 )
 
+// SlugUser ...
+const (
+	SlugUser = "user"
+	NameUser = "普通用户"
+)
+
 // Role ...
 type Role struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty"`
@@ -129,6 +135,15 @@ func NewMonitor() *Role {
 	role.Slug = SlugMonitor
 	role.Name = NameMonitor
 	role.Description = NameMonitor
+	return role
+}
+
+// NewGod 用户就是上帝
+func NewGod() *Role {
+	role := NewRole()
+	role.Slug = SlugUser
+	role.Name = NameUser
+	role.Description = NameUser
 	return role
 }
 
