@@ -79,13 +79,18 @@ func (u *User) Role() (*Role, error) {
 	err := FindOne(ru, bson.M{
 		"userid": u.ID,
 	})
+	log.Println(*ru)
 	if err != nil {
 		return nil, err
 	}
 	role := NewRole()
 	role.ID = ru.RoleID
 	err = role.Find()
-	return role, err
+	log.Println(role)
+	if err != nil {
+		return nil, err
+	}
+	return role, nil
 }
 
 // Roles ...

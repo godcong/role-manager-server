@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"log"
 )
 
 // Router ...
@@ -85,9 +86,10 @@ func ValidateSlug(my *model.User, slug string) error {
 func AddPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		my := User(ctx)
-
+		log.Printf("%+v", *my)
 		slug := ctx.PostForm("Slug")
 		err := ValidateSlug(my, slug)
+		log.Println(err)
 		if err != nil {
 			failed(ctx, err.Error())
 			return
@@ -96,17 +98,19 @@ func AddPOST(ver string) gin.HandlerFunc {
 		user := model.NewUser()
 		user.ID = model.ID(oid)
 		err = user.Find()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		//role := model.Role{}
-		role, err := model.RoleBySlug(slug)
+		log.Println(*user, oid)
+		log.Printf("%+v", *user)
 		if err != nil {
 			failed(ctx, err.Error())
 			return
 		}
 
+		role, err := model.RoleBySlug(slug)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		log.Printf("%+v", *role)
 		ru := model.NewRoleUser()
 		ru.SetRole(role)
 		ru.SetUser(user)
