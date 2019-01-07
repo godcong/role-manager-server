@@ -268,29 +268,3 @@ func (m *Model) AfterUpdate() {
 func (m *Model) AfterDelete() {
 	return
 }
-
-// TransactionDo ...
-type TransactionDo func() error
-
-// Transaction 事物
-func Transaction(fn TransactionDo) error {
-	session, err := DB().StartSession()
-	if err != nil {
-		return err
-	}
-	defer session.EndSession(mgo.TimeOut())
-	err = session.StartTransaction()
-	if err != nil {
-		return err
-	}
-	err = fn()
-	if err != nil {
-		_ = session.AbortTransaction(mgo.TimeOut())
-		return err
-	}
-	err = session.CommitTransaction(mgo.TimeOut())
-	if err != nil {
-		_ = session.AbortTransaction(mgo.TimeOut())
-	}
-	return nil
-}

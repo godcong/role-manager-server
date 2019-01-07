@@ -31,6 +31,7 @@ func LoginCheck(ver string) gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+
 		ctx.Set("user", user)
 		ctx.Next()
 	}

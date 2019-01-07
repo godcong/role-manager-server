@@ -110,6 +110,7 @@ func (r *RoleUser) User() (*User, error) {
 
 // Role ...
 func (r *RoleUser) Role() (*Role, error) {
+
 	if r.ID == primitive.NilObjectID {
 		return nil, errors.New("id is null")
 	}

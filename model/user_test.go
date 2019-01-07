@@ -1,23 +1,16 @@
 package model
 
 import (
+	"github.com/godcong/role-manager-server/util"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"testing"
 )
 
-var user = User{
-	Name:          "godcong",
-	Username:      "ungodcong",
-	Email:         "godcong@ggg.com",
-	Mobile:        "123456",
-	IDCardFacade:  "/d/d/e/e/d/c/",
-	IDCardObverse: "/f/g/h/j/a",
-	Password:      "godcong0910",
-	Token:         "1212133333",
-}
-
 // TestUser_Create ...
 func TestUser_Create(t *testing.T) {
+	user := NewUser()
+	user.Username = "godcong"
+	user.Name = util.GenerateRandomString(32)
 	t.Log(user.Create())
 	t.Log(user)
 }

@@ -97,3 +97,58 @@ func Reconnect() error {
 func C(name string) *mongo.Collection {
 	return DB().D().Collection(name)
 }
+
+// RelateInfo ...
+type RelateInfo struct {
+	From         string `bson:"from"`
+	LocalField   string `bson:"localField"`
+	ForeignField string `json:"foreignField"`
+	As           string `json:"as"`
+}
+
+// RelateFunc ...
+type RelateFunc func() (Modeler, error)
+
+// RelateMakeFunc ...
+type RelateMakeFunc func(a, b Modeler) error
+
+// RelateMaker ...
+func RelateMaker(fa, fb RelateFunc, f RelateMakeFunc) error {
+	return Transaction(func() error {
+		a, err := fa()
+		if err != nil {
+			return err
+		}
+		b, err := fb()
+		if err != nil {
+			return err
+		}
+		return f(a, b)
+	})
+}
+
+// TransactionDo ...
+type TransactionDo func() error
+
+// Transaction 事物
+func Transaction(fn TransactionDo) error {
+	session, err := DB().StartSession()
+	if err != nil {
+		return err
+	}
+	defer session.EndSession(mgo.TimeOut())
+	err = session.StartTransaction()
+	if err != nil {
+		return err
+	}
+	err = fn()
+	if err != nil {
+		_ = session.AbortTransaction(mgo.TimeOut())
+		return err
+	}
+	err = session.CommitTransaction(mgo.TimeOut())
+	if err != nil {
+		_ = session.AbortTransaction(mgo.TimeOut())
+	}
+	return nil
+}
