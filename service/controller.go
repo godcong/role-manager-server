@@ -80,7 +80,7 @@ func RegisterPOST(ver string) gin.HandlerFunc {
 // AddUserPOST ...
 func AddUserPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
+		success(ctx, "logined")
 	}
 }
 
@@ -146,11 +146,37 @@ func AccessControlAllow(ctx *gin.Context) {
 	ctx.Next()
 }
 
+// DecryptJWT ...
+func DecryptJWT(key []byte, token string) (string, error) {
+	cl := jwt.Claims{}
+	signed, err := jwt.ParseSigned(token)
+	if err != nil {
+		return "", err
+	}
+
+	err = signed.Claims(key, &cl)
+	if err != nil {
+		return "", err
+	}
+
+	expected := jwt.Expected{
+		Issuer: "godcong",
+		Time:   time.Now(),
+	}
+
+	err = cl.Validate(expected)
+	if err != nil {
+		return "", err
+	}
+
+	return cl.Subject, nil
+}
+
 // EncryptJWT ...
 func EncryptJWT(key []byte, sub []byte) (string, error) {
 	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.HS256, Key: key}, (&jose.SignerOptions{}).WithType("JWT"))
 	if err != nil {
-		panic(err)
+		return "", nil
 	}
 	cl := jwt.Claims{
 		Subject:   string(sub),

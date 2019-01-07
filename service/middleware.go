@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
-	"github.com/json-iterator/go"
+	"log"
 )
 
 // LoginCheck ...
@@ -15,17 +15,17 @@ func LoginCheck(ver string) gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		t := Token{}
-		e := jsoniter.Unmarshal([]byte(token), &t)
-		if e != nil {
-			failed(ctx, e.Error())
+		t, err := FromToken(token)
+		if err != nil {
+			failed(ctx, err.Error())
 			ctx.Abort()
 			return
 		}
 
 		user := model.NewUser()
+		log.Println(t.OID)
 		user.ID = model.ID(t.OID)
-		err := user.Find()
+		err = user.Find()
 		if err != nil {
 			failed(ctx, err.Error())
 			ctx.Abort()
