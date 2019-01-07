@@ -87,7 +87,7 @@ func NewRoleUser() *RoleUser {
 }
 
 func (r *RoleUser) _Name() string {
-	return "user_role"
+	return "role_user"
 }
 
 // User ...

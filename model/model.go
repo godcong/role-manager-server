@@ -196,8 +196,10 @@ func IsExist(m Modeler, v bson.M) bool {
 	if m.SoftDelete() {
 		v["model.deletedat"] = nil
 	}
-	result := C(m._Name()).FindOne(mgo.TimeOut(), v)
-	if result != nil && result.Err() == nil {
+	log.Println(m._Name(), v)
+	//result := C(m._Name()).FindOne(mgo.TimeOut(), v)
+	i, err := C(m._Name()).Count(mgo.TimeOut(), v)
+	if err != nil && i != 0 {
 		return true
 	}
 	return false

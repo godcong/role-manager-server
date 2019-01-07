@@ -6,6 +6,7 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/util"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 	"net/http"
@@ -13,6 +14,80 @@ import (
 )
 
 const key = ""
+
+// GenesisGet ...
+func GenesisGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		role := model.NewGenesis()
+		err := model.FindOne(role, bson.M{
+			"slug": role.Slug,
+		})
+		if err != nil && role.ID != primitive.NilObjectID {
+			failed(ctx, "genesis is created")
+			return
+		}
+		passwd := util.GenerateRandomString(16)
+		user := model.NewUser()
+		user.Name = "genesis"
+		user.SetPassword(passwd)
+		err = model.Transaction(func() error {
+			err := role.Create()
+			if err != nil {
+				return err
+			}
+			err = user.Create()
+			if err != nil {
+				return err
+			}
+			ru := model.NewRoleUser()
+			ru.SetUser(user)
+			ru.SetRole(role)
+			err = ru.CreateIfNotExist()
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, gin.H{
+			"Name":     user.Name,
+			"Password": passwd,
+		})
+		return
+	}
+}
+
+// RegisterPOST ...
+func RegisterPOST(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.PostForm("applyName")     //商户名称
+		ctx.PostForm("applyCode")     //社会统一信用代码
+		ctx.PostForm("applyContact")  //商户联系人
+		ctx.PostForm("applyPosition") //联系人职位
+		ctx.PostForm("applyPhone")    //联系人手机号
+		ctx.PostForm("applyMailbox")  //联系人邮箱
+	}
+}
+
+// AddUserPOST ...
+func AddUserPOST(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// User ...
+func User(ctx *gin.Context) *model.User {
+	if v, b := ctx.Get("user"); b {
+		if v0, b := v.(*model.User); b {
+			return v0
+		}
+	}
+	return nil
+}
 
 // LoginPOST ...
 func LoginPOST(ver string) gin.HandlerFunc {
@@ -35,23 +110,6 @@ func LoginPOST(ver string) gin.HandlerFunc {
 		})
 
 	}
-}
-
-func result(ctx *gin.Context, code int, message string, detail interface{}) {
-	h := gin.H{
-		"code":    code,
-		"message": message,
-		"detail":  detail,
-	}
-	ctx.JSON(http.StatusOK, h)
-}
-
-func success(ctx *gin.Context, detail interface{}) {
-	result(ctx, 0, "success", detail)
-}
-
-func failed(ctx *gin.Context, message string) {
-	result(ctx, -1, message, nil)
 }
 
 func addUser(ctx *gin.Context) (*model.User, error) {
@@ -121,20 +179,19 @@ func ValidateUser(ctx *gin.Context) (*model.User, error) {
 	return u, err
 }
 
-// ToToken ...
-func ToToken(u *model.User) (string, error) {
-	t := Token{}
-	t.Name = u.Name
-	t.OID = u.ID.String()
-	//t.Pwd = u.Password //TODO
-	t.EffectiveTime = time.Now().Unix() + 3600*24*7
-
-	sub, err := util.MarshalJSON(t)
-	if err != nil {
-		return "", err
+func result(ctx *gin.Context, code int, message string, detail interface{}) {
+	h := gin.H{
+		"code":    code,
+		"message": message,
+		"detail":  detail,
 	}
+	ctx.JSON(http.StatusOK, h)
+}
 
-	token, err := EncryptJWT([]byte(key), sub)
+func success(ctx *gin.Context, detail interface{}) {
+	result(ctx, 0, "success", detail)
+}
 
-	return token, err
+func failed(ctx *gin.Context, message string) {
+	result(ctx, -1, message, nil)
 }
