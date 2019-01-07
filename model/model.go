@@ -48,11 +48,12 @@ type BaseAble interface {
 
 // Model ...
 type Model struct {
-	softDelete bool
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	DeletedAt  *time.Time
 	Version    int
+	softDelete bool
 }
 
 // NewModel ...
@@ -267,4 +268,14 @@ func (m *Model) AfterUpdate() {
 // AfterDelete ...
 func (m *Model) AfterDelete() {
 	return
+}
+
+// GetID ...
+func (m *Model) GetID() primitive.ObjectID {
+	return m.ID
+}
+
+// SetID ...
+func (m *Model) SetID(id primitive.ObjectID) {
+	m.ID = id
 }

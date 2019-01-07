@@ -9,7 +9,6 @@ import (
 
 // User ...
 type User struct {
-	ID            primitive.ObjectID `bson:"_id,omitempty"`
 	Name          string
 	Username      string
 	Email         string
@@ -19,22 +18,12 @@ type User struct {
 	Organization  string
 	Password      string
 	Token         string
-	*Model
+	Model         `bson:",inline"`
 }
 
 // CreateIfNotExist ...
 func (u *User) CreateIfNotExist() error {
 	return CreateIfNotExist(u)
-}
-
-// GetID ...
-func (u *User) GetID() primitive.ObjectID {
-	return u.ID
-}
-
-// SetID ...
-func (u *User) SetID(id primitive.ObjectID) {
-	u.ID = id
 }
 
 func (u *User) _Name() string {
