@@ -1,6 +1,9 @@
 package util
 
 import (
+	"github.com/json-iterator/go"
+	"io"
+	"io/ioutil"
 	"math/rand"
 	"time"
 )
@@ -60,4 +63,26 @@ func GenerateRandomString(size int, kind ...RandomKind) string {
 		result = append(result, bytes[rand.Intn(len(bytes))])
 	}
 	return string(result)
+}
+
+// UnmarshalJSON ...
+func UnmarshalJSON(reader io.Reader, v interface{}) error {
+	bytes, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return err
+	}
+	err = jsoniter.Unmarshal(bytes, v)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON ...
+func MarshalJSON(v interface{}) ([]byte, error) {
+	bytes, err := jsoniter.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	return bytes, err
 }

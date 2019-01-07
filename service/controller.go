@@ -1,21 +1,39 @@
 package service
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/util"
+	"github.com/mongodb/mongo-go-driver/bson"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 	"net/http"
 	"time"
 )
 
+const key = ""
+
 // LoginPOST ...
 func LoginPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.PostForm("username")
+		user, err := ValidateUser(ctx)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
 
-		jose.New
+		token, err := ToToken(user)
+
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		success(ctx, gin.H{
+			"token": token,
+		})
+
 	}
 }
 
@@ -82,4 +100,41 @@ func EncryptJWT(key []byte, sub []byte) (string, error) {
 
 	raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
 	return raw, err
+}
+
+// ValidateUser ...
+func ValidateUser(ctx *gin.Context) (*model.User, error) {
+	user := ctx.PostForm("username")
+	pass := ctx.PostForm("password")
+	u := model.NewUser()
+	err := model.FindOne(u, bson.M{
+		"name": user,
+	})
+	if err != nil {
+		failed(ctx, err.Error())
+		return nil, err
+	}
+
+	if u.Password != pass {
+		return nil, errors.New("password not validated")
+	}
+	return u, err
+}
+
+// ToToken ...
+func ToToken(u *model.User) (string, error) {
+	t := Token{}
+	t.Name = u.Name
+	t.OID = u.ID.String()
+	//t.Pwd = u.Password //TODO
+	t.EffectiveTime = time.Now().Unix() + 3600*24*7
+
+	sub, err := util.MarshalJSON(t)
+	if err != nil {
+		return "", err
+	}
+
+	token, err := EncryptJWT([]byte(key), sub)
+
+	return token, err
 }
