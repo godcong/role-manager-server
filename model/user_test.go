@@ -12,7 +12,6 @@ var user = User{
 	Mobile:        "123456",
 	IDCardFacade:  "/d/d/e/e/d/c/",
 	IDCardObverse: "/f/g/h/j/a",
-	Association:   "yelion",
 	Password:      "godcong0910",
 	Token:         "1212133333",
 }

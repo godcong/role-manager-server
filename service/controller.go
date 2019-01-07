@@ -1,7 +1,10 @@
 package service
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/util"
@@ -10,10 +13,12 @@ import (
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 	"net/http"
+	"strings"
 	"time"
 )
 
-const key = ""
+const globalKey = ""
+const globalSalt = ""
 
 // GenesisGet ...
 func GenesisGet(ver string) gin.HandlerFunc {
@@ -29,7 +34,7 @@ func GenesisGet(ver string) gin.HandlerFunc {
 		passwd := util.GenerateRandomString(16)
 		user := model.NewUser()
 		user.Name = "genesis"
-		user.SetPassword(passwd)
+		user.SetPassword(PWD(passwd))
 		err = model.Transaction(func() error {
 			err := role.Create()
 			if err != nil {
@@ -173,10 +178,18 @@ func ValidateUser(ctx *gin.Context) (*model.User, error) {
 		return nil, err
 	}
 
-	if u.Password != pass {
+	if !u.ValidatePassword(PWD(pass)) {
 		return nil, errors.New("password not validated")
 	}
 	return u, err
+}
+
+// PWD ...
+func PWD(pwd string) string {
+	m := hmac.New(sha256.New, []byte(globalKey))
+	m.Write([]byte(pwd))
+	m.Write([]byte(globalSalt))
+	return strings.ToUpper(fmt.Sprintf("%x", m.Sum(nil)))
 }
 
 func result(ctx *gin.Context, code int, message string, detail interface{}) {

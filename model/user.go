@@ -1,14 +1,10 @@
 package model
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"fmt"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"log"
-	"strings"
 )
 
 // User ...
@@ -69,21 +65,12 @@ func (u *User) Find() error {
 
 // SetPassword ...
 func (u *User) SetPassword(pwd string) {
-	u.Password = PWD(pwd)
+	u.Password = pwd
 }
 
 // ValidatePassword ...
 func (u *User) ValidatePassword(pwd string) bool {
-	return u.Password == PWD(pwd)
-}
-
-// PWD ...
-func PWD(pwd string) string {
-	salt := []byte("22c77682334a55f41b6cdbdf5ca27a830a4241a0e13c101f6dc5bd2dde86e3b7")
-	m := hmac.New(sha256.New, []byte("3htASeUkrx5LcnuTENQIZQPCVlwdnvIJ7bYtSpoJYq38MgUJnx1CQIR1gjZ8HJxAEcN4gqugBg"))
-	m.Write([]byte(pwd))
-	m.Write(salt)
-	return strings.ToUpper(fmt.Sprintf("%x", m.Sum(nil)))
+	return u.Password == pwd
 }
 
 // Roles ...
