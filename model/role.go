@@ -169,8 +169,8 @@ func (r *Role) CheckPermission(permission *Permission) error {
 	return nil
 }
 
-// NewGenesis ...
-func NewGenesis() *Role {
+// NewGenesisRole ...
+func NewGenesisRole() *Role {
 	role := NewRole()
 	role.Slug = SlugGenesis
 	role.Name = NameGenesis
@@ -178,8 +178,8 @@ func NewGenesis() *Role {
 	return role
 }
 
-// NewAdmin ...
-func NewAdmin() *Role {
+// NewAdminRole ...
+func NewAdminRole() *Role {
 	role := NewRole()
 	role.Slug = SlugAdmin
 	role.Name = NameAdmin
@@ -187,8 +187,8 @@ func NewAdmin() *Role {
 	return role
 }
 
-// NewOrg ...
-func NewOrg() *Role {
+// NewOrgRole ...
+func NewOrgRole() *Role {
 	role := NewRole()
 	role.Slug = SlugOrg
 	role.Name = NameOrg
@@ -196,8 +196,8 @@ func NewOrg() *Role {
 	return role
 }
 
-// NewMonitor ...
-func NewMonitor() *Role {
+// NewMonitorRole ...
+func NewMonitorRole() *Role {
 	role := NewRole()
 	role.Slug = SlugMonitor
 	role.Name = NameMonitor
@@ -205,8 +205,8 @@ func NewMonitor() *Role {
 	return role
 }
 
-// NewGod 用户就是上帝
-func NewGod() *Role {
+// NewGodRole 用户就是上帝
+func NewGodRole() *Role {
 	role := NewRole()
 	role.Slug = SlugUser
 	role.Name = NameUser

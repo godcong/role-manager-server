@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+)
+
 // Organization ...
 type Organization struct {
 	Model       `bson:",inline"`
@@ -12,6 +17,25 @@ type Organization struct {
 	Phone       string `bson:"phone"`    //联系人手机号
 	Mailbox     string `bson:"mailbox"`  //联系人邮箱
 	Description string `bson:"description"`
+}
+
+// NewOrganization ...
+func NewOrganization() *Organization {
+	return &Organization{
+		Model: model(),
+	}
+}
+
+// IsExist ...
+func (o *Organization) IsExist() bool {
+	if o.ID != primitive.NilObjectID {
+		return IsExist(o, bson.M{
+			"_id": o.ID,
+		})
+	}
+	return IsExist(o, bson.M{
+		"name": o.Name,
+	})
 }
 
 // CreateIfNotExist ...

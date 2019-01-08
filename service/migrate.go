@@ -12,11 +12,11 @@ func Migrate() {
 
 func createRoles() {
 	models := []model.Modeler{
-		model.NewGenesis(),
-		model.NewAdmin(),
-		model.NewOrg(),
-		model.NewMonitor(),
-		model.NewGod(),
+		model.NewGenesisRole(),
+		model.NewAdminRole(),
+		model.NewOrgRole(),
+		model.NewMonitorRole(),
+		model.NewGodRole(),
 	}
 
 	for _, m := range models {

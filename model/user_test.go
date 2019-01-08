@@ -92,7 +92,7 @@ func TestUser_Find(t *testing.T) {
 
 // TestRole_Create ...
 func TestRole_Create(t *testing.T) {
-	g := NewGenesis()
+	g := NewGenesisRole()
 	e := g.Create()
 	t.Log(g, e)
 }

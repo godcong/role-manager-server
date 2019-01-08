@@ -11,7 +11,7 @@ func TestPermission_Create(t *testing.T) {
 	p.Slug = ".v0.user.add"
 	err := p.CreateIfNotExist()
 	log.Println(err)
-	role := NewGenesis()
+	role := NewGenesisRole()
 	err = role.Find()
 	log.Println(*role, err)
 	user := NewUser()

@@ -140,7 +140,7 @@ func OrgUpload(ver string) gin.HandlerFunc {
 // GenesisGET ...
 func GenesisGET(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		role := model.NewGenesis()
+		role := model.NewGenesisRole()
 		err := model.FindOne(role, bson.M{
 			"slug": role.Slug,
 		})
