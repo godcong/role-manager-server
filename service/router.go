@@ -50,9 +50,13 @@ func Router(eng *gin.Engine) {
 	admin0.DELETE("user/:id", AdminUserDelete(current))
 
 	//组织管理员
-	org0 := v0.Group("org")
+	org0 := v0.Group("manage")
+	//org0.POST("org", OrgAdd(current))
+	//org0.GET("org", OrgList(current))
+	//org0.POST("org/:id", OrgUpdate(current))
+	//org0.DELETE("org/:id", OrgDelete(current))
+
 	org0.POST("active", OrgActivation(current))
-	org0.POST("add", OrgAdd(current))
 	org0.POST("upload", OrgUpload(current))
 
 	//监督
@@ -62,6 +66,21 @@ func Router(eng *gin.Engine) {
 	user0 := v0.Group("user")
 	user0.GET("play", UserPlayList(current))
 	user0.GET("play/:id", UserPlay(current))
+}
+
+// OrgUpdate ...
+func OrgUpdate(ver string) gin.HandlerFunc {
+
+}
+
+// OrgDelete ...
+func OrgDelete(ver string) gin.HandlerFunc {
+
+}
+
+// OrgList ...
+func OrgList(ver string) gin.HandlerFunc {
+
 }
 
 // OrgAdd ...
