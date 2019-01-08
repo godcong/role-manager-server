@@ -3,8 +3,9 @@ package model
 // Organization ...
 type Organization struct {
 	Model       `bson:",inline"`
+	IsDefault   bool   `bson:"is_default"`
 	Name        string `bson:"name"`
-	Verify      string `json:"verify"`
+	Verify      string `bson:"verify"`
 	Description string `bson:"description"`
 }
 

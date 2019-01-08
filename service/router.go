@@ -16,7 +16,7 @@ func Router(eng *gin.Engine) {
 	//组织注册
 
 	g0.GET("genesis", GenesisGET(current))
-
+	g0.POST("register", OrgRegister(current))
 	v0 := g0.Group("")
 	v0.Use(LoginCheck(current), PermissionCheck(current))
 
@@ -66,6 +66,13 @@ func Router(eng *gin.Engine) {
 	user0 := v0.Group("user")
 	user0.GET("play", UserPlayList(current))
 	user0.GET("play/:id", UserPlay(current))
+}
+
+// OrgRegister ...
+func OrgRegister(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		success(ctx, "")
+	}
 }
 
 // OrgUpdate ...
