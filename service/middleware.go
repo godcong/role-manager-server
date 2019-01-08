@@ -44,6 +44,14 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 		log.Println("method", ctx.Request.Method)
 		log.Println("path:", ctx.Request.URL.Path)
 		log.Println("handle:", ctx.HandlerName())
+
+		hn := strings.Split(ctx.HandlerName(), ".")
+		size := len(hn)
+		if size > 0 {
+			size -= 2
+		}
+		path := hn[size]
+
 		user := User(ctx)
 		role, err := user.Role()
 		if err == nil {
@@ -55,7 +63,7 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 		}
 		log.Println(err)
 
-		path := strings.Replace(ctx.Request.URL.Path, "/", ".", -1)
+		//path := strings.Replace(ctx.Request.URL.Path, "/", ".", -1)
 		p := model.NewPermission()
 		p.Slug = path
 		err = p.Find()

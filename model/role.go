@@ -4,6 +4,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
 )
 
 // SlugGenesis ...
@@ -75,6 +76,31 @@ func (r *Role) Find() error {
 	return FindOne(r, bson.M{
 		"slug": r.Slug,
 	})
+}
+
+// ALL ...
+func (r *Role) ALL() ([]*Role, error) {
+	var roles []*Role
+	m := bson.M{}
+	err := Find(r, m, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var r Role
+		err := cursor.Decode(&r)
+		if err != nil {
+			return err
+		}
+		roles = append(roles, &r)
+		for cursor.Next(mgo.TimeOut()) {
+			var p Permission
+			err := cursor.Decode(&p)
+			if err != nil {
+				return err
+			}
+			roles = append(roles, &r)
+		}
+		return nil
+	})
+	return roles, err
 }
 
 func (r *Role) _Name() string {

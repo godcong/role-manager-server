@@ -8,6 +8,8 @@ import (
 // DashboardRoleDelete ...
 func DashboardRoleDelete(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		failed(ctx, "can't delete role now")
+		return
 		success(ctx, "")
 	}
 }
@@ -15,6 +17,8 @@ func DashboardRoleDelete(ver string) gin.HandlerFunc {
 // DashboardRoleUpdate ...
 func DashboardRoleUpdate(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		failed(ctx, "can't change role now")
+		return
 		success(ctx, "")
 	}
 }
@@ -22,6 +26,8 @@ func DashboardRoleUpdate(ver string) gin.HandlerFunc {
 // DashboardRoleAdd ...
 func DashboardRoleAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		failed(ctx, "can't add new role now")
+		return
 		success(ctx, "")
 	}
 }
@@ -29,28 +35,89 @@ func DashboardRoleAdd(ver string) gin.HandlerFunc {
 // DashboardRoleList ...
 func DashboardRoleList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, "")
+		r := model.NewRole()
+		roles, err := r.ALL()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, roles)
 	}
 }
 
 // DashboardRoleShow ...
 func DashboardRoleShow(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, "")
+		id := ctx.Param("id")
+		r := model.NewRole()
+		r.ID = model.ID(id)
+		err := r.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		permissions, err := r.Permissions()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		success(ctx, permissions)
 	}
 }
 
 // DashboardPermissionDelete ...
 func DashboardPermissionDelete(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, "")
+		id := ctx.Param("id")
+		p := model.NewPermission()
+		p.ID = model.ID(id)
+		err := p.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		err = p.Delete()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, p)
 	}
 }
 
 // DashboardPermissionUpdate ...
 func DashboardPermissionUpdate(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, "")
+		id := ctx.Param("id")
+		p := model.NewPermission()
+		p.ID = model.ID(id)
+		err := p.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		name := ctx.PostForm("name")
+		if name != "" {
+			p.Name = name
+			p.Description = name
+		}
+		des := ctx.PostForm("description")
+		if des != "" {
+			p.Description = des
+		}
+		slug := ctx.PostForm("slug")
+		if slug != "" {
+			p.Slug = slug
+		}
+		err = p.Update()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		success(ctx, p)
 	}
 }
 
@@ -67,7 +134,7 @@ func DashboardPermissionAdd(ver string) gin.HandlerFunc {
 		p.Slug = slug
 		p.Name = name
 		p.Description = des
-		err := p.Create()
+		err := p.CreateIfNotExist()
 		if err != nil {
 			failed(ctx, err.Error())
 			return

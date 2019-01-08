@@ -284,7 +284,7 @@ func (m *Model) SetID(id primitive.ObjectID) {
 // SoftDelete ...
 func SoftDelete(modeler Modeler, v *bson.M) bool {
 	if modeler.SoftDelete() {
-		(*v)["model.deleted_at"] = nil
+		(*v)["deleted_at"] = nil
 		return true
 	}
 	return false

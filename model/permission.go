@@ -78,7 +78,8 @@ func (p *Permission) Find() error {
 // ALL ...
 func (p *Permission) ALL() ([]*Permission, error) {
 	var permissions []*Permission
-	err := Find(p, bson.M{}, func(cursor mongo.Cursor) error {
+	m := bson.M{}
+	err := Find(p, m, func(cursor mongo.Cursor) error {
 		log.Println(cursor.DecodeBytes())
 		var p Permission
 		err := cursor.Decode(&p)
