@@ -20,6 +20,20 @@ import (
 const globalKey = ""
 const globalSalt = ""
 
+// UserPlay ...
+func UserPlay(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		success(ctx, "")
+	}
+}
+
+// UserPlayList ...
+func UserPlayList(s string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		success(ctx, "")
+	}
+}
+
 // MonitorList ...
 func MonitorList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -36,20 +50,6 @@ func OrgVerify(ver string) gin.HandlerFunc {
 
 // AdminAdd ...
 func AdminAdd(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-	}
-}
-
-// DashboardAdd ...
-func DashboardAdd(s string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-	}
-}
-
-// DashboardListGet ...
-func DashboardListGet(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 	}

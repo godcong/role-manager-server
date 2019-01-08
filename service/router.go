@@ -24,13 +24,28 @@ func Router(eng *gin.Engine) {
 	//账号、密码、所属组织、角色权限、邮箱、手机号码、授权证书和授权私钥
 	dashboard0 := v0.Group("dashboard")
 	dashboard0.GET("list", DashboardListGet(current))
+
+	dashboard0.GET("permission", DashboardPermissionList(current))
+	dashboard0.POST("permission", DashboardPermissionAdd(current))
+	dashboard0.POST("permission/:id", DashboardPermissionUpdate(current))
+	dashboard0.DELETE("permission/:id", DashboardPermissionDelete(current))
+
+	dashboard0.GET("role", DashboardRoleList(current))
+	dashboard0.POST("role", DashboardRoleAdd(current))
+	dashboard0.POST("role/:id", DashboardRoleUpdate(current))
+	dashboard0.DELETE("role/:id", DashboardRoleDelete(current))
+
 	dashboard0.POST("user", DashboardUserAdd(current))
 	dashboard0.GET("user", DashboardUserList(current))
 	dashboard0.POST("user/:id", DashboardUserUpdate(current))
 	dashboard0.DELETE("user/:id", DashboardUserDelete(current))
+
 	//节点管理员
 	admin0 := v0.Group("admin")
-	admin0.POST("add", AdminAdd(current))
+	admin0.POST("user", AdminUserAdd(current))
+	admin0.GET("user", AdminUserList(current))
+	admin0.POST("user/:id", AdminUserUpdate(current))
+	admin0.DELETE("user/:id", AdminUserDelete(current))
 
 	//组织管理员
 	org0 := v0.Group("org")
@@ -41,35 +56,6 @@ func Router(eng *gin.Engine) {
 	monitor0.GET("list", MonitorList(current))
 
 	user0 := v0.Group("user")
-	user0.POST("add", AddPOST(current))
-}
-
-// DashboardUserDelete ...
-func DashboardUserDelete(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		success(ctx, "")
-	}
-}
-
-// DashboardUserUpdate ...
-func DashboardUserUpdate(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		success(ctx, "")
-	}
-}
-
-// DashboardUserList ...
-func DashboardUserList(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		success(ctx, "")
-	}
-}
-
-// DashboardUserAdd ...
-func DashboardUserAdd(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		addUser(ctx)
-
-		success(ctx, "")
-	}
+	user0.GET("play", UserPlayList(current))
+	user0.GET("play/:id", UserPlay(current))
 }
