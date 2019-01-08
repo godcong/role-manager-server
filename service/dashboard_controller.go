@@ -189,9 +189,22 @@ func DashboardUserAdd(ver string) gin.HandlerFunc {
 // DashboardUserShow 查看用户信息
 func DashboardUserShow(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		addUser(ctx)
+		id := ctx.Param("id")
+		user := model.NewUser()
+		user.ID = model.ID(id)
+		err := user.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
 
-		success(ctx, "")
+		p, _ := user.Permissions()
+		r, _ := user.Role()
+		success(ctx, gin.H{
+			"user":        user,
+			"role":        r,
+			"permissions": p,
+		})
 	}
 }
 

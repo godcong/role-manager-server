@@ -44,7 +44,7 @@ func MonitorList(ver string) gin.HandlerFunc {
 // OrgVerify ...
 func OrgVerify(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
+		ctx.Param("id")
 	}
 }
 
@@ -130,17 +130,10 @@ func AddPOST(ver string) gin.HandlerFunc {
 	}
 }
 
-// AddOrgPOST ...
-func AddOrgPOST(ver string) gin.HandlerFunc {
+// OrgUpload ...
+func OrgUpload(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-	}
-}
-
-// AddAdminPOST ...
-func AddAdminPOST(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
+		success(ctx, "")
 	}
 }
 

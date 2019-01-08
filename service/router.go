@@ -51,7 +51,8 @@ func Router(eng *gin.Engine) {
 
 	//组织管理员
 	org0 := v0.Group("org")
-	org0.POST("verify", OrgVerify(current))
+	org0.POST("active", OrgActivation(current))
+	org0.POST("upload", OrgUpload(current))
 
 	//监督
 	monitor0 := v0.Group("monitor")

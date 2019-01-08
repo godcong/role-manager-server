@@ -19,7 +19,8 @@ type User struct {
 	Password      string `bson:"password"`
 	Certificate   string `bson:"certificate"`
 	PrivateKey    string `bson:"private_key"`
-	Token         string `bson:"token"`
+
+	Token string `bson:"token"`
 }
 
 // CreateIfNotExist ...
