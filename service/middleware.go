@@ -45,11 +45,21 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 		log.Println("rp:", ctx.Request.URL.RawPath)
 		log.Println("rq:", ctx.Request.URL.RawQuery)
 		log.Println("q:", ctx.Request.URL.Query().Encode())
+		user := User(ctx)
+		role, err := user.Role()
+		if err == nil {
+			//超级管理员拥有所有权限
+			if role.Slug == model.SlugGenesis {
+				ctx.Next()
+				return
+			}
+		}
+		log.Println(err)
 
 		path := strings.Replace(ctx.Request.URL.Path, "/", ".", -1)
 		p := model.NewPermission()
 		p.Slug = path
-		err := p.Find()
+		err = p.Find()
 		if err != nil {
 			log.Println(err.Error())
 			failed(ctx, err.Error())
@@ -57,7 +67,6 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 			return
 		}
 
-		user := User(ctx)
 		err = user.CheckPermission(p)
 		if err != nil {
 			log.Println(err.Error())

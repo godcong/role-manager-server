@@ -11,6 +11,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -18,6 +19,130 @@ import (
 
 const globalKey = ""
 const globalSalt = ""
+
+// MonitorList ...
+func MonitorList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// OrgVerify ...
+func OrgVerify(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// AdminAdd ...
+func AdminAdd(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// DashboardAdd ...
+func DashboardAdd(s string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// DashboardListGet ...
+func DashboardListGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+func roleIsExist(role *model.Role) bool {
+	return model.IsExist(role, bson.M{
+		"slug": role.Slug,
+	})
+}
+
+// ValidateSlug ...
+func ValidateSlug(my *model.User, slug string) error {
+	myRole, err := my.Role()
+	if err != nil {
+		return err
+	}
+
+	if myRole.Slug == slug {
+		return errors.New("can not add same slug")
+	}
+
+	switch myRole.Slug {
+	case model.SlugGenesis:
+		if slug == model.SlugAdmin || slug == model.SlugMonitor {
+			return nil
+		}
+	case model.SlugAdmin:
+		if slug == model.SlugOrg {
+			return nil
+		}
+	}
+	return errors.New("can not add slug between (" + myRole.Slug + "," + slug + ")")
+}
+
+// AddPOST ...
+func AddPOST(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		my := User(ctx)
+		log.Printf("%+v", *my)
+		slug := ctx.PostForm("Slug")
+		err := ValidateSlug(my, slug)
+		log.Println(err)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		oid := ctx.PostForm("OID")
+		user := model.NewUser()
+		user.ID = model.ID(oid)
+		err = user.Find()
+		log.Println(*user, oid)
+		log.Printf("%+v", *user)
+		if err != nil {
+			log.Println(err)
+			failed(ctx, "no_corresponding_user")
+			return
+		}
+
+		role := model.NewRole()
+		role.Slug = slug
+		err = role.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		log.Printf("%+v", *role)
+		ru := model.NewRoleUser()
+		ru.SetRole(role)
+		ru.SetUser(user)
+		err = ru.CreateIfNotExist()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, "success")
+		return
+	}
+}
+
+// AddOrgPOST ...
+func AddOrgPOST(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// AddAdminPOST ...
+func AddAdminPOST(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
 
 // GenesisGET ...
 func GenesisGET(ver string) gin.HandlerFunc {
@@ -120,28 +245,53 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	user.IDCardFacade = ctx.PostForm("idCardFacade")
 	user.IDCardObverse = ctx.PostForm("idCardObverse")
 	user.Organization = ctx.PostForm("organization")
+	user.Certificate = ctx.PostForm("certificate")
+	user.PrivateKey = ctx.PostForm("private_key")
 	user.SetPassword(PWD(ctx.PostForm("password")))
-	err := user.Create()
-	user.Password = ctx.PostForm("password")
-	return user, err
-	//nextRole := model.NewRole()
-	//if my, b := ctx.Get("user"); b {
-	//	if myUser, b := my.(*model.User); b {
-	//		role, _ := myUser.Role()
-	//		switch role.Slug {
-	//		case model.SlugGenesis:
-	//			nextRole = model.NewAdmin()
-	//		case model.SlugAdmin:
-	//			nextRole = model.NewOrg()
-	//		}
-	//	}
-	//}
-	//err := makeUser(user, nextRole)
-	//return user, err
 
+	slug := ctx.PostForm("slug")
+	role := model.NewRole()
+	role.Slug = slug
+
+	err := model.RelateMaker(func() (modeler model.Modeler, e error) {
+		err := user.Create()
+		user.Password = ctx.PostForm("password")
+		return user, err
+	}, func() (modeler model.Modeler, e error) {
+		err := role.Find()
+		if err != nil {
+			return nil, errors.New("role is not found")
+		}
+		return role, nil
+	}, func(a, b model.Modeler) error {
+		ru := model.NewRoleUser()
+		ru.SetUser(user)
+		ru.SetRole(role)
+		return ru.CreateIfNotExist()
+	})
+
+	ps, err := role.Permissions()
+	err = model.RelateMaker(func() (modeler model.Modeler, e error) {
+		return user, nil
+	}, func() (modeler model.Modeler, e error) {
+		return ps[0], nil
+	}, func(a, b model.Modeler) error {
+		for _, p := range ps {
+			pu := model.PermissionUser{}
+			pu.SetUser(user)
+			pu.SetPermission(p)
+			err := pu.CreateIfNotExist()
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return user, err
 }
 
 func makeUser(user *model.User, role *model.Role) error {
+
 	err := model.Transaction(func() error {
 		err := user.Create()
 		if err != nil {

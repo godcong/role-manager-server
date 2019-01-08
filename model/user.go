@@ -17,6 +17,8 @@ type User struct {
 	IDCardObverse string `bson:"id_card_obverse"`
 	Organization  string `bson:"organization"`
 	Password      string `bson:"password"`
+	Certificate   string `bson:"certificate"`
+	PrivateKey    string `bson:"private_key"`
 	Token         string `bson:"token"`
 }
 

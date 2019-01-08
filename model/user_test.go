@@ -12,6 +12,7 @@ func TestUser_Create(t *testing.T) {
 	user := NewUser()
 	user.Username = "godcong"
 	user.Name = util.GenerateRandomString(32)
+	user.SetPassword("DBD978CCDBBE8B6DE77F6B37B5DF9B5B62A7E892A501C3B53EAA16B0838BD5ED")
 	t.Log(user.Create())
 	t.Log(user)
 }
@@ -40,6 +41,7 @@ func TestUser_Delete(t *testing.T) {
 	}
 	//t.Log(user.Delete())
 	user.SetSoftDelete(true)
+
 	e := user.Delete()
 	t.Log(e)
 	t.Log(user)
