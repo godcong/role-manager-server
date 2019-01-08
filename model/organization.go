@@ -8,14 +8,15 @@ import (
 // Organization ...
 type Organization struct {
 	Model       `bson:",inline"`
-	IsDefault   bool   `bson:"is_default"`
-	Verify      string `bson:"verify"`   //验证状态
-	Name        string `bson:"name"`     //商户名称
-	Code        string `bson:"code"`     //社会统一信用代码
-	Contact     string `bson:"contact"`  //商户联系人
-	Position    string `bson:"position"` //联系人职位
-	Phone       string `bson:"phone"`    //联系人手机号
-	Mailbox     string `bson:"mailbox"`  //联系人邮箱
+	IsDefault   bool   `bson:"is_default"` //是否为默认
+	OID         string `bson:"oid"`        //组织注册ID
+	Verify      string `bson:"verify"`     //验证状态
+	Name        string `bson:"name"`       //商户名称
+	Code        string `bson:"code"`       //社会统一信用代码
+	Contact     string `bson:"contact"`    //商户联系人
+	Position    string `bson:"position"`   //联系人职位
+	Phone       string `bson:"phone"`      //联系人手机号
+	Mailbox     string `bson:"mailbox"`    //联系人邮箱
 	Description string `bson:"description"`
 }
 

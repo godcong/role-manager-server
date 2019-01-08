@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 // Router ...
@@ -18,7 +19,7 @@ func Router(eng *gin.Engine) {
 	g0.GET("genesis", GenesisGET(current))
 	g0.POST("register", OrgRegister(current))
 	v0 := g0.Group("")
-	v0.Use(LoginCheck(current), PermissionCheck(current))
+	v0.Use(LogOutput(current), LoginCheck(current), PermissionCheck(current))
 
 	//超级管理员面板
 	//账号、密码、所属组织、角色权限、邮箱、手机号码、授权证书和授权私钥
@@ -67,6 +68,17 @@ func Router(eng *gin.Engine) {
 	user0 := v0.Group("user")
 	user0.GET("play", UserPlayList(current))
 	user0.GET("play/:id", UserPlay(current))
+}
+
+// LogOutput ...
+func LogOutput(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		log.Println("visit:", ctx.Request.RequestURI)
+		log.Println(ctx.Request.URL)
+		log.Println(ctx.Request.Host)
+		log.Println(ctx.Request.Method)
+
+	}
 }
 
 // AdminOrganizationShow ...
