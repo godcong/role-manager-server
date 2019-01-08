@@ -55,7 +55,7 @@ func DashboardPermissionUpdate(ver string) gin.HandlerFunc {
 }
 
 // DashboardPermissionAdd ...
-func DashboardPermissionAdd(s string) gin.HandlerFunc {
+func DashboardPermissionAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		p := model.NewPermission()
 		slug := ctx.PostForm("slug")
@@ -77,7 +77,7 @@ func DashboardPermissionAdd(s string) gin.HandlerFunc {
 }
 
 // DashboardPermissionList ...
-func DashboardPermissionList(s string) gin.HandlerFunc {
+func DashboardPermissionList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		p := model.NewPermission()
 		permissions, err := p.ALL()
