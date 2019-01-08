@@ -20,6 +20,31 @@ import (
 const globalKey = ""
 const globalSalt = ""
 
+// OrgRegister ...
+func OrgRegister(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		name := ctx.PostForm("applyName")         //商户名称
+		code := ctx.PostForm("applyCode")         //社会统一信用代码
+		contact := ctx.PostForm("applyContact")   //商户联系人
+		position := ctx.PostForm("applyPosition") //联系人职位
+		phone := ctx.PostForm("applyPhone")       //联系人手机号
+		mail := ctx.PostForm("applyMailbox")      //联系人邮箱
+		org := model.NewOrganization()
+		org.Name = name
+		org.Code = code
+		org.Contact = contact
+		org.Position = position
+		org.Phone = phone
+		org.Mailbox = mail
+		err := org.CreateIfNotExist()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, org)
+	}
+}
+
 // UserPlay ...
 func UserPlay(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -69,14 +94,14 @@ func ValidateSlug(my *model.User, slug string) error {
 	}
 
 	if myRole.Slug == slug {
-		return errors.New("can not add same slug")
+		return errors.New("can not add same slug permission")
 	}
 
 	switch myRole.Slug {
 	case model.SlugGenesis:
-		if slug == model.SlugAdmin || slug == model.SlugMonitor {
-			return nil
-		}
+		//if slug == model.SlugAdmin || slug == model.SlugMonitor {
+		return nil
+		//}
 	case model.SlugAdmin:
 		if slug == model.SlugOrg {
 			return nil
@@ -238,10 +263,15 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	user.SetPassword(PWD(ctx.PostForm("password")))
 
 	slug := ctx.PostForm("slug")
+
+	err := ValidateSlug(User(ctx), slug)
+	if err != nil {
+		return nil, err
+	}
 	role := model.NewRole()
 	role.Slug = slug
 
-	err := model.RelateMaker(func() (modeler model.Modeler, e error) {
+	err = model.RelateMaker(func() (modeler model.Modeler, e error) {
 		err := user.Create()
 		user.Password = ctx.PostForm("password")
 		return user, err

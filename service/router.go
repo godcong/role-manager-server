@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/role-manager-server/model"
 )
 
 // Router ...
@@ -45,13 +44,14 @@ func Router(eng *gin.Engine) {
 
 	//节点管理员
 	admin0 := v0.Group("admin")
-	admin0.POST("user", AdminUserAdd(current))
-	admin0.GET("user", AdminUserList(current))
-	admin0.POST("user/:id", AdminUserUpdate(current))
-	admin0.DELETE("user/:id", AdminUserDelete(current))
+	admin0.POST("organization", AdminOrganizationAdd(current))
+	admin0.GET("organization", AdminOrganizationList(current))
+	admin0.POST("organization/:id", AdminOrganizationUpdate(current))
+	admin0.DELETE("organization/:id", AdminOrganizationDelete(current))
+	admin0.GET("organization/:id/show", AdminOrganizationShow(current))
 
 	//组织管理员
-	org0 := v0.Group("manage")
+	org0 := v0.Group("org")
 	//org0.POST("org", OrgAdd(current))
 	//org0.GET("org", OrgList(current))
 	//org0.POST("org/:id", OrgUpdate(current))
@@ -69,29 +69,9 @@ func Router(eng *gin.Engine) {
 	user0.GET("play/:id", UserPlay(current))
 }
 
-// OrgRegister ...
-func OrgRegister(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		name := ctx.PostForm("applyName")         //商户名称
-		code := ctx.PostForm("applyCode")         //社会统一信用代码
-		contact := ctx.PostForm("applyContact")   //商户联系人
-		position := ctx.PostForm("applyPosition") //联系人职位
-		phone := ctx.PostForm("applyPhone")       //联系人手机号
-		mail := ctx.PostForm("applyMailbox")      //联系人邮箱
-		org := model.NewOrganization()
-		org.Name = name
-		org.Code = code
-		org.Contact = contact
-		org.Position = position
-		org.Phone = phone
-		org.Mailbox = mail
-		err := org.CreateIfNotExist()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		success(ctx, org)
-	}
+// AdminOrganizationShow ...
+func AdminOrganizationShow(ver string) gin.HandlerFunc {
+
 }
 
 // OrgUpdate ...
