@@ -3,7 +3,6 @@ package model
 import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
 // SlugGenesis ...
@@ -27,6 +26,18 @@ type Role struct {
 	Slug        string `bson:"slug"`
 	Description string `bson:"description"`
 	Level       int    `bson:"level"`
+}
+
+// IsExist ...
+func (r *Role) IsExist() bool {
+	if r.ID != primitive.NilObjectID {
+		return IsExist(r, bson.M{
+			"_id": r.ID,
+		})
+	}
+	return IsExist(r, bson.M{
+		"slug": r.Slug,
+	})
 }
 
 // CreateIfNotExist ...
