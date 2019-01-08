@@ -54,7 +54,12 @@ func (p *Permission) Delete() error {
 
 // Find ...
 func (p *Permission) Find() error {
-	return FindByID(p)
+	if p.ID != primitive.NilObjectID {
+		return FindByID(p)
+	}
+	return FindOne(p, bson.M{
+		"slug": p.Slug,
+	})
 }
 
 func (p *Permission) _Name() string {

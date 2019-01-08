@@ -11,45 +11,73 @@ import (
 // Router ...
 func Router(eng *gin.Engine) {
 
-	verV0 := "v0"
+	current := "v0"
 	eng.Use(AccessControlAllow)
-	g0 := eng.Group(verV0)
-	eng.POST("init", func(ctx *gin.Context) {
-		genesis := model.NewGenesis()
-		if !roleIsExist(genesis) {
-			genesis.Create()
-		}
-		admin := model.NewAdmin()
-		if !roleIsExist(admin) {
-			admin.Create()
-		}
-		org := model.NewOrg()
-		if !roleIsExist(org) {
-			org.Create()
-		}
-		monitor := model.NewMonitor()
-		if !roleIsExist(monitor) {
-			monitor.Create()
-		}
-		user := model.NewGod()
-		if !roleIsExist(user) {
-			user.Create()
-		}
-		success(ctx, "success")
-	})
+	g0 := eng.Group(current)
+
 	//登录
-	g0.POST("login", LoginPOST(verV0))
+	g0.POST("login", LoginPOST(current))
 	//组织注册
 
-	g0.GET("genesis", GenesisGET(verV0))
+	g0.GET("genesis", GenesisGET(current))
 
 	v0 := g0.Group("")
-	v0.Use(LoginCheck(verV0))
-	v0.POST("register", RegisterPOST(verV0))
-	v0.POST("addAdmin", AddAdminPOST(verV0))
-	v0.POST("addOrg", AddOrgPOST(verV0))
-	v0.POST("addUser", AddUserPOST(verV0))
-	v0.POST("add", AddPOST(verV0))
+	v0.Use(LoginCheck(current), PermissionCheck(current))
+
+	//超级管理员面板
+	//账号、密码、所属组织、角色权限、邮箱、手机号码、授权证书和授权私钥
+	dashboard0 := v0.Group("dashboard")
+	dashboard0.GET("list", DashboardListGet(current))
+	dashboard0.POST("add", DashboardAdd(current))
+	//节点管理员
+	admin0 := v0.Group("admin")
+	admin0.POST("add", AdminAdd(current))
+
+	//组织管理员
+	org0 := v0.Group("org")
+	org0.POST("verify", OrgVerify(current))
+
+	//监督
+	monitor0 := v0.Group("monitor")
+	monitor0.GET("list", MonitorList(current))
+
+	user0 := v0.Group("user")
+	user0.POST("add", AddPOST(current))
+}
+
+// MonitorList ...
+func MonitorList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// OrgVerify ...
+func OrgVerify(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// AdminAdd ...
+func AdminAdd(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// DashboardAdd ...
+func DashboardAdd(s string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// DashboardListGet ...
+func DashboardListGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
 }
 
 func roleIsExist(role *model.Role) bool {
@@ -105,7 +133,9 @@ func AddPOST(ver string) gin.HandlerFunc {
 			return
 		}
 
-		role, err := model.RoleBySlug(slug)
+		role := model.NewRole()
+		role.Slug = slug
+		err = role.Find()
 		if err != nil {
 			failed(ctx, err.Error())
 			return

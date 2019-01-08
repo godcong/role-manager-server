@@ -227,7 +227,6 @@ func ValidateUser(ctx *gin.Context) (*model.User, error) {
 		"name": user,
 	})
 	if err != nil {
-		failed(ctx, err.Error())
 		return nil, err
 	}
 

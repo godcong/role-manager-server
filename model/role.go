@@ -108,6 +108,28 @@ func (r *Role) Users() ([]*User, error) {
 	return users, err
 }
 
+// Permissions ...
+func (r *Role) Permissions() ([]*Permission, error) {
+	var ps []*Permission
+	pr := NewPermissionRole()
+	err := Find(pr, bson.M{
+		"role_id": r.ID,
+	}, func(cursor mongo.Cursor) error {
+		ru := NewPermissionRole()
+		err := cursor.Decode(ru)
+		if err != nil {
+			return err
+		}
+		p, err := ru.Permission()
+		if err != nil {
+			return err
+		}
+		ps = append(ps, p)
+		return nil
+	})
+	return ps, err
+}
+
 // NewGenesis ...
 func NewGenesis() *Role {
 	role := NewRole()
