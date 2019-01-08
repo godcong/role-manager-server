@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/role-manager-server/model"
 	"log"
 )
 
