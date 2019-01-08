@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/godcong/role-manager-server/model"
+	"log"
 )
 
 // Migrate ...
@@ -19,8 +20,7 @@ func createRoles() {
 	}
 
 	for _, m := range models {
-
-		m.Create()
+		err := m.CreateIfNotExist()
+		log.Println(err)
 	}
-
 }

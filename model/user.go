@@ -1,11 +1,5 @@
 package model
 
-import (
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"log"
-)
-
 // User ...
 type User struct {
 	Model         `bson:",inline"`
@@ -64,53 +58,12 @@ func (u *User) ValidatePassword(pwd string) bool {
 // Role ...
 func (u *User) Role() (*Role, error) {
 	ru := NewRoleUser()
-	err := FindOne(ru, bson.M{
-		"userid": u.ID,
-	})
-	log.Println(*ru)
+	ru.UserID = u.ID
+	err := ru.Find()
 	if err != nil {
 		return nil, err
 	}
-	role := NewRole()
-	role.ID = ru.RoleID
-	err = role.Find()
-	log.Println(role)
-	if err != nil {
-		return nil, err
-	}
-	return role, nil
-}
-
-// Roles ...
-func (u *User) Roles() ([]*Role, error) {
-	var list []*RoleUser
-
-	ru := NewRoleUser()
-	err := Find(ru, bson.M{
-		"userid": u.ID,
-	}, func(cursor mongo.Cursor) error {
-		ru := NewRoleUser()
-		e := cursor.Decode(&ru)
-		if e == nil {
-			list = append(list, ru)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	var roles []*Role
-	for _, val := range list {
-		role := NewRole()
-		role.ID = val.RoleID
-		err := role.Find()
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		roles = append(roles, role)
-	}
-	return roles, nil
+	return ru.Role()
 }
 
 // NewUser ...

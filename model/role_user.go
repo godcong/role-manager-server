@@ -49,9 +49,14 @@ func (r *RoleUser) CreateIfNotExist() error {
 
 // IsExist ...
 func (r *RoleUser) IsExist() bool {
+	if r.ID != primitive.NilObjectID {
+		return IsExist(r, bson.M{
+			"_id": r.ID,
+		})
+	}
 	return IsExist(r, bson.M{
-		"roleid": r.RoleID,
-		"userid": r.UserID,
+		"role_id": r.RoleID,
+		"user_id": r.UserID,
 	})
 }
 
@@ -69,11 +74,12 @@ func (r *RoleUser) Delete() error {
 func (r *RoleUser) Find() error {
 	if r.ID != primitive.NilObjectID {
 		return FindByID(r)
-	} else if r.RoleID != primitive.NilObjectID && r.UserID != primitive.NilObjectID {
+	} else if r.UserID != primitive.NilObjectID {
 		return FindOne(r, bson.M{
-			"roleid": r.RoleID,
-			"userid": r.UserID,
+			"user_id": r.UserID,
 		})
+	} else if r.RoleID != primitive.NilObjectID {
+		return errors.New("user id could't null")
 	}
 	return nil
 }
@@ -109,10 +115,10 @@ func (r *RoleUser) User() (*User, error) {
 
 // Role ...
 func (r *RoleUser) Role() (*Role, error) {
-
 	if r.ID == primitive.NilObjectID {
 		return nil, errors.New("id is null")
 	}
+
 	if r.RoleID != primitive.NilObjectID {
 		role := NewRole()
 		role.ID = r.RoleID
@@ -121,7 +127,6 @@ func (r *RoleUser) Role() (*Role, error) {
 			return nil, err
 		}
 		r.role = role
-		r.RoleID = role.ID
 		return role, nil
 	}
 	return nil, errors.New("role not found")

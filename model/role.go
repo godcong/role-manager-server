@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
 // SlugGenesis ...
@@ -85,13 +86,26 @@ func (r *Role) GetID() primitive.ObjectID {
 	return r.ID
 }
 
-// RoleBySlug ...
-func RoleBySlug(slug string) (*Role, error) {
-	r := NewRole()
-	err := FindOne(r, bson.M{
-		"slug": slug,
+// Users ...
+func (r *Role) Users() ([]*User, error) {
+	var users []*User
+	ru := NewRoleUser()
+	err := Find(ru, bson.M{
+		"role_id": r.ID,
+	}, func(cursor mongo.Cursor) error {
+		ru := NewRoleUser()
+		err := cursor.Decode(ru)
+		if err != nil {
+			return err
+		}
+		user, err := ru.User()
+		if err != nil {
+			return err
+		}
+		users = append(users, user)
+		return nil
 	})
-	return r, err
+	return users, err
 }
 
 // NewGenesis ...

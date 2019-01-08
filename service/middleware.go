@@ -36,3 +36,10 @@ func LoginCheck(ver string) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+// PermissionCheck ...
+func PermissionCheck(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
