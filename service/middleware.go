@@ -38,19 +38,22 @@ func LoginCheck(ver string) gin.HandlerFunc {
 	}
 }
 
+func handleFuncName(ctx *gin.Context) string {
+	hn := strings.Split(ctx.HandlerName(), ".")
+	size := len(hn)
+	if size > 0 {
+		size -= 2
+	}
+	return hn[size]
+}
+
 // PermissionCheck ...
 func PermissionCheck(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		log.Println("method", ctx.Request.Method)
 		log.Println("path:", ctx.Request.URL.Path)
-		log.Println("handle:", ctx.HandlerName())
-
-		hn := strings.Split(ctx.HandlerName(), ".")
-		size := len(hn)
-		if size > 0 {
-			size -= 2
-		}
-		path := hn[size]
+		handle := handleFuncName(ctx)
+		log.Println("handle:", handle)
 
 		user := User(ctx)
 		role, err := user.Role()
@@ -61,15 +64,13 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 				return
 			}
 		}
-		log.Println(err)
 
-		//path := strings.Replace(ctx.Request.URL.Path, "/", ".", -1)
 		p := model.NewPermission()
-		p.Slug = path
+		p.Slug = handle
 		err = p.Find()
 		if err != nil {
 			log.Println(err.Error())
-			failed(ctx, err.Error())
+			nop(ctx, err.Error())
 			ctx.Abort()
 			return
 		}
@@ -77,7 +78,7 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 		err = user.CheckPermission(p)
 		if err != nil {
 			log.Println(err.Error())
-			failed(ctx, "this account has no permissions to visit")
+			nop(ctx, "this account has no permissions to visit this url")
 			ctx.Abort()
 			return
 		}

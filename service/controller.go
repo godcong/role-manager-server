@@ -410,3 +410,7 @@ func success(ctx *gin.Context, detail interface{}) {
 func failed(ctx *gin.Context, message string) {
 	result(ctx, -1, message, nil)
 }
+
+func nop(ctx *gin.Context, message string) {
+	result(ctx, -2, message, nil)
+}
