@@ -62,3 +62,10 @@ func Router(eng *gin.Engine) {
 	user0.GET("play", UserPlayList(current))
 	user0.GET("play/:id", UserPlay(current))
 }
+
+// OrgActivation ...
+func OrgActivation(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
