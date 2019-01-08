@@ -9,13 +9,15 @@ import (
 func TestPermission_Create(t *testing.T) {
 	p := NewPermission()
 	p.Slug = ".v0.user.add"
-	p.CreateIfNotExist()
+	err := p.CreateIfNotExist()
+	log.Println(err)
 	role := NewGenesis()
-	err := role.Find()
+	err = role.Find()
 	log.Println(*role, err)
 	user := NewUser()
 	user.ID = ID("5c343d3ddfbfa08c879d01a2")
-	user.Find()
+	err = user.Find()
+	log.Println(*user, err)
 	err = RelateMaker(func() (modeler Modeler, e error) {
 		//err := p.Create()
 		return p, nil

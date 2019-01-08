@@ -129,7 +129,8 @@ func AddPOST(ver string) gin.HandlerFunc {
 		log.Println(*user, oid)
 		log.Printf("%+v", *user)
 		if err != nil {
-			failed(ctx, err.Error())
+			log.Println(err)
+			failed(ctx, "no_corresponding_user")
 			return
 		}
 

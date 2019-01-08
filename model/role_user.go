@@ -8,7 +8,7 @@ import (
 
 // RoleUser ...
 type RoleUser struct {
-	Model  `json:",inline"`
+	Model  `bson:",inline"`
 	UserID primitive.ObjectID `bson:"user_id"`
 	RoleID primitive.ObjectID `bson:"role_id"`
 	user   *User

@@ -109,8 +109,8 @@ func TestRoleUser_Find(t *testing.T) {
 // TestRoleUser_Create ...
 func TestRoleUser_Create(t *testing.T) {
 	ru := NewRoleUser()
-	ru.RoleID = ID("5c2f2864451279e9ff6f2128")
-	ru.UserID = ID("5c2eeb95761de4f5a13b3b83")
+	ru.RoleID = ID("5c344d138efb3aefa1341d0c")
+	ru.UserID = ID("5c343d3ddfbfa08c879d01a2")
 	e := ru.CreateIfNotExist()
 	t.Log(ru, e)
 }

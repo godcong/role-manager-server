@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
@@ -207,7 +206,6 @@ func Count(m Modeler, v bson.M) (int64, error) {
 // IsExist ...
 func IsExist(m Modeler, v bson.M) bool {
 	i, err := Count(m, v)
-	log.Println(i, err)
 	if err == nil && i != 0 {
 		return true
 	}
@@ -219,7 +217,8 @@ func CreateIfNotExist(m Modeler) error {
 	if !m.IsExist() {
 		return m.Create()
 	}
-	return errors.New(m._Name() + " is exist")
+	return m.Find()
+	//return errors.New(m._Name() + " is exist")
 }
 
 // IsExist ...

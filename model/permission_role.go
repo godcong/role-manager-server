@@ -114,5 +114,5 @@ func NewPermissionRole() *PermissionRole {
 }
 
 func (r *PermissionRole) _Name() string {
-	return "user_role"
+	return "permission_role"
 }
