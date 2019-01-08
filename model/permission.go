@@ -15,6 +15,18 @@ type Permission struct {
 	PermissionModel string `bson:"permission_model"`
 }
 
+// IsExist ...
+func (p *Permission) IsExist() bool {
+	if p.ID != primitive.NilObjectID {
+		return IsExist(p, bson.M{
+			"_id": p.ID,
+		})
+	}
+	return IsExist(p, bson.M{
+		"slug": p.Slug,
+	})
+}
+
 // CreateIfNotExist ...
 func (p *Permission) CreateIfNotExist() error {
 	return CreateIfNotExist(p)

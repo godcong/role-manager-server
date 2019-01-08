@@ -9,7 +9,7 @@ import (
 func TestPermission_Create(t *testing.T) {
 	p := NewPermission()
 	p.Slug = ".v0.user.add"
-	p.Create()
+	p.CreateIfNotExist()
 	role := NewGenesis()
 	err := role.Find()
 	log.Println(*role, err)
