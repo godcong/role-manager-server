@@ -1,6 +1,9 @@
 package service
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/godcong/role-manager-server/model"
+)
 
 // DashboardRoleDelete ...
 func DashboardRoleDelete(ver string) gin.HandlerFunc {
@@ -30,6 +33,13 @@ func DashboardRoleList(ver string) gin.HandlerFunc {
 	}
 }
 
+// DashboardRoleShow ...
+func DashboardRoleShow(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		success(ctx, "")
+	}
+}
+
 // DashboardPermissionDelete ...
 func DashboardPermissionDelete(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -47,21 +57,35 @@ func DashboardPermissionUpdate(ver string) gin.HandlerFunc {
 // DashboardPermissionAdd ...
 func DashboardPermissionAdd(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, "")
+		p := model.NewPermission()
+		slug := ctx.PostForm("slug")
+		name := ctx.PostForm("name")
+		des := ctx.PostForm("description")
+		if des == "" {
+			des = name
+		}
+		p.Slug = slug
+		p.Name = name
+		p.Description = des
+		err := p.Create()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, p)
 	}
 }
 
 // DashboardPermissionList ...
 func DashboardPermissionList(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		success(ctx, "")
-	}
-}
-
-// DashboardPermission ...
-func DashboardPermission(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		success(ctx, "")
+		p := model.NewPermission()
+		permissions, err := p.ALL()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, permissions)
 	}
 }
 
@@ -88,6 +112,15 @@ func DashboardUserList(ver string) gin.HandlerFunc {
 
 // DashboardUserAdd ...
 func DashboardUserAdd(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		addUser(ctx)
+
+		success(ctx, "")
+	}
+}
+
+// DashboardUserShow 查看用户信息
+func DashboardUserShow(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		addUser(ctx)
 

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
 	"log"
+	"reflect"
 	"strings"
 )
 
@@ -41,10 +42,10 @@ func LoginCheck(ver string) gin.HandlerFunc {
 // PermissionCheck ...
 func PermissionCheck(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		log.Println("method", ctx.Request.Method)
 		log.Println("path:", ctx.Request.URL.Path)
-		log.Println("rp:", ctx.Request.URL.RawPath)
-		log.Println("rq:", ctx.Request.URL.RawQuery)
-		log.Println("q:", ctx.Request.URL.Query().Encode())
+		val := reflect.ValueOf(ctx.Handler())
+		log.Println("handle:", val.Type().Name())
 		user := User(ctx)
 		role, err := user.Role()
 		if err == nil {

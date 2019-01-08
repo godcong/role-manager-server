@@ -34,11 +34,13 @@ func Router(eng *gin.Engine) {
 	dashboard0.POST("role", DashboardRoleAdd(current))
 	dashboard0.POST("role/:id", DashboardRoleUpdate(current))
 	dashboard0.DELETE("role/:id", DashboardRoleDelete(current))
+	dashboard0.GET("user/:id/show", DashboardRoleShow(current))
 
 	dashboard0.POST("user", DashboardUserAdd(current))
 	dashboard0.GET("user", DashboardUserList(current))
 	dashboard0.POST("user/:id", DashboardUserUpdate(current))
 	dashboard0.DELETE("user/:id", DashboardUserDelete(current))
+	dashboard0.GET("user/:id/show", DashboardUserShow(current))
 
 	//节点管理员
 	admin0 := v0.Group("admin")

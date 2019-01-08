@@ -4,6 +4,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
 )
 
 // Permission ...
@@ -72,6 +73,30 @@ func (p *Permission) Find() error {
 	return FindOne(p, bson.M{
 		"slug": p.Slug,
 	})
+}
+
+// ALL ...
+func (p *Permission) ALL() ([]*Permission, error) {
+	var permissions []*Permission
+	err := Find(p, bson.M{}, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var p Permission
+		err := cursor.Decode(&p)
+		if err != nil {
+			return err
+		}
+		permissions = append(permissions, &p)
+		for cursor.Next(mgo.TimeOut()) {
+			var p Permission
+			err := cursor.Decode(&p)
+			if err != nil {
+				return err
+			}
+			permissions = append(permissions, &p)
+		}
+		return nil
+	})
+	return permissions, err
 }
 
 func (p *Permission) _Name() string {
