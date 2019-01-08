@@ -172,12 +172,7 @@ func GenesisGET(ver string) gin.HandlerFunc {
 // RegisterPOST ...
 func RegisterPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.PostForm("applyName")     //商户名称
-		ctx.PostForm("applyCode")     //社会统一信用代码
-		ctx.PostForm("applyContact")  //商户联系人
-		ctx.PostForm("applyPosition") //联系人职位
-		ctx.PostForm("applyPhone")    //联系人手机号
-		ctx.PostForm("applyMailbox")  //联系人邮箱
+
 	}
 }
 
