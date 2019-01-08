@@ -180,7 +180,15 @@ func DashboardUserList(ver string) gin.HandlerFunc {
 // DashboardUserAdd ...
 func DashboardUserAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		addUser(ctx)
+
+		slug := ctx.PostForm("slug")
+
+		err := ValidateSlug(User(ctx), slug)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		//addUser(ctx)
 
 		success(ctx, "")
 	}

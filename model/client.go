@@ -12,8 +12,9 @@ const DefaultInterval = 5 * time.Second
 
 // MongoDB ...
 type MongoDB struct {
-	ctx  context.Context
-	host string
+	ctx    context.Context
+	host   string
+	prefix string
 	*mongo.Client
 	Interval time.Duration
 	database string
@@ -31,8 +32,10 @@ func newMongoDB() *MongoDB {
 	return &MongoDB{
 		ctx:      context.Background(),
 		host:     "mongodb://localhost:27017",
-		database: "database",
+		prefix:   "rms",
+		Client:   nil,
 		Interval: DefaultInterval,
+		database: "database",
 	}
 }
 
@@ -95,7 +98,7 @@ func Reconnect() error {
 
 // C return a collection
 func C(name string) *mongo.Collection {
-	return DB().D().Collection(name)
+	return DB().D().Collection(mgo.prefix + "_" + name)
 }
 
 // RelateInfo ...
