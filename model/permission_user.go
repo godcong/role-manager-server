@@ -8,12 +8,11 @@ import (
 
 // PermissionUser ...
 type PermissionUser struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	PermissionID primitive.ObjectID
-	UserID       primitive.ObjectID
+	Model        `bson:",inline"`
+	PermissionID primitive.ObjectID `bson:"permission_id"`
+	UserID       primitive.ObjectID `bson:"user_id"`
 	permission   *Permission
 	user         *User
-	*Model
 }
 
 // CreateIfNotExist ...

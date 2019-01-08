@@ -2,23 +2,22 @@ package model
 
 import (
 	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"log"
 )
 
 // User ...
 type User struct {
-	Name          string
-	Username      string
-	Email         string
-	Mobile        string
-	IDCardFacade  string
-	IDCardObverse string
-	Organization  string
-	Password      string
-	Token         string
 	Model         `bson:",inline"`
+	Name          string `bson:"name"`
+	Username      string `bson:"username"`
+	Email         string `bson:"email"`
+	Mobile        string `bson:"mobile"`
+	IDCardFacade  string `bson:"id_card_facade"`
+	IDCardObverse string `bson:"id_card_obverse"`
+	Organization  string `bson:"organization"`
+	Password      string `bson:"password"`
+	Token         string `bson:"token"`
 }
 
 // CreateIfNotExist ...

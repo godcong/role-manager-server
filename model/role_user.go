@@ -8,12 +8,11 @@ import (
 
 // RoleUser ...
 type RoleUser struct {
-	ID     primitive.ObjectID `bson:"_id,omitempty"`
-	UserID primitive.ObjectID
-	RoleID primitive.ObjectID
+	Model  `json:",inline"`
+	UserID primitive.ObjectID `bson:"user_id"`
+	RoleID primitive.ObjectID `bson:"role_id"`
 	user   *User
 	role   *Role
-	*Model
 }
 
 // SetRole ...

@@ -10,40 +10,23 @@ import (
 const (
 	SlugGenesis = "genesis"
 	NameGenesis = "超级管理员"
-)
-
-// SlugAdmin ...
-const (
-	SlugAdmin = "admin"
-	NameAdmin = "节点管理员"
-)
-
-// SlugOrg ...
-const (
-	SlugOrg = "organization"
-	NameOrg = "组织管理员"
-)
-
-// SlugMonitor ...
-const (
+	SlugAdmin   = "admin"
+	NameAdmin   = "节点管理员"
+	SlugOrg     = "organization"
+	NameOrg     = "组织管理员"
 	SlugMonitor = "monitor"
 	NameMonitor = "监督"
-)
-
-// SlugUser ...
-const (
-	SlugUser = "user"
-	NameUser = "普通用户"
+	SlugUser    = "user"
+	NameUser    = "普通用户"
 )
 
 // Role ...
 type Role struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"`
-	Name        string
-	Slug        string
-	Description string
-	Level       int
-	*Model
+	Model       `json:",inline"`
+	Name        string `bson:"name"`
+	Slug        string `bson:"slug"`
+	Description string `bson:"description"`
+	Level       int    `bson:"level"`
 }
 
 // FindGenesis ...

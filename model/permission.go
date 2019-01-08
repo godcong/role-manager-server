@@ -4,12 +4,11 @@ import "github.com/mongodb/mongo-go-driver/bson/primitive"
 
 // Permission ...
 type Permission struct {
-	ID              primitive.ObjectID `bson:"_id,omitempty"`
-	Name            string
-	Slug            string
-	Description     string
-	PermissionModel string
-	*Model
+	Model           `bson:",inline"`
+	Name            string `bson:"name"`
+	Slug            string `bson:"slug"`
+	Description     string `bson:"description"`
+	PermissionModel string `bson:"permission_model"`
 }
 
 // CreateIfNotExist ...
