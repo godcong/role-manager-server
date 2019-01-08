@@ -19,7 +19,7 @@ func (p *Permission) CreateIfNotExist() error {
 // NewPermission ...
 func NewPermission() *Permission {
 	return &Permission{
-		Model: NewModel(),
+		Model: model(),
 	}
 }
 

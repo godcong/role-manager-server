@@ -49,11 +49,21 @@ type BaseAble interface {
 // Model ...
 type Model struct {
 	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  *time.Time
-	Version    int
+	CreatedAt  time.Time          `bson:"created_at"`
+	UpdatedAt  time.Time          `bson:"updated_at"`
+	DeletedAt  *time.Time         `bson:"deleted_at"`
+	Version    int                `bson:"version"`
 	softDelete bool
+}
+
+func model() Model {
+	return Model{
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+		DeletedAt:  nil,
+		Version:    1,
+		softDelete: true,
+	}
 }
 
 // NewModel ...
@@ -157,9 +167,7 @@ type FindDecode func(cursor mongo.Cursor) error
 
 // Find ...
 func Find(m Modeler, v bson.M, dec FindDecode, ops ...*options.FindOptions) error {
-	if m.SoftDelete() {
-		v["model.deletedat"] = nil
-	}
+	SoftDelete(m, &v)
 	find, err := C(m._Name()).Find(mgo.TimeOut(), v, ops...)
 	if err != nil {
 		return err
@@ -175,9 +183,7 @@ func Find(m Modeler, v bson.M, dec FindDecode, ops ...*options.FindOptions) erro
 
 // FindOne ...
 func FindOne(m Modeler, v bson.M, ops ...*options.FindOneOptions) error {
-	if m.SoftDelete() {
-		v["model.deletedat"] = nil
-	}
+	SoftDelete(m, &v)
 	return C(m._Name()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
 }
 
@@ -186,17 +192,13 @@ func FindByID(m Modeler, ops ...*options.FindOneOptions) error {
 	v := bson.M{
 		"_id": m.GetID(),
 	}
-	if m.SoftDelete() {
-		v["model.deletedat"] = nil
-	}
+	SoftDelete(m, &v)
 	return C(m._Name()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
 }
 
 // Count ...
 func Count(m Modeler, v bson.M) (int64, error) {
-	if m.SoftDelete() {
-		v["model.deletedat"] = nil
-	}
+	SoftDelete(m, &v)
 	//result := C(m._Name()).FindOne(mgo.TimeOut(), v)
 	return C(m._Name()).Count(mgo.TimeOut(), v)
 
@@ -278,4 +280,13 @@ func (m *Model) GetID() primitive.ObjectID {
 // SetID ...
 func (m *Model) SetID(id primitive.ObjectID) {
 	m.ID = id
+}
+
+// SoftDelete ...
+func SoftDelete(modeler Modeler, v *bson.M) bool {
+	if modeler.SoftDelete() {
+		(*v)["model.deleted_at"] = nil
+		return true
+	}
+	return false
 }

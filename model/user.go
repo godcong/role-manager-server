@@ -116,6 +116,6 @@ func (u *User) Roles() ([]*Role, error) {
 // NewUser ...
 func NewUser() *User {
 	return &User{
-		Model: NewModel(),
+		Model: model(),
 	}
 }

@@ -109,7 +109,7 @@ func (r *PermissionUser) Find() error {
 // NewPermissionUser ...
 func NewPermissionUser() *PermissionUser {
 	return &PermissionUser{
-		Model: NewModel(),
+		Model: model(),
 	}
 }
 

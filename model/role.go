@@ -29,23 +29,6 @@ type Role struct {
 	Level       int    `bson:"level"`
 }
 
-// FindGenesis ...
-func FindGenesis() ([]*Role, error) {
-	var roles []*Role
-	role := NewRole()
-	e := Find(role, bson.M{
-		"slug": SlugGenesis,
-	}, func(cursor mongo.Cursor) error {
-		role := NewRole()
-		e := cursor.Decode(&role)
-		if e == nil {
-			roles = append(roles, role)
-		}
-		return nil
-	})
-	return roles, e
-}
-
 // CreateIfNotExist ...
 func (r *Role) CreateIfNotExist() error {
 	return CreateIfNotExist(r)
@@ -73,7 +56,13 @@ func (r *Role) Delete() error {
 
 // Find ...
 func (r *Role) Find() error {
-	return FindByID(r)
+
+	if r.ID != primitive.NilObjectID {
+		return FindByID(r)
+	}
+	return FindOne(r, bson.M{
+		"slug": r.Slug,
+	})
 }
 
 func (r *Role) _Name() string {
@@ -142,6 +131,6 @@ func NewGod() *Role {
 // NewRole ...
 func NewRole() *Role {
 	return &Role{
-		Model: NewModel(),
+		Model: model(),
 	}
 }

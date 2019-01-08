@@ -81,7 +81,7 @@ func (r *RoleUser) Find() error {
 // NewRoleUser ...
 func NewRoleUser() *RoleUser {
 	return &RoleUser{
-		Model: NewModel(),
+		Model: model(),
 	}
 }
 
