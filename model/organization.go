@@ -3,6 +3,8 @@ package model
 import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
 )
 
 // Organization ...
@@ -37,6 +39,31 @@ func (o *Organization) IsExist() bool {
 	return IsExist(o, bson.M{
 		"name": o.Name,
 	})
+}
+
+// ALL ...
+func (o *Organization) ALL() ([]*Organization, error) {
+	var orgs []*Organization
+	m := bson.M{}
+	err := Find(o, m, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var o Organization
+		err := cursor.Decode(&o)
+		if err != nil {
+			return err
+		}
+		orgs = append(orgs, &o)
+		for cursor.Next(mgo.TimeOut()) {
+			var o Organization
+			err := cursor.Decode(&o)
+			if err != nil {
+				return err
+			}
+			orgs = append(orgs, &o)
+		}
+		return nil
+	})
+	return orgs, err
 }
 
 // CreateIfNotExist ...

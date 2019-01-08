@@ -83,7 +83,9 @@ func LogOutput(ver string) gin.HandlerFunc {
 
 // AdminOrganizationShow ...
 func AdminOrganizationShow(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 
+	}
 }
 
 // OrgUpdate ...
