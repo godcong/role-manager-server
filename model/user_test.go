@@ -4,6 +4,7 @@ import (
 	"github.com/godcong/role-manager-server/util"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"testing"
+	"time"
 )
 
 // TestUser_Create ...
@@ -19,7 +20,23 @@ func TestUser_Create(t *testing.T) {
 func TestUser_Delete(t *testing.T) {
 	id, _ := primitive.ObjectIDFromHex("5c2eeb5bb69c469e69c79a26")
 	user := User{
-		ID: id,
+		Model: Model{
+			ID:         id,
+			CreatedAt:  time.Time{},
+			UpdatedAt:  time.Time{},
+			DeletedAt:  nil,
+			Version:    0,
+			softDelete: false,
+		},
+		Name:          "",
+		Username:      "",
+		Email:         "",
+		Mobile:        "",
+		IDCardFacade:  "",
+		IDCardObverse: "",
+		Organization:  "",
+		Password:      "",
+		Token:         "",
 	}
 	//t.Log(user.Delete())
 	user.SetSoftDelete(true)
@@ -36,7 +53,23 @@ func TestUser_Delete(t *testing.T) {
 // TestUser_Update ...
 func TestUser_Update(t *testing.T) {
 	user := User{
-		ID: ID("5c2eea9a3db6598a9c25c65c"),
+		Model: Model{
+			ID:         primitive.ObjectID{},
+			CreatedAt:  time.Time{},
+			UpdatedAt:  time.Time{},
+			DeletedAt:  nil,
+			Version:    0,
+			softDelete: false,
+		},
+		Name:          "",
+		Username:      "",
+		Email:         "",
+		Mobile:        "",
+		IDCardFacade:  "",
+		IDCardObverse: "",
+		Organization:  "",
+		Password:      "",
+		Token:         "",
 	}
 	user.softDelete = true
 	user.Find()
@@ -80,9 +113,4 @@ func TestRoleUser_Create(t *testing.T) {
 	ru.UserID = ID("5c2eeb95761de4f5a13b3b83")
 	e := ru.CreateIfNotExist()
 	t.Log(ru, e)
-}
-
-// TestFindGenesis ...
-func TestFindGenesis(t *testing.T) {
-	t.Log(FindGenesis())
 }

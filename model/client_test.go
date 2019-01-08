@@ -19,10 +19,5 @@ func TestInitClient(t *testing.T) {
 
 // TestRelate ...
 func TestRelate(t *testing.T) {
-	Relate("user", &RelateInfo{
-		From:         "",
-		LocalField:   "",
-		ForeignField: "",
-		As:           "",
-	})
+
 }

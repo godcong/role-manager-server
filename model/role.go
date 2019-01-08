@@ -22,7 +22,7 @@ const (
 
 // Role ...
 type Role struct {
-	Model       `json:",inline"`
+	Model       `bson:",inline"`
 	Name        string `bson:"name"`
 	Slug        string `bson:"slug"`
 	Description string `bson:"description"`
@@ -128,6 +128,19 @@ func (r *Role) Permissions() ([]*Permission, error) {
 		return nil
 	})
 	return ps, err
+}
+
+// CheckPermission ...
+func (r *Role) CheckPermission(permission *Permission) error {
+	pr := NewPermissionRole()
+	err := FindOne(pr, bson.M{
+		"role_id":       r.ID,
+		"permission_id": permission.ID,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // NewGenesis ...

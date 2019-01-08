@@ -1,5 +1,11 @@
 package model
 
+import (
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
+)
+
 // User ...
 type User struct {
 	Model         `bson:",inline"`
@@ -63,7 +69,43 @@ func (u *User) Role() (*Role, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Println(*ru)
 	return ru.Role()
+}
+
+// Permissions ...
+func (u *User) Permissions() ([]*Permission, error) {
+	var ps []*Permission
+	pu := NewPermissionUser()
+	err := Find(pu, bson.M{
+		"user_id": u.ID,
+	}, func(cursor mongo.Cursor) error {
+		pu := NewPermissionUser()
+		err := cursor.Decode(pu)
+		if err != nil {
+			return err
+		}
+		p, err := pu.Permission()
+		if err != nil {
+			return err
+		}
+		ps = append(ps, p)
+		return nil
+	})
+	return ps, err
+}
+
+// CheckPermission ...
+func (u *User) CheckPermission(permission *Permission) error {
+	pu := NewPermissionUser()
+	err := FindOne(pu, bson.M{
+		"user_id":       u.ID,
+		"permission_id": permission.ID,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // NewUser ...
