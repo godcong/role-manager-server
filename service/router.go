@@ -75,18 +75,6 @@ func Router(eng *gin.Engine) {
 	user0.GET("play/:id", UserPlay(current))
 }
 
-// UserRegister ...
-func UserRegister(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		user, err := addUser(ctx)
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		success(ctx, user)
-	}
-}
-
 // OrgActivation ...
 func OrgActivation(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

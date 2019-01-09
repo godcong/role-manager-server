@@ -72,7 +72,45 @@ func AdminOrganizationUpdate(ver string) gin.HandlerFunc {
 	}
 }
 
-// AdminOrganizationList ...
+// AdminOrganizationList ....
+/**
+* @api {get} /v0/admin/organization 组织列表
+* @apiName AdminOrganizationList
+* @apiGroup AdminOrganization
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": [
+*		        {
+*		            "ID": "5c35b06daad2d1c5eb7292bd",
+*		            "CreatedAt": "2019-01-09T16:27:25.903+08:00",
+*		            "UpdatedAt": "2019-01-09T16:37:37.379+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 3,
+*		            "IsDefault": false,
+*		            "Verify": "pass",
+*		            "Name": "商户名称",
+*		            "Code": "社会统一信用代码",
+*		            "Contact": "商户联系人",
+*		            "Position": "联系人职位",
+*		            "Phone": "联系人手机号",
+*		            "Mailbox": "联系人邮箱",
+*		            "Description": ""
+*		        }
+*		    ],
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/admin/organization
+ */
 func AdminOrganizationList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		org := model.NewOrganization()
