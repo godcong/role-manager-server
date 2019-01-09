@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 // Router ...
@@ -17,7 +16,8 @@ func Router(eng *gin.Engine) {
 	//组织注册
 
 	g0.GET("genesis", GenesisGET(current))
-	g0.POST("register", OrgRegister(current))
+	g0.POST("register", UserRegister(current))
+	g0.POST("apply", OrgApply(current))
 	v0 := g0.Group("")
 	v0.Use(LogOutput(current), LoginCheck(current), PermissionCheck(current))
 
@@ -70,49 +70,15 @@ func Router(eng *gin.Engine) {
 	user0.GET("play/:id", UserPlay(current))
 }
 
-// LogOutput ...
-func LogOutput(ver string) gin.HandlerFunc {
+// UserRegister ...
+func UserRegister(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		log.Println("visit:", ctx.Request.RequestURI)
-		log.Println(ctx.Request.URL)
-		log.Println(ctx.Request.Host)
-		log.Println(ctx.Request.Method)
-
-	}
-}
-
-// AdminOrganizationShow ...
-func AdminOrganizationShow(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-	}
-}
-
-// OrgUpdate ...
-func OrgUpdate(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-	}
-}
-
-// OrgDelete ...
-func OrgDelete(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-	}
-}
-
-// OrgList ...
-func OrgList(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-	}
-}
-
-// OrgAdd ...
-func OrgAdd(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
+		user, err := addUser(ctx)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, user)
 	}
 }
 

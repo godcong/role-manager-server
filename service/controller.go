@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -15,8 +16,8 @@ import (
 const globalKey = ""
 const globalSalt = ""
 
-// OrgRegister ...
-func OrgRegister(ver string) gin.HandlerFunc {
+// OrgApply ...
+func OrgApply(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		name := ctx.PostForm("applyName")         //商户名称
 		code := ctx.PostForm("applyCode")         //社会统一信用代码
@@ -31,6 +32,7 @@ func OrgRegister(ver string) gin.HandlerFunc {
 		org.Position = position
 		org.Phone = phone
 		org.Mailbox = mail
+		org.Verify = model.VerifyApplication //申请中
 		err := org.CreateIfNotExist()
 		if err != nil {
 			failed(ctx, err.Error())
@@ -158,6 +160,12 @@ func LoginPOST(ver string) gin.HandlerFunc {
 }
 
 func addUser(ctx *gin.Context) (*model.User, error) {
+
+	org, err := checkOrganization(ctx)
+	if err != nil {
+		log.Println(org)
+		return nil, errors.New("organization not found")
+	}
 	user := model.NewUser()
 	user.Name = ctx.PostForm("name")
 	user.Username = ctx.PostForm("username")
@@ -165,14 +173,14 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	user.Mobile = ctx.PostForm("mobile")
 	user.IDCardFacade = ctx.PostForm("idCardFacade")
 	user.IDCardObverse = ctx.PostForm("idCardObverse")
-	user.Organization = ctx.PostForm("organization")
+	user.OrganizationID = org.ID
 	user.Certificate = ctx.PostForm("certificate")
 	user.PrivateKey = ctx.PostForm("private_key")
 	user.SetPassword(PWD(ctx.PostForm("password")))
 
 	slug := ctx.PostForm("slug")
 
-	err := ValidateSlug(User(ctx), slug)
+	err = ValidateSlug(User(ctx), slug)
 	if err != nil {
 		return nil, err
 	}
@@ -216,8 +224,22 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	return user, err
 }
 
-func makeUser(user *model.User, role *model.Role) error {
+func checkOrganization(ctx *gin.Context) (*model.Organization, error) {
+	oid := ctx.PostForm("organization_id")
+	org := model.NewOrganization()
+	org.ID = model.ID(oid)
 
+	err := org.Find()
+	if err != nil {
+		return nil, err
+	}
+	if org.Verify == model.VerifyPass {
+		return org, nil
+	}
+	return org, err
+}
+
+func makeUser(user *model.User, role *model.Role) error {
 	err := model.Transaction(func() error {
 		err := user.Create()
 		if err != nil {
@@ -275,6 +297,16 @@ func PWD(pwd string) string {
 	return strings.ToUpper(fmt.Sprintf("%x", m.Sum(nil)))
 }
 
+// LogOutput ...
+func LogOutput(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		log.Println("visit:", ctx.Request.RequestURI)
+		log.Println(ctx.Request.URL)
+		log.Println(ctx.Request.Host)
+		log.Println(ctx.Request.Method)
+
+	}
+}
 func result(ctx *gin.Context, code int, message string, detail interface{}) {
 	h := gin.H{
 		"code":    code,

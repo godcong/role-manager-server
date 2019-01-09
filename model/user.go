@@ -2,23 +2,24 @@ package model
 
 import (
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"log"
 )
 
 // User ...
 type User struct {
-	Model         `bson:",inline"`
-	Name          string `bson:"name"`
-	Username      string `bson:"username"`
-	Email         string `bson:"email"`
-	Mobile        string `bson:"mobile"`
-	IDCardFacade  string `bson:"id_card_facade"`
-	IDCardObverse string `bson:"id_card_obverse"`
-	Organization  string `bson:"organization"`
-	Password      string `bson:"password"`
-	Certificate   string `bson:"certificate"`
-	PrivateKey    string `bson:"private_key"`
+	Model          `bson:",inline"`
+	Name           string             `bson:"name"`
+	Username       string             `bson:"username"`
+	Email          string             `bson:"email"`
+	Mobile         string             `bson:"mobile"`
+	IDCardFacade   string             `bson:"id_card_facade"`
+	IDCardObverse  string             `bson:"id_card_obverse"`
+	OrganizationID primitive.ObjectID `bson:"organization_id"`
+	Password       string             `bson:"password"`
+	Certificate    string             `bson:"certificate"`
+	PrivateKey     string             `bson:"private_key"`
 
 	Token string `bson:"token"`
 }
@@ -79,8 +80,7 @@ func (u *User) Role() (*Role, error) {
 // Permissions ...
 func (u *User) Permissions() ([]*Permission, error) {
 	var ps []*Permission
-	pu := NewPermissionUser()
-	err := Find(pu, bson.M{
+	err := Find(NewPermissionUser(), bson.M{
 		"user_id": u.ID,
 	}, func(cursor mongo.Cursor) error {
 		pu := NewPermissionUser()

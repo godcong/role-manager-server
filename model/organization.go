@@ -7,11 +7,22 @@ import (
 	"log"
 )
 
+// VerifyApplication 申请中
+const VerifyApplication = "application"
+
+// VerifyPass 通过
+const VerifyPass = "pass"
+
+// VerifyReturn 打回
+const VerifyReturn = "return"
+
+// VerifyClosed 关闭
+const VerifyClosed = "closed"
+
 // Organization ...
 type Organization struct {
 	Model       `bson:",inline"`
 	IsDefault   bool   `bson:"is_default"` //是否为默认
-	OID         string `bson:"oid"`        //组织注册ID
 	Verify      string `bson:"verify"`     //验证状态
 	Name        string `bson:"name"`       //商户名称
 	Code        string `bson:"code"`       //社会统一信用代码
@@ -89,6 +100,23 @@ func (o *Organization) Delete() error {
 // Find ...
 func (o *Organization) Find() error {
 	return FindByID(o)
+}
+
+// Users ...
+func (o *Organization) Users() ([]*User, error) {
+	var users []*User
+	err := Find(NewUser(), bson.M{
+		"organization_id": o.ID,
+	}, func(cursor mongo.Cursor) error {
+		user := NewUser()
+		err := cursor.Decode(user)
+		if err != nil {
+			return err
+		}
+		users = append(users, user)
+		return nil
+	})
+	return users, err
 }
 
 func (o *Organization) _Name() string {
