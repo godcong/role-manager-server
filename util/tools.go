@@ -2,6 +2,8 @@ package util
 
 import (
 	"github.com/json-iterator/go"
+	"gopkg.in/square/go-jose.v2"
+	"gopkg.in/square/go-jose.v2/jwt"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -85,4 +87,49 @@ func MarshalJSON(v interface{}) ([]byte, error) {
 		return nil, err
 	}
 	return bytes, err
+}
+
+// DecryptJWT ...
+func DecryptJWT(key []byte, token string) (string, error) {
+	cl := jwt.Claims{}
+	signed, err := jwt.ParseSigned(token)
+	if err != nil {
+		return "", err
+	}
+
+	err = signed.Claims(key, &cl)
+	if err != nil {
+		return "", err
+	}
+
+	expected := jwt.Expected{
+		Issuer: "godcong",
+		Time:   time.Now(),
+	}
+
+	err = cl.Validate(expected)
+	if err != nil {
+		return "", err
+	}
+
+	return cl.Subject, nil
+}
+
+// EncryptJWT ...
+func EncryptJWT(key []byte, sub []byte) (string, error) {
+	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.HS256, Key: key}, (&jose.SignerOptions{}).WithType("JWT"))
+	if err != nil {
+		return "", nil
+	}
+	cl := jwt.Claims{
+		Subject:   string(sub),
+		Issuer:    "godcong",
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		Expiry:    jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 14)),
+		NotBefore: jwt.NewNumericDate(time.Now()),
+		ID:        GenerateRandomString(16),
+	}
+
+	raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
+	return raw, err
 }

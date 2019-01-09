@@ -7,14 +7,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
-	"github.com/godcong/role-manager-server/util"
 	"github.com/mongodb/mongo-go-driver/bson"
-	"gopkg.in/square/go-jose.v2"
-	"gopkg.in/square/go-jose.v2/jwt"
-	"log"
 	"net/http"
 	"strings"
-	"time"
 )
 
 const globalKey = ""
@@ -66,26 +61,6 @@ func MonitorList(ver string) gin.HandlerFunc {
 	}
 }
 
-// OrgVerify ...
-func OrgVerify(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		ctx.Param("id")
-	}
-}
-
-// AdminAdd ...
-func AdminAdd(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-	}
-}
-
-func roleIsExist(role *model.Role) bool {
-	return model.IsExist(role, bson.M{
-		"slug": role.Slug,
-	})
-}
-
 // ValidateSlug ...
 func ValidateSlug(my *model.User, slug string) error {
 	myRole, err := my.Role()
@@ -108,51 +83,6 @@ func ValidateSlug(my *model.User, slug string) error {
 		}
 	}
 	return errors.New("can not add slug between (" + myRole.Slug + "," + slug + ")")
-}
-
-// AddPOST ...
-func AddPOST(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		my := User(ctx)
-		log.Printf("%+v", *my)
-		slug := ctx.PostForm("Slug")
-		err := ValidateSlug(my, slug)
-		log.Println(err)
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		oid := ctx.PostForm("OID")
-		user := model.NewUser()
-		user.ID = model.ID(oid)
-		err = user.Find()
-		log.Println(*user, oid)
-		log.Printf("%+v", *user)
-		if err != nil {
-			log.Println(err)
-			failed(ctx, "no_corresponding_user")
-			return
-		}
-
-		role := model.NewRole()
-		role.Slug = slug
-		err = role.Find()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		log.Printf("%+v", *role)
-		ru := model.NewRoleUser()
-		ru.SetRole(role)
-		ru.SetUser(user)
-		err = ru.CreateIfNotExist()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		success(ctx, "success")
-		return
-	}
 }
 
 // OrgUpload ...
@@ -191,28 +121,6 @@ func GenesisGET(ver string) gin.HandlerFunc {
 			"Password": passwd,
 		})
 		return
-	}
-}
-
-// RegisterPOST ...
-func RegisterPOST(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-	}
-}
-
-// AddUserPOST ...
-func AddUserPOST(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		user, err := addUser(ctx)
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		success(ctx, gin.H{
-			"Name":     user.Name,
-			"Password": user.Password,
-		})
 	}
 }
 
@@ -339,51 +247,6 @@ func AccessControlAllow(ctx *gin.Context) {
 		return
 	}
 	ctx.Next()
-}
-
-// DecryptJWT ...
-func DecryptJWT(key []byte, token string) (string, error) {
-	cl := jwt.Claims{}
-	signed, err := jwt.ParseSigned(token)
-	if err != nil {
-		return "", err
-	}
-
-	err = signed.Claims(key, &cl)
-	if err != nil {
-		return "", err
-	}
-
-	expected := jwt.Expected{
-		Issuer: "godcong",
-		Time:   time.Now(),
-	}
-
-	err = cl.Validate(expected)
-	if err != nil {
-		return "", err
-	}
-
-	return cl.Subject, nil
-}
-
-// EncryptJWT ...
-func EncryptJWT(key []byte, sub []byte) (string, error) {
-	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.HS256, Key: key}, (&jose.SignerOptions{}).WithType("JWT"))
-	if err != nil {
-		return "", nil
-	}
-	cl := jwt.Claims{
-		Subject:   string(sub),
-		Issuer:    "godcong",
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		Expiry:    jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 14)),
-		NotBefore: jwt.NewNumericDate(time.Now()),
-		ID:        util.GenerateRandomString(16),
-	}
-
-	raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
-	return raw, err
 }
 
 // ValidateUser ...

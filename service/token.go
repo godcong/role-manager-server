@@ -29,7 +29,7 @@ func ToToken(u *model.User) (string, error) {
 		return "", err
 	}
 
-	token, err := EncryptJWT([]byte(globalKey), sub)
+	token, err := util.EncryptJWT([]byte(globalKey), sub)
 
 	return token, err
 }
@@ -37,7 +37,7 @@ func ToToken(u *model.User) (string, error) {
 // FromToken ...
 func FromToken(token string) (*Token, error) {
 	t := Token{}
-	sub, err := DecryptJWT([]byte(globalKey), token)
+	sub, err := util.DecryptJWT([]byte(globalKey), token)
 	log.Println("sub", sub)
 	if err != nil {
 		return nil, err

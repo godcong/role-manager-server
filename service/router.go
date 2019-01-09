@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/role-manager-server/model"
 	"log"
 )
 
@@ -91,17 +90,23 @@ func AdminOrganizationShow(ver string) gin.HandlerFunc {
 
 // OrgUpdate ...
 func OrgUpdate(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 
+	}
 }
 
 // OrgDelete ...
 func OrgDelete(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 
+	}
 }
 
 // OrgList ...
 func OrgList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 
+	}
 }
 
 // OrgAdd ...
