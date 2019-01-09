@@ -13,10 +13,12 @@ func Router(eng *gin.Engine) {
 
 	//登录
 	g0.POST("login", LoginPOST(current))
-	//组织注册
 
+	//管理员生成
 	g0.GET("genesis", GenesisGET(current))
+	//用户注册
 	g0.POST("register", UserRegister(current))
+	//组织申请
 	g0.POST("apply", OrgApply(current))
 	v0 := g0.Group("")
 	v0.Use(LogOutput(current), LoginCheck(current), PermissionCheck(current))

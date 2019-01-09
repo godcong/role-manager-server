@@ -50,9 +50,7 @@ func (r *RoleUser) CreateIfNotExist() error {
 // IsExist ...
 func (r *RoleUser) IsExist() bool {
 	if r.ID != primitive.NilObjectID {
-		return IsExist(r, bson.M{
-			"_id": r.ID,
-		})
+		return IDExist(r)
 	}
 	return IsExist(r, bson.M{
 		"role_id": r.RoleID,

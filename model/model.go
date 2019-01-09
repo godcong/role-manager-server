@@ -203,6 +203,13 @@ func Count(m Modeler, v bson.M) (int64, error) {
 
 }
 
+// IDExist ...
+func IDExist(m Modeler) bool {
+	return IsExist(m, bson.M{
+		"_id": m.GetID(),
+	})
+}
+
 // IsExist ...
 func IsExist(m Modeler, v bson.M) bool {
 	i, err := Count(m, v)

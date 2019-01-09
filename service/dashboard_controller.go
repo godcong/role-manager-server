@@ -158,24 +158,20 @@ func DashboardPermissionList(ver string) gin.HandlerFunc {
 
 // DashboardUserDelete ...
 /**
-* @api {post} /v0/dashboard/user 上传文件接口
-* @apiName upload
-* @apiGroup Upload
+* @api {delete} /v0/dashboard/user/:id 删除用户
+* @apiName DashboardUserDelete
+* @apiGroup DashboardUser
 * @apiVersion  0.0.1
 *
 * @apiUse Success
-* @apiParam  {Binary} binary 媒体文件二进制文件
-* @apiParamExample  {Binary} get-Example:
-*
-*    upload a binary file from local
-*
+
 * @apiSuccess (detail) {string} id 文件名ID
 * @apiSuccessExample {json} Success-Response:
 *     {
 *       "code":0,
 *       "msg":"ok",
 *       "detail":{
-*			"id":"9FCp2x2AeEWNobvzKA3vRgqzZNqFWEJTMpLAz2hLhQGEd3URD5VTwDdTwrjTu2qm"
+*			"user"
 *		 }
 *     }
 * @apiUse Failed
@@ -210,15 +206,19 @@ func DashboardUserUpdate(ver string) gin.HandlerFunc {
 // DashboardUserList ...
 func DashboardUserList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-		success(ctx, "")
+		user := model.NewUser()
+		users, err := user.ALL()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, users)
 	}
 }
 
 // DashboardUserAdd ...
 func DashboardUserAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
 		user, err := addUser(ctx)
 		if err != nil {
 			failed(ctx, err.Error())
@@ -242,10 +242,12 @@ func DashboardUserShow(ver string) gin.HandlerFunc {
 
 		p, _ := user.Permissions()
 		r, _ := user.Role()
+		o, _ := user.Organization()
 		success(ctx, gin.H{
-			"user":        user,
-			"role":        r,
-			"permissions": p,
+			"user":         user,
+			"role":         r,
+			"permissions":  p,
+			"organization": o,
 		})
 	}
 }

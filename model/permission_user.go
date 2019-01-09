@@ -23,8 +23,8 @@ func (r *PermissionUser) CreateIfNotExist() error {
 // IsExist ...
 func (r *PermissionUser) IsExist() bool {
 	return IsExist(r, bson.M{
-		"permissionid": r.PermissionID,
-		"userid":       r.UserID,
+		"permission_id": r.PermissionID,
+		"user_id":       r.UserID,
 	})
 }
 

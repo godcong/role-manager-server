@@ -24,6 +24,18 @@ type User struct {
 	Token string `bson:"token"`
 }
 
+// IsExist ...
+func (u *User) IsExist() bool {
+	if u.ID != primitive.NilObjectID {
+		return IDExist(u)
+	}
+
+	return IsExist(u, bson.M{
+		"name": u.Name,
+	})
+
+}
+
 // CreateIfNotExist ...
 func (u *User) CreateIfNotExist() error {
 	return CreateIfNotExist(u)
@@ -75,6 +87,14 @@ func (u *User) Role() (*Role, error) {
 	}
 	log.Println(*ru)
 	return ru.Role()
+}
+
+// Organization ...
+func (u *User) Organization() (*Organization, error) {
+	org := NewOrganization()
+	org.ID = u.OrganizationID
+	err := org.Find()
+	return org, err
 }
 
 // Permissions ...

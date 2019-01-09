@@ -33,9 +33,7 @@ type Role struct {
 // IsExist ...
 func (r *Role) IsExist() bool {
 	if r.ID != primitive.NilObjectID {
-		return IsExist(r, bson.M{
-			"_id": r.ID,
-		})
+		return IDExist(r)
 	}
 	return IsExist(r, bson.M{
 		"slug": r.Slug,

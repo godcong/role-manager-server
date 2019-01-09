@@ -43,9 +43,7 @@ func NewOrganization() *Organization {
 // IsExist ...
 func (o *Organization) IsExist() bool {
 	if o.ID != primitive.NilObjectID {
-		return IsExist(o, bson.M{
-			"_id": o.ID,
-		})
+		return IDExist(o)
 	}
 	return IsExist(o, bson.M{
 		"name": o.Name,

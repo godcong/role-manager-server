@@ -19,9 +19,7 @@ type Permission struct {
 // IsExist ...
 func (p *Permission) IsExist() bool {
 	if p.ID != primitive.NilObjectID {
-		return IsExist(p, bson.M{
-			"_id": p.ID,
-		})
+		return IDExist(p)
 	}
 	return IsExist(p, bson.M{
 		"slug": p.Slug,

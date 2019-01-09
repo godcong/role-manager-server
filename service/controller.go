@@ -103,7 +103,7 @@ func GenesisGET(ver string) gin.HandlerFunc {
 		})
 		ru := model.NewRoleUser()
 		if model.IsExist(ru, bson.M{
-			"roleid": role.ID,
+			"role_id": role.ID,
 		}) {
 			failed(ctx, "genesis is exist")
 			return
@@ -141,6 +141,7 @@ func LoginPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := ValidateUser(ctx)
 		if err != nil {
+			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
@@ -148,6 +149,7 @@ func LoginPOST(ver string) gin.HandlerFunc {
 		token, err := ToToken(user)
 
 		if err != nil {
+			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
