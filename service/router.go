@@ -2,14 +2,21 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rakyll/statik/fs"
+	"log"
 )
 
 // Router ...
 func Router(eng *gin.Engine) {
+	st, err := fs.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+	eng.StaticFS("/doc", st)
 
 	current := "v0"
 	eng.Use(AccessControlAllow)
-	eng.Static("doc", "./doc")
+	//eng.Static("doc", "./doc")
 
 	g0 := eng.Group(current)
 

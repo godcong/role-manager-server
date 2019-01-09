@@ -14,6 +14,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mongodb/mongo-go-driver v0.1.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rakyll/statik v0.1.5
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51 // indirect
 	github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 // indirect
