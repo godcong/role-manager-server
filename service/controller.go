@@ -13,6 +13,20 @@ import (
 	"strings"
 )
 
+/**
+ * @apiDefine Success
+ * @apiSuccess {string} msg 返回具体消息
+ * @apiSuccess {int} code 返回状态码：【正常：0】，【失败，-1】
+ * @apiSuccess {json} [detail]  如正常则返回detail
+ */
+/**
+ * @apiDefine Failed
+ * @apiErrorExample {json} Error-Response:
+ *     {
+ *       "code":-1,
+ *       "msg":"error message",
+ *     }
+ */
 const globalKey = ""
 const globalSalt = ""
 

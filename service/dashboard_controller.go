@@ -203,6 +203,11 @@ func DashboardUserDelete(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
+		err = user.Delete()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
 		success(ctx, user)
 	}
 }
