@@ -161,11 +161,11 @@ func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 	return err
 }
 
-// FindDecode ...
-type FindDecode func(cursor mongo.Cursor) error
+// FindDecodeLoop ...
+type FindDecodeLoop func(cursor mongo.Cursor) error
 
 // Find ...
-func Find(m Modeler, v bson.M, dec FindDecode, ops ...*options.FindOptions) error {
+func Find(m Modeler, v bson.M, dec FindDecodeLoop, ops ...*options.FindOptions) error {
 	SoftDelete(m, &v)
 	find, err := C(m._Name()).Find(mgo.TimeOut(), v, ops...)
 	if err != nil {

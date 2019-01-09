@@ -90,14 +90,6 @@ func (r *Role) ALL() ([]*Role, error) {
 			return err
 		}
 		roles = append(roles, &r)
-		for cursor.Next(mgo.TimeOut()) {
-			var p Permission
-			err := cursor.Decode(&p)
-			if err != nil {
-				return err
-			}
-			roles = append(roles, &r)
-		}
 		return nil
 	})
 	return roles, err

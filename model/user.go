@@ -111,6 +111,23 @@ func (u *User) CheckPermission(permission *Permission) error {
 	return nil
 }
 
+// ALL ...
+func (u *User) ALL() ([]*User, error) {
+	var users []*User
+	m := bson.M{}
+	err := Find(u, m, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var p User
+		err := cursor.Decode(&p)
+		if err != nil {
+			return err
+		}
+		users = append(users, &p)
+		return nil
+	})
+	return users, err
+}
+
 // NewUser ...
 func NewUser() *User {
 	return &User{

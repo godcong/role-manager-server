@@ -87,14 +87,6 @@ func (p *Permission) ALL() ([]*Permission, error) {
 			return err
 		}
 		permissions = append(permissions, &p)
-		for cursor.Next(mgo.TimeOut()) {
-			var p Permission
-			err := cursor.Decode(&p)
-			if err != nil {
-				return err
-			}
-			permissions = append(permissions, &p)
-		}
 		return nil
 	})
 	return permissions, err

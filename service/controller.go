@@ -159,6 +159,36 @@ func LoginPOST(ver string) gin.HandlerFunc {
 	}
 }
 
+func updateUser(ctx *gin.Context) (*model.User, error) {
+	id := ctx.Param("id")
+	user := model.NewUser()
+	user.ID = model.ID(id)
+	err := user.Find()
+	if err != nil {
+		return nil, err
+	}
+
+	if oid := ctx.PostForm("organization_id"); oid != "" {
+		user.OrganizationID = model.ID(oid)
+	}
+	if password := ctx.PostForm("password"); password != "" {
+		user.SetPassword(PWD(password))
+	}
+	user.Name = ctx.DefaultPostForm("name", user.Name)
+	user.Username = ctx.DefaultPostForm("username", user.Username)
+	user.Email = ctx.DefaultPostForm("email", user.Email)
+	user.Mobile = ctx.DefaultPostForm("mobile", user.Mobile)
+	user.IDCardFacade = ctx.DefaultPostForm("idCardFacade", user.IDCardFacade)
+	user.IDCardObverse = ctx.DefaultPostForm("idCardObverse", user.IDCardObverse)
+	user.Certificate = ctx.DefaultPostForm("certificate", user.Certificate)
+	user.PrivateKey = ctx.DefaultPostForm("private_key", user.PrivateKey)
+	err = user.Update()
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func addUser(ctx *gin.Context) (*model.User, error) {
 
 	org, err := checkOrganization(ctx)
