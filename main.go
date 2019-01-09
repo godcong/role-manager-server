@@ -5,10 +5,13 @@ package main
 import (
 	"fmt"
 	"github.com/godcong/role-manager-server/service"
+
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	_ "github.com/godcong/role-manager-server/statik"
 )
 
 func main() {

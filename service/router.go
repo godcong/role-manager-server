@@ -64,7 +64,7 @@ func Router(eng *gin.Engine) {
 	admin0.POST("organization/:id", AdminOrganizationUpdate(current))
 	admin0.DELETE("organization/:id", AdminOrganizationDelete(current))
 	admin0.GET("organization/:id/show", AdminOrganizationShow(current))
-	admin0.GET("organization/:id/user", AdminOrganizationUserUpdate(current))
+	admin0.POST("organization/:id/user", AdminOrganizationUserUpdate(current))
 
 	//组织管理员
 	org0 := v0.Group("org")
@@ -89,7 +89,7 @@ func Router(eng *gin.Engine) {
 /**
 * @api {post} /v0/admin/organization/:id/user 添加用户
 * @apiName AdminOrganizationUserUpdate
-* @apiGroup AdminOrganizationUser
+* @apiGroup AdminOrganization
 * @apiVersion  0.0.1
 *
 * @apiHeader {string} token user token
@@ -102,6 +102,55 @@ func Router(eng *gin.Engine) {
 * @apiSuccess (detail) {string} other 参考返回Example
 * @apiSuccessExample {json} Success-Response:
 *		{
+*		    "code": 0,
+*		    "detail": {
+*		        "organization": {
+*		            "ID": "5c35b06daad2d1c5eb7292bd",
+*		            "CreatedAt": "2019-01-09T16:27:25.903+08:00",
+*		            "UpdatedAt": "2019-01-09T16:47:22.266+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 4,
+*		            "IsDefault": false,
+*		            "Verify": "return",
+*		            "Name": "商户名称",
+*		            "Code": "社会统一信用代码",
+*		            "Contact": "商户联系人",
+*		            "Position": "联系人职位",
+*		            "Phone": "联系人手机号",
+*		            "Mailbox": "联系人邮箱",
+*		            "Description": ""
+*		        },
+*		        "role": {
+*		            "ID": "5c3596d3e0b207fb17d6ddfb",
+*		            "CreatedAt": "2019-01-09T14:38:11.599+08:00",
+*		            "UpdatedAt": "2019-01-09T14:38:11.599+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 1,
+*		            "Name": "组织管理员",
+*		            "Slug": "organization",
+*		            "Description": "组织管理员",
+*		            "Level": 0
+*		        },
+*		        "user": {
+*		            "ID": "5c35b8355f262f9b85b765a2",
+*		            "CreatedAt": "2019-01-09T17:00:37.669+08:00",
+*		            "UpdatedAt": "2019-01-09T17:00:37.669+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 1,
+*		            "Name": "godcong",
+*		            "Username": "godcong",
+*		            "Email": "godcong@163.com",
+*		            "Mobile": "13058750423",
+*		            "IDCardFacade": "",
+*		            "IDCardObverse": "",
+*		            "OrganizationID": "5c35b06daad2d1c5eb7292bd",
+*		            "Password": "DBD978CCDBBE8B6DE77F6B37B5DF9B5B62A7E892A501C3B53EAA16B0838BD5ED",
+*		            "Certificate": "noacc",
+*		            "PrivateKey": "noacc",
+*		            "Token": ""
+*		        }
+*		    },
+*		    "message": "success"
 *		}
 *
 * @apiUse Failed
@@ -115,6 +164,7 @@ func AdminOrganizationUserUpdate(ver string) gin.HandlerFunc {
 		user.ID = model.ID(uid)
 		err := user.Find()
 		if err != nil {
+			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
@@ -122,6 +172,7 @@ func AdminOrganizationUserUpdate(ver string) gin.HandlerFunc {
 		org.ID = model.ID(id)
 		err = org.Find()
 		if err != nil {
+			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
@@ -134,8 +185,11 @@ func AdminOrganizationUserUpdate(ver string) gin.HandlerFunc {
 
 		role := model.NewOrgRole()
 		err = role.Find()
-		err = addPermission(user, role)
+		err = addPermission(func() (*model.User, error) {
+			return user, nil
+		}, role)
 		if err != nil {
+			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}

@@ -330,7 +330,10 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	role := model.NewRole()
 	role.Slug = slug
 
-	err = addPermission(user, role)
+	err = addPermission(func() (*model.User, error) {
+		err := user.CreateIfNotExist()
+		return user, err
+	}, role)
 	user.Password = password
 	if err != nil {
 		return nil, err
@@ -338,9 +341,11 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	return user, nil
 }
 
-func addPermission(user *model.User, role *model.Role) error {
-	err := model.RelateMaker(func() (modeler model.Modeler, e error) {
-		err := user.CreateIfNotExist()
+func addPermission(f func() (*model.User, error), role *model.Role) error {
+	var user *model.User
+	var err error
+	err = model.RelateMaker(func() (modeler model.Modeler, e error) {
+		user, err = f()
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("user is exist")
