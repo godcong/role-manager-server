@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/role-manager-server/model"
 	"github.com/rakyll/statik/fs"
 	"log"
 )
@@ -57,11 +58,13 @@ func Router(eng *gin.Engine) {
 
 	//节点管理员
 	admin0 := v0.Group("admin")
+
 	admin0.POST("organization", AdminOrganizationAdd(current))
 	admin0.GET("organization", AdminOrganizationList(current))
 	admin0.POST("organization/:id", AdminOrganizationUpdate(current))
 	admin0.DELETE("organization/:id", AdminOrganizationDelete(current))
 	admin0.GET("organization/:id/show", AdminOrganizationShow(current))
+	admin0.GET("organization/:id/user", AdminOrganizationUserUpdate(current))
 
 	//组织管理员
 	org0 := v0.Group("org")
@@ -80,6 +83,70 @@ func Router(eng *gin.Engine) {
 	user0 := v0.Group("user")
 	user0.GET("play", UserPlayList(current))
 	user0.GET("play/:id", UserPlay(current))
+}
+
+// AdminOrganizationUserUpdate ...
+/**
+* @api {post} /v0/admin/organization/:id/user 添加用户
+* @apiName AdminOrganizationUserUpdate
+* @apiGroup AdminOrganizationUser
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+
+* @apiParam  {string} user_id            用户ID
+* @apiParam  {string} apply              类型:true
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/admin/organization/:id/user
+ */
+func AdminOrganizationUserUpdate(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		uid := ctx.PostForm("user_id")
+		user := model.NewUser()
+		user.ID = model.ID(uid)
+		err := user.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		org := model.NewOrganization()
+		org.ID = model.ID(id)
+		err = org.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		apply := ctx.PostForm("apply")
+		if apply != "true" {
+			failed(ctx, apply)
+			return
+		}
+
+		role := model.NewOrgRole()
+		err = role.Find()
+		err = addPermission(user, role)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		success(ctx, gin.H{
+			"user":         user,
+			"role":         role,
+			"organization": org,
+		})
+
+	}
 }
 
 // OrgActivation ...

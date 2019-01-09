@@ -305,6 +305,7 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 		log.Println(org)
 		return nil, errors.New("organization not found")
 	}
+	password := ctx.PostForm("password")
 	user := model.NewUser()
 	user.Name = ctx.PostForm("name")
 	user.Username = ctx.PostForm("username")
@@ -315,7 +316,7 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	user.OrganizationID = org.ID
 	user.Certificate = ctx.PostForm("certificate")
 	user.PrivateKey = ctx.PostForm("private_key")
-	user.SetPassword(PWD(ctx.PostForm("password")))
+	user.SetPassword(PWD(password))
 
 	my := User(ctx)
 	slug := "user"
@@ -329,9 +330,17 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	role := model.NewRole()
 	role.Slug = slug
 
-	err = model.RelateMaker(func() (modeler model.Modeler, e error) {
+	err = addPermission(user, role)
+	user.Password = password
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func addPermission(user *model.User, role *model.Role) error {
+	err := model.RelateMaker(func() (modeler model.Modeler, e error) {
 		err := user.CreateIfNotExist()
-		user.Password = ctx.PostForm("password")
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("user is exist")
@@ -340,7 +349,7 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	}, func() (modeler model.Modeler, e error) {
 		err := role.Find()
 		if err != nil {
-			return nil, errors.New("role is not found")
+			return nil, errors.New("role not found")
 		}
 		return role, nil
 	}, func(a, b model.Modeler) error {
@@ -350,16 +359,16 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 		return ru.CreateIfNotExist()
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if slug == "user" {
-		return user, nil
+	if role.Slug == "user" {
+		return nil
 	}
 
 	ps, err := role.Permissions()
 	if err != nil || ps == nil {
-		return nil, errors.New("permission not found")
+		return errors.New("permission not found")
 	}
 	err = model.RelateMaker(func() (modeler model.Modeler, e error) {
 		return user, nil
@@ -378,9 +387,9 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return user, err
+	return nil
 }
 
 func checkOrganization(ctx *gin.Context) (*model.Organization, error) {
