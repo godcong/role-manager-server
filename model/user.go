@@ -10,16 +10,16 @@ import (
 // User ...
 type User struct {
 	Model          `bson:",inline"`
-	Name           string             `bson:"name"`
-	Username       string             `bson:"username"`
-	Email          string             `bson:"email"`
-	Mobile         string             `bson:"mobile"`
-	IDCardFacade   string             `bson:"id_card_facade"`
-	IDCardObverse  string             `bson:"id_card_obverse"`
-	OrganizationID primitive.ObjectID `bson:"organization_id"`
-	Password       string             `bson:"password"`
-	Certificate    string             `bson:"certificate"`
-	PrivateKey     string             `bson:"private_key"`
+	Name           string             `bson:"name"`            //名称
+	Username       string             `bson:"username"`        //用户名
+	Email          string             `bson:"email"`           //邮件
+	Mobile         string             `bson:"mobile"`          //移动电话
+	IDCardFacade   string             `bson:"id_card_facade"`  //身份证(正)
+	IDCardObverse  string             `bson:"id_card_obverse"` //身份证(反)
+	OrganizationID primitive.ObjectID `bson:"organization_id"` //组织ID
+	Password       string             `bson:"password"`        //密码
+	Certificate    string             `bson:"certificate"`     //证书
+	PrivateKey     string             `bson:"private_key"`     //私钥
 
 	Token string `bson:"token"`
 }

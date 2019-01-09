@@ -194,8 +194,8 @@ func updateUser(ctx *gin.Context) (*model.User, error) {
 	user.Username = ctx.DefaultPostForm("username", user.Username)
 	user.Email = ctx.DefaultPostForm("email", user.Email)
 	user.Mobile = ctx.DefaultPostForm("mobile", user.Mobile)
-	user.IDCardFacade = ctx.DefaultPostForm("idCardFacade", user.IDCardFacade)
-	user.IDCardObverse = ctx.DefaultPostForm("idCardObverse", user.IDCardObverse)
+	user.IDCardFacade = ctx.DefaultPostForm("id_card_facade", user.IDCardFacade)
+	user.IDCardObverse = ctx.DefaultPostForm("id_card_obverse", user.IDCardObverse)
 	user.Certificate = ctx.DefaultPostForm("certificate", user.Certificate)
 	user.PrivateKey = ctx.DefaultPostForm("private_key", user.PrivateKey)
 	err = user.Update()
@@ -305,15 +305,18 @@ func makeUser(user *model.User, role *model.Role) error {
 
 // AccessControlAllow ...
 func AccessControlAllow(ctx *gin.Context) {
-	origin := ctx.Request.Header.Get("origin")
-	ctx.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+	//origin := ctx.Request.Header.Get("origin")
+	ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	ctx.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-	ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, XMLHttpRequest, "+
-		"Accept-Encoding, X-CSRF-Token, Authorization")
+	ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+	ctx.Writer.Header().Set("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS")
+	//ctx.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, XMLHttpRequest, "+
+	//	"Accept-Encoding, X-CSRF-Token, Authorization")
 	if ctx.Request.Method == "OPTIONS" {
 		ctx.String(200, "ok")
 		return
 	}
+
 	ctx.Next()
 }
 
