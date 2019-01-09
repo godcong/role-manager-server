@@ -244,7 +244,7 @@ func DashboardRoleShow(ver string) gin.HandlerFunc {
 
 // DashboardRolePermissionAdd ...
 /**
-* @api {post} /v0/dashboard/role/:id/add 添加角色权限
+* @api {post} /v0/dashboard/role/:id/permission 添加角色权限
 * @apiName DashboardRolePermissionAdd
 * @apiGroup DashboardRole
 * @apiVersion  0.0.1
@@ -274,7 +274,7 @@ func DashboardRoleShow(ver string) gin.HandlerFunc {
 *		}
 *
 * @apiUse Failed
-* @apiSampleRequest /v0/dashboard/role/:id/add
+* @apiSampleRequest /v0/dashboard/role/:id/permission
  */
 func DashboardRolePermissionAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -294,14 +294,37 @@ func DashboardRolePermissionAdd(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
-		pr := model.NewPermissionRole()
-		pr.SetPermission(p)
-		pr.SetRole(role)
-		err = pr.CreateIfNotExist()
+		users, err := role.Users()
 		if err != nil {
 			failed(ctx, err.Error())
 			return
 		}
+
+		err = model.Transaction(func() error {
+			pr := model.NewPermissionRole()
+			pr.SetPermission(p)
+			pr.SetRole(role)
+			err = pr.CreateIfNotExist()
+			if err != nil {
+				return err
+			}
+
+			for _, user := range users {
+				pu := model.NewPermissionUser()
+				pu.SetPermission(p)
+				pu.SetUser(user)
+				err := pu.CreateIfNotExist()
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
 		success(ctx, gin.H{
 			"role":       role,
 			"permission": p,

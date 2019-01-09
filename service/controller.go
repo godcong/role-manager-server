@@ -31,6 +31,47 @@ const globalKey = ""
 const globalSalt = ""
 
 // OrgApply ...
+/**
+* @api {post} /v0/apply 组织申请
+* @apiName OrgApply
+* @apiGroup Default
+* @apiVersion  0.0.1
+*
+* @apiParam  {string} applyName           	商户名称
+* @apiParam  {string} applyCode       	社会统一信用代码
+* @apiParam  {string} applyContact          	商户联系人
+* @apiParam  {string} applyPosition         	联系人职位
+* @apiParam  {string} applyPhone 	联系人手机号
+* @apiParam  {string} applyMailbox	联系人邮箱
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c35b06daad2d1c5eb7292bd",
+*		        "CreatedAt": "2019-01-09T16:27:25.9038177+08:00",
+*		        "UpdatedAt": "2019-01-09T16:27:25.9038177+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 1,
+*		        "IsDefault": false,
+*		        "Verify": "application",
+*		        "Name": "商户名称",
+*		        "Code": "社会统一信用代码",
+*		        "Contact": "商户联系人",
+*		        "Position": "联系人职位",
+*		        "Phone": "联系人手机号",
+*		        "Mailbox": "联系人邮箱",
+*		        "Description": ""
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/apply
+ */
 func OrgApply(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		org := model.NewOrganization()
