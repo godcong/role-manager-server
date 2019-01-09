@@ -33,19 +33,13 @@ const globalSalt = ""
 // OrgApply ...
 func OrgApply(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		name := ctx.PostForm("applyName")         //商户名称
-		code := ctx.PostForm("applyCode")         //社会统一信用代码
-		contact := ctx.PostForm("applyContact")   //商户联系人
-		position := ctx.PostForm("applyPosition") //联系人职位
-		phone := ctx.PostForm("applyPhone")       //联系人手机号
-		mail := ctx.PostForm("applyMailbox")      //联系人邮箱
 		org := model.NewOrganization()
-		org.Name = name
-		org.Code = code
-		org.Contact = contact
-		org.Position = position
-		org.Phone = phone
-		org.Mailbox = mail
+		org.Name = ctx.PostForm("applyName")
+		org.Code = ctx.PostForm("applyCode")
+		org.Contact = ctx.PostForm("applyContact")
+		org.Position = ctx.PostForm("applyPosition")
+		org.Phone = ctx.PostForm("applyPhone")
+		org.Mailbox = ctx.PostForm("applyMailbox")
 		org.Verify = model.VerifyApplication //申请中
 		err := org.CreateIfNotExist()
 		if err != nil {
