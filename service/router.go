@@ -39,6 +39,7 @@ func Router(eng *gin.Engine) {
 	dashboard0.POST("role/:id", DashboardRoleUpdate(current))
 	dashboard0.DELETE("role/:id", DashboardRoleDelete(current))
 	dashboard0.GET("role/:id/show", DashboardRoleShow(current))
+	dashboard0.POST("role/:id/add", DashboardRolePermissionAdd(current))
 
 	dashboard0.POST("user", DashboardUserAdd(current))
 	dashboard0.GET("user", DashboardUserList(current))

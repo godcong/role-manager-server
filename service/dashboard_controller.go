@@ -8,6 +8,24 @@ import (
 )
 
 // DashboardRoleDelete ...
+/**
+* @api {delete} /v0/dashboard/role/:id 删除角色(暂不支持)
+* @apiName DashboardRoleDelete
+* @apiGroup DashboardRole
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/role
+ */
 func DashboardRoleDelete(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		failed(ctx, "can't delete role now")
@@ -17,6 +35,29 @@ func DashboardRoleDelete(ver string) gin.HandlerFunc {
 }
 
 // DashboardRoleUpdate ...
+/**
+* @api {post} /v0/dashboard/role/:id 更新角色(暂不支持)
+* @apiName DashboardRoleUpdate
+* @apiGroup DashboardRole
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiParam  {string} name				名称
+* @apiParam  {string} slug				角色
+* @apiParam  {string} [description]		说明
+* @apiParam  {string} [level]			等级
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/role
+ */
 func DashboardRoleUpdate(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		failed(ctx, "can't change role now")
@@ -26,15 +67,116 @@ func DashboardRoleUpdate(ver string) gin.HandlerFunc {
 }
 
 // DashboardRoleAdd ...
+/**
+* @api {post} /v0/dashboard/role 添加角色(暂不支持)
+* @apiName DashboardRoleAdd
+* @apiGroup DashboardRole
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiParam  {string} name				名称
+* @apiParam  {string} slug				角色
+* @apiParam  {string} [description]		说明
+* @apiParam  {string} [level]			等级
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/role
+ */
 func DashboardRoleAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		failed(ctx, "can't add new role now")
 		return
+		//TODO
 		success(ctx, "")
 	}
 }
 
 // DashboardRoleList ...
+/**
+* @api {get} /v0/dashboard/role 角色列表
+* @apiName DashboardRoleList
+* @apiGroup DashboardRole
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": [
+*		        {
+*		            "ID": "5c3596d3e0b207fb17d6ddf9",
+*		            "CreatedAt": "2019-01-09T14:38:11.564+08:00",
+*		            "UpdatedAt": "2019-01-09T14:38:11.564+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 1,
+*		            "Name": "超级管理员",
+*		            "Slug": "genesis",
+*		            "Description": "超级管理员",
+*		            "Level": 0
+*		        },
+*		        {
+*		            "ID": "5c3596d3e0b207fb17d6ddfa",
+*		            "CreatedAt": "2019-01-09T14:38:11.597+08:00",
+*		            "UpdatedAt": "2019-01-09T14:38:11.597+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 1,
+*		            "Name": "节点管理员",
+*		            "Slug": "admin",
+*		            "Description": "节点管理员",
+*		            "Level": 0
+*		        },
+*		        {
+*		            "ID": "5c3596d3e0b207fb17d6ddfb",
+*		            "CreatedAt": "2019-01-09T14:38:11.599+08:00",
+*		            "UpdatedAt": "2019-01-09T14:38:11.599+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 1,
+*		            "Name": "组织管理员",
+*		            "Slug": "organization",
+*		            "Description": "组织管理员",
+*		            "Level": 0
+*		        },
+*		        {
+*		            "ID": "5c3596d3e0b207fb17d6ddfc",
+*		            "CreatedAt": "2019-01-09T14:38:11.601+08:00",
+*		            "UpdatedAt": "2019-01-09T14:38:11.601+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 1,
+*		            "Name": "监督",
+*		            "Slug": "monitor",
+*		            "Description": "监督",
+*		            "Level": 0
+*		        },
+*		        {
+*		            "ID": "5c3596d3e0b207fb17d6ddfd",
+*		            "CreatedAt": "2019-01-09T14:38:11.603+08:00",
+*		            "UpdatedAt": "2019-01-09T14:38:11.603+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 1,
+*		            "Name": "普通用户",
+*		            "Slug": "user",
+*		            "Description": "普通用户",
+*		            "Level": 0
+*		        }
+*		    ],
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/role
+ */
 func DashboardRoleList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		r := model.NewRole()
@@ -100,6 +242,73 @@ func DashboardRoleShow(ver string) gin.HandlerFunc {
 	}
 }
 
+// DashboardRolePermissionAdd ...
+/**
+* @api {post} /v0/dashboard/role/:id/add 添加角色权限
+* @apiName DashboardRolePermissionAdd
+* @apiGroup DashboardRole
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiParam  {string} permission_id		权限ID
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c35a4481afae2f7afac1a2c",
+*		        "CreatedAt": "2019-01-09T15:35:36.44+08:00",
+*		        "UpdatedAt": "2019-01-09T15:44:18.4474311+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 4,
+*		        "Name": "列表权限",
+*		        "Slug": "DashboardPermissionList",
+*		        "Description": "列表权限",
+*		        "PermissionModel": ""
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/role/:id/add
+ */
+func DashboardRolePermissionAdd(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		role := model.NewRole()
+		role.ID = model.ID(id)
+		err := role.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		pid := ctx.PostForm("permission_id")
+		p := model.NewPermission()
+		p.ID = model.ID(pid)
+		err = p.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		pr := model.NewPermissionRole()
+		pr.SetPermission(p)
+		pr.SetRole(role)
+		err = pr.CreateIfNotExist()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, gin.H{
+			"role":       role,
+			"permission": p,
+		})
+	}
+}
+
 // DashboardPermissionDelete ...
 /**
 * @api {post} /v0/dashboard/permission/:id 删除权限
@@ -160,9 +369,9 @@ func DashboardPermissionDelete(ver string) gin.HandlerFunc {
 *
 * @apiHeader {string} token user token
 *
-* @apiParam  {string} slug        	//权限函数(apiName)
-* @apiParam  {string} name     		//权限名称
-* @apiParam  {string} [description]   //说明
+* @apiParam  {string} slug        	权限函数(apiName)
+* @apiParam  {string} name     		权限名称
+* @apiParam  {string} [description]   说明
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
@@ -229,9 +438,9 @@ func DashboardPermissionUpdate(ver string) gin.HandlerFunc {
 *
 * @apiHeader {string} token user token
 *
-* @apiParam  {string} slug        	//权限函数(apiName)
-* @apiParam  {string} name     		//权限名称
-* @apiParam  {string} [description]   //说明
+* @apiParam  {string} slug        	权限函数(apiName)
+* @apiParam  {string} name     		权限名称
+* @apiParam  {string} [description]   说明
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
@@ -382,16 +591,18 @@ func DashboardUserList(ver string) gin.HandlerFunc {
 *
 * @apiHeader {string} token user token
 *
-* @apiParam  {string} name            //名称
-* @apiParam  {string} username        //用户名
-* @apiParam  {string} email           //邮件
-* @apiParam  {string} mobile          //移动电话
-* @apiParam  {string} id_card_facade  //身份证(正)
-* @apiParam  {string} id_card_obverse //身份证(反)
-* @apiParam  {string} organization_id //组织ID
-* @apiParam  {string} password        //密码
-* @apiParam  {string} certificate     //证书
-* @apiParam  {string} private_key     //私钥
+* @apiParam  {string} name            名称
+* @apiParam  {string} username        用户名
+* @apiParam  {string} email           邮件
+* @apiParam  {string} mobile          移动电话
+* @apiParam  {string} id_card_facade  身份证(正)
+* @apiParam  {string} id_card_obverse 身份证(反)
+* @apiParam  {string} organization_id 组织ID
+* @apiParam  {string} password        密码
+* @apiParam  {string} certificate     证书
+* @apiParam  {string} private_key     私钥
+*
+* @apiParam  {string} slug     		  用户角色:genesis,admin,organization,monitor,user
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
@@ -443,16 +654,16 @@ func DashboardUserAdd(ver string) gin.HandlerFunc {
 *
 * @apiHeader {string} token user token
 *
-* @apiParam  {string} name            //名称
-* @apiParam  {string} username        //用户名
-* @apiParam  {string} email           //邮件
-* @apiParam  {string} mobile          //移动电话
-* @apiParam  {string} id_card_facade  //身份证(正)
-* @apiParam  {string} id_card_obverse //身份证(反)
-* @apiParam  {string} organization_id //组织ID
-* @apiParam  {string} password        //密码
-* @apiParam  {string} certificate     //证书
-* @apiParam  {string} private_key     //私钥
+* @apiParam  {string} name           	名称
+* @apiParam  {string} username       	用户名
+* @apiParam  {string} email          	邮件
+* @apiParam  {string} mobile         	移动电话
+* @apiParam  {string} id_card_facade 	身份证(正)
+* @apiParam  {string} id_card_obverse	身份证(反)
+* @apiParam  {string} organization_id	组织ID
+* @apiParam  {string} password       	密码
+* @apiParam  {string} certificate    	证书
+* @apiParam  {string} private_key    	私钥
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
