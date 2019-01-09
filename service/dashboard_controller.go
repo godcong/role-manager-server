@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
+	"log"
 )
 
 // DashboardRoleDelete ...
@@ -164,24 +165,39 @@ func DashboardPermissionList(ver string) gin.HandlerFunc {
 * @apiVersion  0.0.1
 *
 * @apiUse Success
-
-* @apiSuccess (detail) {string} id 文件名ID
+* @apiSuccess (detail) {json} id 文件名ID
 * @apiSuccessExample {json} Success-Response:
-*     {
-*       "code":0,
-*       "msg":"ok",
-*       "detail":{
-*			"user"
-*		 }
-*     }
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c3596d716fbec777db5a645",
+*		        "CreatedAt": "2019-01-09T14:38:15.191+08:00",
+*		        "UpdatedAt": "2019-01-09T14:38:15.191+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 1,
+*		        "Name": "genesis",
+*		        "Username": "",
+*		        "Email": "",
+*		        "Mobile": "",
+*		        "IDCardFacade": "",
+*		        "IDCardObverse": "",
+*		        "OrganizationID": "000000000000000000000000",
+*		        "Password": "DBD978CCDBBE8B6DE77F6B37B5DF9B5B62A7E892A501C3B53EAA16B0838BD5ED",
+*		        "Certificate": "",
+*		        "PrivateKey": "",
+*		        "Token": ""
+*		    },
+*		    "message": "success"
+*		}
 * @apiUse Failed
-* @apiSampleRequest /v1/upload
+* @apiSampleRequest /v0/dashboard/user
  */
 func DashboardUserDelete(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		user := model.NewUser()
 		user.ID = model.ID(id)
+		log.Println(user)
 		err := user.Find()
 		if err != nil {
 			failed(ctx, err.Error())
