@@ -21,7 +21,7 @@ func Router(eng *gin.Engine) {
 	//用户注册
 	g0.POST("register", UserRegister(current))
 	//组织申请
-	g0.POST("apply", OrgApply(current))
+	g0.POST("apply", OrganizationApply(current))
 
 	v0 := g0.Group("")
 	v0.Use(LogOutput(current), LoginCheck(current), PermissionCheck(current))

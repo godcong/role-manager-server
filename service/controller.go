@@ -30,10 +30,10 @@ import (
 const globalKey = ""
 const globalSalt = ""
 
-// OrgApply ...
+// OrganizationApply ...
 /**
 * @api {post} /v0/apply 组织申请
-* @apiName OrgApply
+* @apiName OrganizationApply
 * @apiGroup Default
 * @apiVersion  0.0.1
 *
@@ -72,7 +72,7 @@ const globalSalt = ""
 * @apiUse Failed
 * @apiSampleRequest /v0/apply
  */
-func OrgApply(ver string) gin.HandlerFunc {
+func OrganizationApply(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		org := model.NewOrganization()
 		org.Name = ctx.PostForm("applyName")
@@ -94,7 +94,7 @@ func OrgApply(ver string) gin.HandlerFunc {
 // UserRegister ...
 /**
 * @api {post} /v0/register 用户注册
-* @apiName OrgApply
+* @apiName UserRegister
 * @apiGroup Default
 * @apiVersion  0.0.1
 *
@@ -116,20 +116,22 @@ func OrgApply(ver string) gin.HandlerFunc {
 *		{
 *		    "code": 0,
 *		    "detail": {
-*		        "ID": "5c35b06daad2d1c5eb7292bd",
-*		        "CreatedAt": "2019-01-09T16:27:25.9038177+08:00",
-*		        "UpdatedAt": "2019-01-09T16:27:25.9038177+08:00",
+*		        "ID": "5c35b8355f262f9b85b765a2",
+*		        "CreatedAt": "2019-01-09T17:00:37.6693418+08:00",
+*		        "UpdatedAt": "2019-01-09T17:00:37.6693418+08:00",
 *		        "DeletedAt": null,
 *		        "Version": 1,
-*		        "IsDefault": false,
-*		        "Verify": "application",
-*		        "Name": "商户名称",
-*		        "Code": "社会统一信用代码",
-*		        "Contact": "商户联系人",
-*		        "Position": "联系人职位",
-*		        "Phone": "联系人手机号",
-*		        "Mailbox": "联系人邮箱",
-*		        "Description": ""
+*		        "Name": "godcong",
+*		        "Username": "godcong",
+*		        "Email": "godcong@163.com",
+*		        "Mobile": "13058750423",
+*		        "IDCardFacade": "",
+*		        "IDCardObverse": "",
+*		        "OrganizationID": "5c35b06daad2d1c5eb7292bd",
+*		        "Password": "123456",
+*		        "Certificate": "noacc",
+*		        "PrivateKey": "noacc",
+*		        "Token": ""
 *		    },
 *		    "message": "success"
 *		}
@@ -298,7 +300,6 @@ func updateUser(ctx *gin.Context) (*model.User, error) {
 }
 
 func addUser(ctx *gin.Context) (*model.User, error) {
-
 	org, err := checkOrganization(ctx)
 	if err != nil {
 		log.Println(org)
@@ -316,19 +317,26 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	user.PrivateKey = ctx.PostForm("private_key")
 	user.SetPassword(PWD(ctx.PostForm("password")))
 
-	slug := ctx.PostForm("slug")
-
-	err = ValidateSlug(User(ctx), slug)
-	if err != nil {
-		return nil, err
+	my := User(ctx)
+	slug := "user"
+	if my != nil {
+		slug = ctx.PostForm("slug")
+		err = ValidateSlug(my, slug)
+		if err != nil {
+			return nil, err
+		}
 	}
 	role := model.NewRole()
 	role.Slug = slug
 
 	err = model.RelateMaker(func() (modeler model.Modeler, e error) {
-		err := user.Create()
+		err := user.CreateIfNotExist()
 		user.Password = ctx.PostForm("password")
-		return user, err
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("user is exist")
+		}
+		return user, nil
 	}, func() (modeler model.Modeler, e error) {
 		err := role.Find()
 		if err != nil {
@@ -341,8 +349,18 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 		ru.SetRole(role)
 		return ru.CreateIfNotExist()
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	if slug == "user" {
+		return user, nil
+	}
 
 	ps, err := role.Permissions()
+	if err != nil || ps == nil {
+		return nil, errors.New("permission not found")
+	}
 	err = model.RelateMaker(func() (modeler model.Modeler, e error) {
 		return user, nil
 	}, func() (modeler model.Modeler, e error) {
@@ -359,6 +377,9 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
 	return user, err
 }
 
