@@ -320,13 +320,19 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 
 	my := User(ctx)
 	slug := "user"
-	if my != nil {
+	if my == nil {
+		users, _ := org.Users()
+		if users == nil {
+			slug = model.SlugOrg
+		}
+	} else {
 		slug = ctx.PostForm("slug")
 		err = ValidateSlug(my, slug)
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	role := model.NewRole()
 	role.Slug = slug
 
