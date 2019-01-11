@@ -15,3 +15,10 @@ func UserMedia(ver string) gin.HandlerFunc {
 
 	}
 }
+
+// UserList ...
+func UserList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
