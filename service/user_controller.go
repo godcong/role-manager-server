@@ -6,6 +6,32 @@ import (
 )
 
 // UserReport ...
+/**
+* @api {post} /v0/report 用户登录
+* @apiName Report
+* @apiGroup Default
+* @apiVersion  0.0.1
+*
+* @apiParam  {string} media_id       举报视频ID
+* @apiParam  {string} exo_id         用户ID
+* @apiParam  {string} types          举报类型
+* @apiParam  {string} detail         举报详情
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*				...
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/report
+ */
 func UserReport(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		report := model.NewReport()
