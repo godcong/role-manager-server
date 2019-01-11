@@ -483,7 +483,7 @@ func ValidateUser(ctx *gin.Context) (*model.User, error) {
 	pass := ctx.PostForm("password")
 	u := model.NewUser()
 	err := model.FindOne(u, bson.M{
-		"name": user,
+		"username": user,
 	})
 	if err != nil {
 		return nil, err
