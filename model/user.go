@@ -137,12 +137,12 @@ func (u *User) ALL() ([]*User, error) {
 	m := bson.M{}
 	err := Find(u, m, func(cursor mongo.Cursor) error {
 		log.Println(cursor.DecodeBytes())
-		var p User
-		err := cursor.Decode(&p)
+		var u User
+		err := cursor.Decode(&u)
 		if err != nil {
 			return err
 		}
-		users = append(users, &p)
+		users = append(users, &u)
 		return nil
 	})
 	return users, err

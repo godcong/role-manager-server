@@ -1,7 +1,10 @@
 package model
 
 import (
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
 	"time"
 )
 
@@ -38,4 +41,106 @@ type ExorcistUser struct {
 	WeChatAppToken        string    `bson:"weChatAppToken"`
 	WeChatAppRefreshToken string    `bson:"weChatAppRefreshToken"`
 	V                     int       `bson:"__v"`
+}
+
+// NewExorcistUser ...
+func NewExorcistUser() *ExorcistUser {
+	return &ExorcistUser{}
+}
+
+// BeforeInsert ...
+func (u *ExorcistUser) BeforeInsert() {
+	u.CreatedAt = time.Now()
+
+}
+
+// BeforeUpdate ...
+func (u *ExorcistUser) BeforeUpdate() {
+
+}
+
+// BeforeDelete ...
+func (u *ExorcistUser) BeforeDelete() {
+
+}
+
+// AfterInsert ...
+func (u *ExorcistUser) AfterInsert() {
+
+}
+
+// AfterUpdate ...
+func (u *ExorcistUser) AfterUpdate() {
+
+}
+
+// AfterDelete ...
+func (u *ExorcistUser) AfterDelete() {
+
+}
+
+// IsExist ...
+func (u *ExorcistUser) IsExist() bool {
+	return false
+}
+
+// GetID ...
+func (u *ExorcistUser) GetID() primitive.ObjectID {
+	return u.ID
+}
+
+// SetID ...
+func (u *ExorcistUser) SetID(id primitive.ObjectID) {
+	u.ID = id
+}
+
+// CreateIfNotExist ...
+func (u *ExorcistUser) CreateIfNotExist() error {
+	return nil
+}
+
+// Create ...
+func (u *ExorcistUser) Create() error {
+	return nil
+}
+
+// Update ...
+func (u *ExorcistUser) Update() error {
+	return nil
+}
+
+// Delete ...
+func (u *ExorcistUser) Delete() error {
+	return nil
+}
+
+// All ...
+func (u *ExorcistUser) All() ([]*ExorcistUser, error) {
+	var users []*ExorcistUser
+	m := bson.M{}
+	err := Find(u, m, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var u ExorcistUser
+		err := cursor.Decode(&u)
+		if err != nil {
+			return err
+		}
+		users = append(users, &u)
+		return nil
+	})
+	return users, err
+}
+
+// Find ...
+func (u *ExorcistUser) Find() error {
+	return nil
+}
+
+// SoftDelete ...
+func (u *ExorcistUser) SoftDelete() bool {
+	return false
+}
+
+func (u *ExorcistUser) _Name() string {
+	return "dbuser"
 }
