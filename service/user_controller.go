@@ -24,7 +24,11 @@ func UserReport(ver string) gin.HandlerFunc {
 		report.Detail = ctx.PostForm("detail")
 		report.ProcessResult = "commit"
 
-		report.Create()
+		err := report.Create()
+		if err != nil {
+			failed(ctx, err.Error())
+		}
+		success(ctx, report)
 		return
 	}
 }
