@@ -81,6 +81,8 @@ func Router(eng *gin.Engine) {
 	monitor0.GET("list", MonitorList(current))
 
 	user0 := v0.Group("user")
+	user0.GET("media", UserMedia(current))
+	user0.POST("report", UserReport(current))
 	user0.GET("play", UserPlayList(current))
 	user0.GET("play/:id", UserPlay(current))
 }
