@@ -10,6 +10,9 @@ import (
 // DefaultInterval ...
 const DefaultInterval = 5 * time.Second
 
+// Prefix ...
+type Prefix bool
+
 // MongoDB ...
 type MongoDB struct {
 	ctx    context.Context
@@ -97,8 +100,22 @@ func Reconnect() error {
 }
 
 // C return a collection
-func C(name string) *mongo.Collection {
+func C(name string, values ...interface{}) *mongo.Collection {
+	if NoPrefix(values...) {
+		return DB().D().Collection(name)
+	}
 	return DB().D().Collection(mgo.prefix + "_" + name)
+}
+
+// NoPrefix ...
+func NoPrefix(values ...interface{}) bool {
+	for _, value := range values {
+		switch val := value.(type) {
+		case Prefix:
+			return (bool)(val)
+		}
+	}
+	return false
 }
 
 // RelateInfo ...
