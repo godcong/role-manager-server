@@ -245,6 +245,30 @@ func User(ctx *gin.Context) *model.User {
 }
 
 // LoginPOST ...
+/**
+* @api {post} /v0/login 用户登录
+* @apiName Login
+* @apiGroup Default
+* @apiVersion  0.0.1
+*
+* @apiParam  {string} username        用户名
+* @apiParam  {string} password        密码
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NDg0MDIxOTAsImlhdCI6MTU0NzE5MjU5MCwiaXNzIjoiZ29kY29uZyIsImp0aSI6IlFUejRRZ2R4T3Y3YVk3YWEiLCJuYmYiOjE1NDcxOTI1OTAsInN1YiI6IntcIm9pZFwiOlwiNWMzODQ5MDkwNzhkNGQ1YmQyMDE3N2JlXCIsXCJuYW1lXCI6XCJnZW5lc2lzXCIsXCJwd2RcIjpcIlwiLFwiZWZmZWN0aXZlVGltZVwiOjE1NDc3OTczOTB9In0.9GoC8UsbzirPnQCUVtvFQFJO5rLxXM1GNZbg4cWfKQg"
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/login
+ */
 func LoginPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := ValidateUser(ctx)
