@@ -7,7 +7,7 @@ import (
 
 // UserReport ...
 /**
-* @api {post} /v0/report 用户登录
+* @api {post} /v0/report 举报
 * @apiName Report
 * @apiGroup Default
 * @apiVersion  0.0.1
