@@ -8,7 +8,7 @@ import (
 )
 
 // DefaultInterval ...
-const DefaultInterval = 5 * time.Second
+const DefaultInterval = 30 * time.Second
 
 // Prefix ...
 type Prefix bool
@@ -21,6 +21,17 @@ type MongoDB struct {
 	*mongo.Client
 	Interval time.Duration
 	database string
+	limit    int64
+}
+
+// Limit ...
+func (m *MongoDB) Limit() *int64 {
+	return &m.limit
+}
+
+// SetLimit ...
+func (m *MongoDB) SetLimit(limit int64) {
+	m.limit = limit
 }
 
 var mgo *MongoDB

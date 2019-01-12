@@ -116,6 +116,7 @@ func (u *ExorcistUser) Delete() error {
 
 // All ...
 func (u *ExorcistUser) All() ([]*ExorcistUser, error) {
+
 	var users []*ExorcistUser
 	m := bson.M{}
 	err := FindWithPrefix(u, m, func(cursor mongo.Cursor) error {
@@ -142,5 +143,5 @@ func (u *ExorcistUser) SoftDelete() bool {
 }
 
 func (u *ExorcistUser) _Name() string {
-	return "dbuser"
+	return "dbusers"
 }

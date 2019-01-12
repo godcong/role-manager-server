@@ -62,6 +62,101 @@ func UserReport(ver string) gin.HandlerFunc {
 	}
 }
 
+// UserPermissionList ...
+/**
+* @api {get} /v0/user/permission 我的权限
+* @apiName UserPermissionList
+* @apiGroup User
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c3596d716fbec777db5a645",
+*		        "CreatedAt": "2019-01-09T14:38:15.191+08:00",
+*		        "UpdatedAt": "2019-01-09T14:38:15.191+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 1,
+*		        "Name": "genesis",
+*		        "Username": "",
+*		        "Email": "",
+*		        "Mobile": "",
+*		        "IDCardFacade": "",
+*		        "IDCardObverse": "",
+*		        "OrganizationID": "000000000000000000000000",
+*		        "Password": "DBD978CCDBBE8B6DE77F6B37B5DF9B5B62A7E892A501C3B53EAA16B0838BD5ED",
+*		        "Certificate": "",
+*		        "PrivateKey": "",
+*		        "Token": ""
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/user
+ */
+func UserPermissionList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user := User(ctx)
+		permissions, err := user.Permissions()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, permissions)
+	}
+}
+
+// UserRoleList ...
+/**
+* @api {get} /v0/user/role 我的角色
+* @apiName UserRoleList
+* @apiGroup User
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c35cc6b5ec8a925a4143001",
+*		        "CreatedAt": "2019-01-09T18:26:51.051+08:00",
+*		        "UpdatedAt": "2019-01-09T18:26:51.051+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 1,
+*		        "Name": "超级管理员",
+*		        "Slug": "genesis",
+*		        "Description": "超级管理员",
+*		        "Level": 0
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/user/role
+ */
+func UserRoleList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user := User(ctx)
+		role, err := user.Role()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, role)
+	}
+}
+
 // UserMedia ...
 func UserMedia(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/godcong/role-manager-server/model"
 	"github.com/rakyll/statik/fs"
 	"log"
 )
@@ -83,6 +82,8 @@ func Router(eng *gin.Engine) {
 
 	user0 := v0.Group("user")
 	user0.GET("media", UserMedia(current))
+	user0.GET("permission", UserPermissionList(current))
+	user0.GET("role", UserRoleList(current))
 
 	user0.GET("play", UserPlayList(current))
 	user0.GET("play/:id", UserPlay(current))
@@ -90,19 +91,6 @@ func Router(eng *gin.Engine) {
 	exo0 := v0.Group("exorcist")
 	exo0.GET("user", ExorcistUserList(current))
 
-}
-
-// ExorcistUserList ...
-func ExorcistUserList(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		user := model.NewExorcistUser()
-		users, err := user.All()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		success(ctx, users)
-	}
 }
 
 // OrgActivation ...

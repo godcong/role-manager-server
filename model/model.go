@@ -169,8 +169,10 @@ func find(m Modeler, v bson.M, dec FindDecodeLoop, prefix bool, ops ...*options.
 
 	col := C(m._Name())
 	if !prefix {
-		col = C(m._Name(), NoPrefix(true))
+		log.Println(prefix)
+		col = C(m._Name(), Prefix(true))
 	}
+	log.Println(col.Name())
 	find, err := col.Find(mgo.TimeOut(), v, ops...)
 	if err != nil {
 		return err
