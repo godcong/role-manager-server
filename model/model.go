@@ -164,10 +164,14 @@ func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 // FindDecodeLoop ...
 type FindDecodeLoop func(cursor mongo.Cursor) error
 
-// Find ...
-func Find(m Modeler, v bson.M, dec FindDecodeLoop, ops ...*options.FindOptions) error {
+func find(m Modeler, v bson.M, dec FindDecodeLoop, prefix bool, ops ...*options.FindOptions) error {
 	SoftDelete(m, &v)
-	find, err := C(m._Name()).Find(mgo.TimeOut(), v, ops...)
+
+	col := C(m._Name())
+	if !prefix {
+		col = C(m._Name(), NoPrefix(true))
+	}
+	find, err := col.Find(mgo.TimeOut(), v, ops...)
 	if err != nil {
 		return err
 	}
@@ -178,6 +182,16 @@ func Find(m Modeler, v bson.M, dec FindDecodeLoop, ops ...*options.FindOptions) 
 		}
 	}
 	return nil
+}
+
+// FindWithPrefix ...
+func FindWithPrefix(m Modeler, v bson.M, dec FindDecodeLoop, prefix bool, ops ...*options.FindOptions) error {
+	return find(m, v, dec, prefix, ops...)
+}
+
+// Find ...
+func Find(m Modeler, v bson.M, dec FindDecodeLoop, ops ...*options.FindOptions) error {
+	return find(m, v, dec, true, ops...)
 }
 
 // FindOne ...

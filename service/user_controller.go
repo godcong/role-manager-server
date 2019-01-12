@@ -3,11 +3,12 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
+	"log"
 )
 
 // UserReport ...
 /**
-* @api {post} /v0/report 举报
+* @api {post} /v0/report 用户举报
 * @apiName Report
 * @apiGroup Default
 * @apiVersion  0.0.1
@@ -52,7 +53,9 @@ func UserReport(ver string) gin.HandlerFunc {
 
 		err := report.Create()
 		if err != nil {
+			log.Println(err)
 			failed(ctx, err.Error())
+			return
 		}
 		success(ctx, report)
 		return

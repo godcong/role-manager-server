@@ -118,7 +118,7 @@ func (u *ExorcistUser) Delete() error {
 func (u *ExorcistUser) All() ([]*ExorcistUser, error) {
 	var users []*ExorcistUser
 	m := bson.M{}
-	err := Find(u, m, func(cursor mongo.Cursor) error {
+	err := FindWithPrefix(u, m, func(cursor mongo.Cursor) error {
 		log.Println(cursor.DecodeBytes())
 		var u ExorcistUser
 		err := cursor.Decode(&u)
@@ -127,7 +127,7 @@ func (u *ExorcistUser) All() ([]*ExorcistUser, error) {
 		}
 		users = append(users, &u)
 		return nil
-	})
+	}, false)
 	return users, err
 }
 

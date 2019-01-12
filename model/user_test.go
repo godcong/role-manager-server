@@ -35,7 +35,6 @@ func TestUser_Delete(t *testing.T) {
 		Mobile:        "",
 		IDCardFacade:  "",
 		IDCardObverse: "",
-		Organization:  "",
 		Password:      "",
 		Token:         "",
 	}
