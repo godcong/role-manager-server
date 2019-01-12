@@ -564,7 +564,7 @@ func DashboardPermissionList(ver string) gin.HandlerFunc {
 
 // DashboardUserList ...
 /**
-* @api {get} /v0/dashboard/user 用户列表
+* @api {get} /v0/dashboard/user 管理用户列表
 * @apiName DashboardUserList
 * @apiGroup DashboardUser
 * @apiVersion  0.0.1
@@ -607,7 +607,7 @@ func DashboardUserList(ver string) gin.HandlerFunc {
 
 // DashboardUserAdd ...
 /**
-* @api {post} /v0/dashboard/user 添加用户
+* @api {post} /v0/dashboard/user 添加管理用户
 * @apiName DashboardUserAdd
 * @apiGroup DashboardUser
 * @apiVersion  0.0.1
@@ -670,7 +670,7 @@ func DashboardUserAdd(ver string) gin.HandlerFunc {
 
 // DashboardUserUpdate ...
 /**
-* @api {post} /v0/dashboard/user/:id 更新用户
+* @api {post} /v0/dashboard/user/:id 更新管理用户
 * @apiName DashboardUserUpdate
 * @apiGroup DashboardUser
 * @apiVersion  0.0.1
@@ -730,7 +730,7 @@ func DashboardUserUpdate(ver string) gin.HandlerFunc {
 
 // DashboardUserDelete ...
 /**
-* @api {delete} /v0/dashboard/user/:id 删除用户
+* @api {delete} /v0/dashboard/user/:id 删除管理用户
 * @apiName DashboardUserDelete
 * @apiGroup DashboardUser
 * @apiVersion  0.0.1
@@ -788,7 +788,7 @@ func DashboardUserDelete(ver string) gin.HandlerFunc {
 
 // DashboardUserShow 查看用户信息
 /**
-* @api {get} /v0/dashboard/user/:id/show 用户信息
+* @api {get} /v0/dashboard/user/:id/show 管理用户信息
 * @apiName DashboardUserShow
 * @apiGroup DashboardUser
 * @apiVersion  0.0.1

@@ -99,7 +99,7 @@ func UserReport(ver string) gin.HandlerFunc {
 *		}
 *
 * @apiUse Failed
-* @apiSampleRequest /v0/dashboard/user
+* @apiSampleRequest /v0/user/permission
  */
 func UserPermissionList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

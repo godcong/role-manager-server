@@ -165,7 +165,7 @@ func AdminOrganizationShow(ver string) gin.HandlerFunc {
 
 // AdminOrganizationUserUpdate ...
 /**
-* @api {post} /v0/admin/organization/:id/user 添加用户
+* @api {post} /v0/admin/organization/:id/user 添加组织用户
 * @apiName AdminOrganizationUserUpdate
 * @apiGroup AdminOrganization
 * @apiVersion  0.0.1
