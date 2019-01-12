@@ -25,7 +25,16 @@ import (
 *		{
 *		    "code": 0,
 *		    "detail": {
-*				...
+*		        "ID": "5c39984d90881789f46185ba",
+*		        "CreatedAt": "2019-01-12T15:33:33.8847341+08:00",
+*		        "UpdatedAt": "2019-01-12T15:33:33.8847341+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 1,
+*		        "MediaID": "5c384909078d4d5bd20177be",
+*		        "ExoID": "5c384909078d4d5bd20177be",
+*		        "Types": "ttttt",
+*		        "Detail": "ddddddddddddd",
+*		        "ProcessResult": "commit"
 *		    },
 *		    "message": "success"
 *		}
