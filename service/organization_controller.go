@@ -103,6 +103,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 			if p != nil {
 				mc.ResultData = append(mc.ResultData, p)
 			}
+			//TODO:
 		}
 
 		err := mc.Create()
@@ -130,9 +131,6 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 * @apiVersion  0.0.1
 *
 * @apiHeader {string} token user token
-*
-* @apiParam  {string} user_id            用户ID
-* @apiParam  {string} apply              类型:true
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id

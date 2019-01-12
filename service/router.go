@@ -75,8 +75,9 @@ func Router(eng *gin.Engine) {
 	//org0.GET("org", OrgList(current))
 	//org0.POST("org/:id", OrgUpdate(current))
 	//org0.DELETE("org/:id", OrgDelete(current))
-	org0.GET("media", OrgMediaAdd(current))
+	org0.GET("media", OrgMediaList(current))
 	org0.POST("media", OrgMediaAdd(current))
+
 	org0.POST("active", OrgActivation(current))
 	//org0.POST("upload", OrgUpload(current))
 
