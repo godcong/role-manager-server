@@ -3,7 +3,8 @@ package model
 // Media ...
 type Media struct {
 	Model        `bson:",inline"`
-	Block        bool   `bson:"block"` //禁止访问
+	Block        bool   `bson:"block"`    //禁止访问
+	VIPFree      string `bson:"vip_free"` //Vip免费
 	Photo        string `bson:"photo"`
 	Name         string `bson:"name"`
 	Type         string `bson:"type"`

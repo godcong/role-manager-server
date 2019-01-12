@@ -68,7 +68,6 @@ func TestUser_Update(t *testing.T) {
 		Mobile:        "",
 		IDCardFacade:  "",
 		IDCardObverse: "",
-		Organization:  "",
 		Password:      "",
 		Token:         "",
 	}
