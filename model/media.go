@@ -12,6 +12,7 @@ type Media struct {
 	Model          `bson:",inline"`
 	OrganizationID primitive.ObjectID `bson:"organization_id"` //组织id
 	CensorID       primitive.ObjectID `bson:"censor_id"`       //ai检查状态
+	CensorResult   string             `bson:"censor_result"`   //鉴定结果
 	Block          bool               `bson:"block"`           //禁止访问
 	VIPFree        string             `bson:"vip_free"`        //Vip免费
 	Photo          string             `bson:"photo"`           //照片

@@ -78,6 +78,8 @@ func Router(eng *gin.Engine) {
 	//org0.DELETE("org/:id", OrgDelete(current))
 	org0.GET("media", OrgMediaList(current))
 	org0.POST("media", OrgMediaAdd(current))
+	org0.GET("media/:id/censor", OrgMediaCensorList(current))
+	org0.POST("media/:id/censor", OrgMediaCensorUpdate(current))
 
 	org0.POST("active", OrgActivation(current))
 	//org0.POST("upload", OrgUpload(current))
@@ -94,6 +96,54 @@ func Router(eng *gin.Engine) {
 	exo0 := v0.Group("exorcist")
 	exo0.GET("user", ExorcistUserList(current))
 
+}
+
+// OrgMediaCensorUpdate ...
+func OrgMediaCensorUpdate(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		cr := ctx.PostForm("censor_result")
+		media := model.NewMedia()
+		media.ID = model.ID(id)
+		err := media.Find()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+		media.CensorResult = cr
+		err = media.Update()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, media)
+	}
+}
+
+// OrgMediaCensorList ...
+func OrgMediaCensorList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		media := model.NewMedia()
+		media.ID = model.ID(id)
+		err := media.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		mc := model.NewMediaCensor()
+		mc.ID = media.CensorID
+		err = mc.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, mc)
+	}
 }
 
 // OrgActivation ...
