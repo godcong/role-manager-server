@@ -1,5 +1,11 @@
 package model
 
+import (
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
+)
+
 // Media ...
 type Media struct {
 	Model        `bson:",inline"`
@@ -25,6 +31,13 @@ type Media struct {
 	ExpireDate   int    `bson:"expire_date"`
 }
 
+// NewMedia ...
+func NewMedia() *Media {
+	return &Media{
+		Model: model(),
+	}
+}
+
 // CreateIfNotExist ...
 func (m *Media) CreateIfNotExist() error {
 	return CreateIfNotExist(m)
@@ -43,6 +56,23 @@ func (m *Media) Update() error {
 // Delete ...
 func (m *Media) Delete() error {
 	return DeleteByID(m)
+}
+
+// ALL ...
+func (m *Media) ALL() ([]*Media, error) {
+	var medias []*Media
+	b := bson.M{}
+	err := Find(m, b, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var m Media
+		err := cursor.Decode(&m)
+		if err != nil {
+			return err
+		}
+		medias = append(medias, &m)
+		return nil
+	})
+	return medias, err
 }
 
 // Find ...

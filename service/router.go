@@ -30,6 +30,8 @@ func Router(eng *gin.Engine) {
 	//组织申请
 	g0.POST("apply", OrganizationApply(current))
 	g0.POST("report", UserReport(current))
+	g0.GET("play", UserPlayList(current))
+	g0.GET("play/:id", UserPlay(current))
 
 	v0 := g0.Group("")
 	v0.Use(LogOutput(current), LoginCheck(current), PermissionCheck(current))
@@ -84,9 +86,6 @@ func Router(eng *gin.Engine) {
 	user0.GET("media", UserMedia(current))
 	user0.GET("permission", UserPermissionList(current))
 	user0.GET("role", UserRoleList(current))
-
-	user0.GET("play", UserPlayList(current))
-	user0.GET("play/:id", UserPlay(current))
 
 	exo0 := v0.Group("exorcist")
 	exo0.GET("user", ExorcistUserList(current))

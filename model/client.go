@@ -45,11 +45,11 @@ func newMongoDB() *MongoDB {
 
 	return &MongoDB{
 		ctx:      context.Background(),
-		host:     "mongodb://localhost:27017",
+		host:     "mongodb://terrylj:uttuyew1@ds111529.mlab.com:11529/exorcist",
 		prefix:   "rms",
 		Client:   nil,
 		Interval: DefaultInterval,
-		database: "database",
+		database: "exorcist",
 	}
 }
 

@@ -160,6 +160,8 @@ func UserPlay(ver string) gin.HandlerFunc {
 // UserPlayList ...
 func UserPlayList(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		media := model.NewMedia()
+		media.ALL()
 		success(ctx, "")
 	}
 }
