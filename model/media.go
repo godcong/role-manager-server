@@ -83,6 +83,22 @@ func (m *Media) Find() error {
 	return FindByID(m)
 }
 
+// FindByOrg ...
+func (m *Media) FindByOrg() (medias []*Media, err error) {
+	err = Find(m, bson.M{
+		"organization_id": m.OrganizationID,
+	}, func(cursor mongo.Cursor) error {
+		var media Media
+		err := cursor.Decode(&media)
+		if err != nil {
+			return err
+		}
+		medias = append(medias, &media)
+		return nil
+	})
+	return
+}
+
 func (m *Media) _Name() string {
 	return "media"
 }

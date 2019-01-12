@@ -127,31 +127,31 @@ func AdminOrganizationList(ver string) gin.HandlerFunc {
 // AdminOrganizationAdd ...
 func AdminOrganizationAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		name := ctx.PostForm("applyName")         //商户名称
-		code := ctx.PostForm("applyCode")         //社会统一信用代码
-		contact := ctx.PostForm("applyContact")   //商户联系人
-		position := ctx.PostForm("applyPosition") //联系人职位
-		phone := ctx.PostForm("applyPhone")       //联系人手机号
-		mail := ctx.PostForm("applyMailbox")      //联系人邮箱
-		org := model.NewOrganization()
-		org.Name = name
-		org.Code = code
-		org.Contact = contact
-		org.Position = position
-		org.Phone = phone
-		org.Mailbox = mail
-		org.Verify = model.VerifyPass //申请中
-		err := org.CreateIfNotExist()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		success(ctx, org)
+		//request: v0/apply
+		success(ctx, nil)
 	}
 }
 
-// AdminOrganizationShow ...
-func AdminOrganizationShow(ver string) gin.HandlerFunc {
+// AdminOrganizationUserList ...
+/**
+* @api {get} /v0/admin/organization/:id/user 组织管理用户
+* @apiName AdminOrganizationUserList
+* @apiGroup AdminOrganization
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/admin/organization/:id/user
+ */
+func AdminOrganizationUserList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		org := model.NewOrganization()
 		users, err := org.Users()
@@ -163,10 +163,10 @@ func AdminOrganizationShow(ver string) gin.HandlerFunc {
 	}
 }
 
-// AdminOrganizationUserUpdate ...
+// AdminOrganizationUserAdd ...
 /**
-* @api {post} /v0/admin/organization/:id/user 添加组织用户
-* @apiName AdminOrganizationUserUpdate
+* @api {post} /v0/admin/organization/:id/user 添加组织管理用户
+* @apiName AdminOrganizationUserAdd
 * @apiGroup AdminOrganization
 * @apiVersion  0.0.1
 *
@@ -234,7 +234,7 @@ func AdminOrganizationShow(ver string) gin.HandlerFunc {
 * @apiUse Failed
 * @apiSampleRequest /v0/admin/organization/:id/user
  */
-func AdminOrganizationUserUpdate(ver string) gin.HandlerFunc {
+func AdminOrganizationUserAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		uid := ctx.PostForm("user_id")

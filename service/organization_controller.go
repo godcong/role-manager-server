@@ -147,6 +147,16 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
  */
 func OrgMediaList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		user := User(ctx)
+		media := model.NewMedia()
+		media.OrganizationID = user.OrganizationID
+		medias, err := media.FindByOrg()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, medias)
 		return
 	}
 }

@@ -66,8 +66,8 @@ func Router(eng *gin.Engine) {
 	admin0.GET("organization", AdminOrganizationList(current))
 	admin0.POST("organization/:id", AdminOrganizationUpdate(current))
 	admin0.DELETE("organization/:id", AdminOrganizationDelete(current))
-	admin0.GET("organization/:id/show", AdminOrganizationShow(current))
-	admin0.POST("organization/:id/user", AdminOrganizationUserUpdate(current))
+	admin0.GET("organization/:id/user", AdminOrganizationUserList(current))
+	admin0.POST("organization/:id/user", AdminOrganizationUserAdd(current))
 
 	//组织管理员
 	org0 := v0.Group("org")
