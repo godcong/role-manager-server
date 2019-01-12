@@ -1,10 +1,9 @@
 package service
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
+	"log"
 )
 
 // DashboardRoleDelete ...
@@ -659,6 +658,7 @@ func DashboardUserList(ver string) gin.HandlerFunc {
  */
 func DashboardUserAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
 		user, err := addUser(ctx)
 		if err != nil {
 			failed(ctx, err.Error())

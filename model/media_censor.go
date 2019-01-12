@@ -1,6 +1,9 @@
 package model
 
-import "github.com/mongodb/mongo-go-driver/bson/primitive"
+import (
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+)
 
 // Frame ...
 type Frame struct {
@@ -50,6 +53,7 @@ type ResultData struct {
 type MediaCensor struct {
 	Model      `bson:",inline"`
 	MediaID    primitive.ObjectID `bson:"media_id"`
+	RequestKey string             `json:"request_key"`
 	ResultData []*ResultData      `bson:"result_data,omitempty"`
 }
 
@@ -80,6 +84,13 @@ func (m *MediaCensor) Delete() error {
 // Find ...
 func (m *MediaCensor) Find() error {
 	return FindByID(m)
+}
+
+// FindByKey ...
+func (m *MediaCensor) FindByKey() error {
+	return FindOne(m, bson.M{
+		"request_key": m.RequestKey,
+	})
 }
 
 // NewMediaCensor ...
