@@ -118,27 +118,6 @@ func (u *User) Permissions() ([]*Permission, error) {
 	return ps, err
 }
 
-// Medias ...
-func (u *User) Medias() ([]*Media, error) {
-	var ps []*Permission
-	err := Find(NewPermissionUser(), bson.M{
-		"user_id": u.ID,
-	}, func(cursor mongo.Cursor) error {
-		pu := NewPermissionUser()
-		err := cursor.Decode(pu)
-		if err != nil {
-			return err
-		}
-		p, err := pu.Permission()
-		if err != nil {
-			return err
-		}
-		ps = append(ps, p)
-		return nil
-	})
-	return ps, err
-}
-
 // CheckPermission ...
 func (u *User) CheckPermission(permission *Permission) error {
 	pu := NewPermissionUser()

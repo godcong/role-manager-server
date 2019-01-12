@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/role-manager-server/model"
 	"github.com/rakyll/statik/fs"
 	"log"
 )
@@ -74,7 +75,8 @@ func Router(eng *gin.Engine) {
 	//org0.GET("org", OrgList(current))
 	//org0.POST("org/:id", OrgUpdate(current))
 	//org0.DELETE("org/:id", OrgDelete(current))
-	org0.POST("media", OrgMediaUpload(current))
+	org0.GET("media", OrgMediaAdd(current))
+	org0.POST("media", OrgMediaAdd(current))
 	org0.POST("active", OrgActivation(current))
 	//org0.POST("upload", OrgUpload(current))
 
@@ -97,4 +99,11 @@ func OrgActivation(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 	}
+}
+
+// JSON ...
+type JSON struct {
+	Code   int               `json:"code"`
+	Msg    string            `json:"msg"`
+	Detail *model.ResultData `json:"detail,omitempty"`
 }
