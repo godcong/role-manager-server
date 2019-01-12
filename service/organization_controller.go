@@ -3,11 +3,13 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
+	"github.com/godcong/role-manager-server/util"
 	"github.com/json-iterator/go"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"sync"
 )
 
 // CensorServer ...
@@ -81,31 +83,31 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		media.ExpireDate = ctx.PostForm("expire_date")
 
 		media.OrganizationID = user.OrganizationID
-
-		vrd := make(chan *model.ResultData)
+		key := util.GenerateRandomString(64)
 		vid := ctx.PostForm("video_object_key")
-		go ThreadRequest(vrd, "",
-			url.Values{"name": []string{vid}})
+		wg := sync.WaitGroup{}
+		wg.Add(2)
+		go ThreadRequest(wg, nil, "localhost:7789/v0/validate/frame",
+			url.Values{
+				"name":        []string{vid},
+				"url":         []string{"localhost:7788/v0/media/callback"},
+				"request_key": []string{key},
+			})
 
-		prd := make(chan *model.ResultData)
+		prd := new(model.ResultData)
 		pic := ctx.PostForm("pic_object_key")
-		go ThreadRequest(prd, "",
+		go ThreadRequest(wg, prd, "",
 			url.Values{"name": []string{pic}})
 
 		mc := model.NewMediaCensor()
+		mc.RequestKey = key
 
-		select {
-		case v := <-vrd:
-			if v != nil {
-				mc.ResultData = append(mc.ResultData, v)
-			}
-		case p := <-prd:
-			if p != nil {
-				mc.ResultData = append(mc.ResultData, p)
-			}
-			//TODO:
+		//wait for done
+		wg.Wait()
+
+		mc.ResultData = []*model.ResultData{
+			prd,
 		}
-
 		err := mc.Create()
 		if err != nil {
 			failed(ctx, err.Error())
@@ -160,17 +162,18 @@ func OrgMediaList(ver string) gin.HandlerFunc {
 }
 
 // ThreadRequest ...
-func ThreadRequest(data chan<- *model.ResultData, uri string, values url.Values) {
+func ThreadRequest(group sync.WaitGroup, data *model.ResultData, uri string, values url.Values) {
+	defer group.Done()
 	resp, err := http.PostForm(CensorServer+uri, values)
+
 	if err != nil {
 		log.Println(uri, values.Encode(), err.Error())
-		data <- nil
+
 		return
 	}
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(uri, values.Encode(), err.Error())
-		data <- nil
 		return
 	}
 
@@ -178,9 +181,11 @@ func ThreadRequest(data chan<- *model.ResultData, uri string, values url.Values)
 	err = jsoniter.Unmarshal(bytes, &json)
 	if err != nil {
 		log.Println(uri, values.Encode(), err.Error())
-		data <- nil
 		return
 	}
+	if data == nil {
+		return
+	}
+	data = json.Detail
 
-	data <- json.Detail
 }

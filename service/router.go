@@ -3,8 +3,6 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
-	"github.com/json-iterator/go"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/rakyll/statik/fs"
 	"log"
 )
@@ -96,39 +94,6 @@ func Router(eng *gin.Engine) {
 	exo0 := v0.Group("exorcist")
 	exo0.GET("user", ExorcistUserList(current))
 
-}
-
-// MediaCallback ...
-func MediaCallback(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		mc := model.NewMediaCensor()
-		mc.RequestKey = ctx.PostForm("request_key")
-		err := mc.FindByKey()
-		if err != nil {
-			log.Println(err)
-			failed(ctx, err.Error())
-			return
-		}
-		if mc.ID == primitive.NilObjectID {
-			log.Println("no media")
-			failed(ctx, "no media")
-			return
-		}
-
-		detail := ctx.PostForm("detail")
-		if detail != "" {
-			var rds []*model.ResultData
-			err = jsoniter.Unmarshal([]byte(detail), &rds)
-			mc.ResultData = rds
-			err := mc.Update()
-			if err != nil {
-				log.Println(err)
-				failed(ctx, err.Error())
-			}
-		}
-
-		success(ctx, nil)
-	}
 }
 
 // OrgActivation ...

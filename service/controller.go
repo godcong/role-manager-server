@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
+	"github.com/json-iterator/go"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"log"
 	"net/http"
 	"strings"
@@ -515,6 +517,48 @@ func LogOutput(ver string) gin.HandlerFunc {
 
 	}
 }
+
+// MediaCallback ...
+func MediaCallback(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		mc := model.NewMediaCensor()
+		mc.RequestKey = ctx.PostForm("request_key")
+		err := mc.FindByKey()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+		if mc.ID == primitive.NilObjectID {
+			log.Println("no media")
+			failed(ctx, "no media")
+			return
+		}
+
+		msg := ctx.PostForm("msg")
+		log.Println(msg)
+		code := ctx.PostForm("code")
+		log.Println(code)
+
+		detail := ctx.PostForm("detail")
+		if detail != "" {
+			var rds []*model.ResultData
+			err = jsoniter.Unmarshal([]byte(detail), &rds)
+			mc.ResultData = []*model.ResultData{
+				mc.ResultData[0], //picture
+			}
+			mc.ResultData = append(mc.ResultData, rds...) //video
+			err := mc.Update()
+			if err != nil {
+				log.Println(err)
+				failed(ctx, err.Error())
+			}
+		}
+
+		success(ctx, nil)
+	}
+}
+
 func result(ctx *gin.Context, code int, message string, detail interface{}) {
 	h := gin.H{
 		"code":    code,
