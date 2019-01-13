@@ -34,7 +34,7 @@ const globalSalt = ""
 
 // OrganizationApply ...
 /**
-* @api {post} /v0/apply 组织申请
+* @api {post} /v0/apply 组织申请(OrganizationApply)
 * @apiName OrganizationApply
 * @apiGroup Default
 * @apiVersion  0.0.1
@@ -95,7 +95,7 @@ func OrganizationApply(ver string) gin.HandlerFunc {
 
 // UserRegister ...
 /**
-* @api {post} /v0/register 用户注册
+* @api {post} /v0/register 用户注册(UserRegister)
 * @apiName UserRegister
 * @apiGroup Default
 * @apiVersion  0.0.1
@@ -250,7 +250,7 @@ func User(ctx *gin.Context) *model.User {
 
 // LoginPOST ...
 /**
-* @api {post} /v0/login 用户登录
+* @api {post} /v0/login 用户登录(LoginPOST)
 * @apiName Login
 * @apiGroup Default
 * @apiVersion  0.0.1

@@ -17,7 +17,7 @@ var CensorServer = "localhost:7789"
 
 // OrgMediaAdd ...
 /**
-* @api {post} /v0/org/media 视频添加
+* @api {post} /v0/org/media 视频添加(OrgMediaAdd)
 * @apiName OrgMediaAdd
 * @apiGroup OrgMedia
 * @apiVersion  0.0.1
@@ -127,7 +127,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 
 // OrgMediaList ...
 /**
-* @api {post} /v0/org/media 视频列表
+* @api {post} /v0/org/media 视频列表(OrgMediaList)
 * @apiName OrgMediaList
 * @apiGroup OrgMedia
 * @apiVersion  0.0.1

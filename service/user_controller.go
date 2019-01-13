@@ -73,7 +73,7 @@ func UserReport(ver string) gin.HandlerFunc {
 
 // UserPermissionList ...
 /**
-* @api {get} /v0/user/permission 我的权限
+* @api {get} /v0/user/permission 我的权限(UserPermissionList)
 * @apiName UserPermissionList
 * @apiGroup User
 * @apiVersion  0.0.1
@@ -124,7 +124,7 @@ func UserPermissionList(ver string) gin.HandlerFunc {
 
 // UserRoleList ...
 /**
-* @api {get} /v0/user/role 我的角色
+* @api {get} /v0/user/role 我的角色(UserRoleList)
 * @apiName UserRoleList
 * @apiGroup User
 * @apiVersion  0.0.1

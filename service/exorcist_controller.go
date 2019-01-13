@@ -20,7 +20,7 @@ func ExorcistUserAdd(ver string) gin.HandlerFunc {
 
 // ExorcistUserList ...
 /**
-* @api {get} /v0/exorcist/user 用户列表
+* @api {get} /v0/exorcist/user 用户列表(ExorcistUserList)
 * @apiName ExorcistUserList
 * @apiGroup ExorcistUser
 * @apiVersion  0.0.1

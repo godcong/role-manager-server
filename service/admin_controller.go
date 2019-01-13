@@ -15,7 +15,7 @@ func AdminOrganizationDelete(ver string) gin.HandlerFunc {
 
 // AdminOrganizationUpdate ...
 /**
-* @api {post} /v0/admin/organization/:id 更新组织
+* @api {post} /v0/admin/organization/:id 更新组织(AdminOrganizationUpdate)
 * @apiName AdminOrganizationUpdate
 * @apiGroup AdminOrganization
 * @apiVersion  0.0.1
@@ -75,7 +75,7 @@ func AdminOrganizationUpdate(ver string) gin.HandlerFunc {
 
 // AdminOrganizationList ....
 /**
-* @api {get} /v0/admin/organization 组织列表
+* @api {get} /v0/admin/organization 组织列表(AdminOrganizationList)
 * @apiName AdminOrganizationList
 * @apiGroup AdminOrganization
 * @apiVersion  0.0.1
@@ -134,7 +134,7 @@ func AdminOrganizationAdd(ver string) gin.HandlerFunc {
 
 // AdminOrganizationUserList ...
 /**
-* @api {get} /v0/admin/organization/:id/user 组织管理用户
+* @api {get} /v0/admin/organization/:id/user 组织管理用户(AdminOrganizationUserList)
 * @apiName AdminOrganizationUserList
 * @apiGroup AdminOrganization
 * @apiVersion  0.0.1
@@ -165,7 +165,7 @@ func AdminOrganizationUserList(ver string) gin.HandlerFunc {
 
 // AdminOrganizationUserAdd ...
 /**
-* @api {post} /v0/admin/organization/:id/user 添加组织管理用户
+* @api {post} /v0/admin/organization/:id/user 添加组织管理用户(AdminOrganizationUserAdd)
 * @apiName AdminOrganizationUserAdd
 * @apiGroup AdminOrganization
 * @apiVersion  0.0.1

@@ -72,10 +72,7 @@ func Router(eng *gin.Engine) {
 
 	//组织管理员
 	org0 := v0.Group("org")
-	//org0.POST("org", OrgAdd(current))
-	//org0.GET("org", OrgList(current))
-	//org0.POST("org/:id", OrgUpdate(current))
-	//org0.DELETE("org/:id", OrgDelete(current))
+
 	org0.GET("media", OrgMediaList(current))
 	org0.POST("media", OrgMediaAdd(current))
 	org0.GET("media/:id/censor", OrgMediaCensorList(current))
