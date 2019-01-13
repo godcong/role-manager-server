@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 )
 
 // Frame ...
@@ -50,11 +51,11 @@ type ResultData struct {
 
 // MediaCensor ...
 type MediaCensor struct {
-	Model `bson:",inline"`
-	//MediaID    primitive.ObjectID `bson:"media_id"`
-	Verify     string        `bson:"verify"` //人工验证
-	RequestKey string        `bson:"request_key"`
-	ResultData []*ResultData `bson:"result_data,omitempty"`
+	Model      `bson:",inline"`
+	MediaID    primitive.ObjectID `bson:"media_id"`
+	Verify     string             `bson:"verify"` //人工验证
+	RequestKey string             `bson:"request_key"`
+	ResultData []*ResultData      `bson:"result_data,omitempty"`
 }
 
 func (m *MediaCensor) _Name() string {
@@ -96,7 +97,8 @@ func (m *MediaCensor) FindByKey() error {
 // Media ...
 func (m *MediaCensor) Media() (*Media, error) {
 	media := NewMedia()
-	media.CensorID = m.ID
+
+	media.ID = m.MediaID
 	err := media.Find()
 	return media, err
 }
@@ -104,6 +106,7 @@ func (m *MediaCensor) Media() (*Media, error) {
 // NewMediaCensor ...
 func NewMediaCensor() *MediaCensor {
 	return &MediaCensor{
-		Model: model(),
+		Verify: "verification",
+		Model:  model(),
 	}
 }

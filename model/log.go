@@ -4,11 +4,20 @@ import "github.com/mongodb/mongo-go-driver/bson/primitive"
 
 // Log ...
 type Log struct {
-	Model
-	UserID     primitive.ObjectID
-	Method     primitive.ObjectID
-	Permission string
-	Detail     string
+	Model      `bson:",inline"`
+	UserID     primitive.ObjectID `bson:"user_id"`
+	Method     string             `bson:"method"`
+	URL        string             `bson:"url"`
+	Permission string             `bson:"permission"`
+	Err        string             `json:"err"`
+	Detail     string             `bson:"detail"`
+}
+
+// NewLog ...
+func NewLog() *Log {
+	return &Log{
+		Model: model(),
+	}
 }
 
 // CreateIfNotExist ...

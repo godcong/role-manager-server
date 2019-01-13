@@ -16,7 +16,7 @@ func Router(eng *gin.Engine) {
 	eng.StaticFS("/doc", st)
 
 	current := "v0"
-	eng.Use(AccessControlAllow)
+	eng.Use(AccessControlAllow, Log(current))
 	//eng.Static("doc", "./doc")
 
 	g0 := eng.Group(current)
@@ -77,6 +77,8 @@ func Router(eng *gin.Engine) {
 	org0.POST("media", OrgMediaAdd(current))
 	org0.GET("media/:id/censor", OrgMediaCensorList(current))
 	org0.POST("media/:id/censor", OrgMediaCensorUpdate(current))
+	org0.GET("censor/:id", OrgCensorList(current))
+	org0.POST("censor/:id", OrgCensorUpdate(current))
 
 	org0.POST("active", OrgActivation(current))
 	//org0.POST("upload", OrgUpload(current))

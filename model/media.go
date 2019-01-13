@@ -11,7 +11,7 @@ import (
 type Media struct {
 	Model             `bson:",inline"`
 	OrganizationID    primitive.ObjectID `bson:"organization_id"`     //组织id
-	CensorID          primitive.ObjectID `bson:"censor_id"`           //ai检查状态
+	CensorID          primitive.ObjectID `bson:"censor_id"`           //AI检查状态
 	CensorResult      string             `bson:"censor_result"`       //鉴定结果
 	Block             bool               `bson:"block"`               //禁止访问
 	VIPFree           string             `bson:"vip_free"`            //Vip免费
@@ -109,6 +109,25 @@ func (m *Media) FindByOrg() (medias []*Media, err error) {
 func (m *Media) FindByCensor() (err error) {
 	return FindOne(m, bson.M{
 		"censor_id": m.CensorID,
+	})
+	return
+}
+
+// Censors ...
+func (m *Media) Censors() (mcs []*MediaCensor, err error) {
+	mc := NewMediaCensor()
+	err = Find(mc, bson.M{
+		"media_id": m.ID,
+		"verify":   "verification",
+	}, func(cursor mongo.Cursor) error {
+		mc := NewMediaCensor()
+		err := cursor.Decode(mc)
+		if err != nil {
+			return err
+		}
+
+		mcs = append(mcs, mc)
+		return nil
 	})
 	return
 }

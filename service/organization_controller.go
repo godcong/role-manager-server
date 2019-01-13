@@ -115,6 +115,12 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		media.OrganizationID = user.OrganizationID
 		key := util.GenerateRandomString(64)
 		vid := ctx.PostForm("video_object_key")
+		err := media.Create()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
 		go ThreadRequest(wg, nil, "/validate/frame",
@@ -129,29 +135,21 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		go ThreadRequest(wg, &prd, "/validate/pic",
 			url.Values{"name": []string{pic}})
 
-		mc := model.NewMediaCensor()
-		mc.RequestKey = key
-
 		//wait for done
 		log.Println("waiting")
 		wg.Wait()
 
+		mc := model.NewMediaCensor()
+		mc.RequestKey = key
+		mc.MediaID = media.ID
 		mc.ResultData = []*model.ResultData{
 			prd[0],
 		}
-		err := mc.Create()
+		err = mc.Create()
 		if err != nil {
 			failed(ctx, err.Error())
 			return
 		}
-
-		media.CensorID = mc.ID
-		err = media.Create()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-
 		success(ctx, mc)
 	}
 }
@@ -281,7 +279,7 @@ func ThreadRequest(group *sync.WaitGroup, data *[]*model.ResultData, uri string,
 
 // OrgMediaCensorList ...
 /**
-* @api {get} /v0/media/:id/censor 视频审核列表(OrgMediaCensorList)
+* @api {get} /v0/org/media/:id/censor 视频审核列表(群)(OrgMediaCensorList)
 * @apiName OrgMediaCensorList
 * @apiGroup OrgMediaCensor
 * @apiVersion  0.0.1
@@ -296,11 +294,52 @@ func ThreadRequest(group *sync.WaitGroup, data *[]*model.ResultData, uri string,
 *		}
 *
 * @apiUse Failed
-* @apiSampleRequest /v0/media/:id/censor
+* @apiSampleRequest /v0/org/media/:id/censor
  */
 func OrgMediaCensorList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
+		media := model.NewMedia()
+		media.ID = model.ID(id)
+		err := media.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		censors, err := media.Censors()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		success(ctx, censors)
+	}
+}
+
+// OrgCensorList ...
+/**
+* @api {get} /v0/org/media/:id 视频审核列表(单)(OrgCensorList)
+* @apiName OrgCensorList
+* @apiGroup OrgCensor
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/org/censor/:id
+ */
+func OrgCensorList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
 		mc := model.NewMediaCensor()
 		mc.ID = model.ID(id)
 
@@ -316,8 +355,8 @@ func OrgMediaCensorList(ver string) gin.HandlerFunc {
 
 // OrgMediaCensorUpdate ...
 /**
-* @api {post} /v0/media/:id/censor 视频审核更新(OrgMediaCensorUpdate)
-* @apiName OrgMediaCensorList
+* @api {post} /v0/org/media/:id/censor/:cid 视频审核更新(群)(OrgMediaCensorUpdate)
+* @apiName OrgMediaCensorUpdate
 * @apiGroup OrgMediaCensor
 * @apiVersion  0.0.1
 *
@@ -333,11 +372,11 @@ func OrgMediaCensorList(ver string) gin.HandlerFunc {
 *		}
 *
 * @apiUse Failed
-* @apiSampleRequest /v0/media/:id/censor
+* @apiSampleRequest /v0/org/media/:id/censor
  */
 func OrgMediaCensorUpdate(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
+		id := ctx.Param("cid")
 
 		verify := ctx.PostForm("verify")
 		mc := model.NewMediaCensor()
@@ -363,6 +402,69 @@ func OrgMediaCensorUpdate(ver string) gin.HandlerFunc {
 			return
 		}
 		media.CensorResult = verify
+		media.CensorID = mc.ID
+		err = media.Update()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, media)
+	}
+}
+
+// OrgCensorUpdate ...
+/**
+* @api {post} /v0/org/censor/:id 视频审核更新(单)(OrgCensorUpdate)
+* @apiName OrgCensorUpdate
+* @apiGroup OrgCensor
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiParam  {string} verify           	验证: 通过(pass),不通过(failed)
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/org/censor/:id
+ */
+func OrgCensorUpdate(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		verify := ctx.PostForm("verify")
+		mc := model.NewMediaCensor()
+		mc.ID = model.ID(id)
+
+		err := mc.Find()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+
+		mc.Verify = verify
+		err = mc.Update()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+
+		media, err := mc.Media()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+		media.CensorResult = verify
+		media.CensorID = mc.ID
 		err = media.Update()
 		if err != nil {
 			log.Println(err)
