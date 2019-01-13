@@ -134,10 +134,12 @@ func UserReportList(ver string) gin.HandlerFunc {
 
 // UserReportUpdate ...
 /**
-* @api {post} /v0/report 用户举报
-* @apiName Report
-* @apiGroup Default
+* @api {post} /v0/user/report/:id 用户举报(UserReportUpdate)
+* @apiName UserReportUpdate
+* @apiGroup UserReport
 * @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
 *
 * @apiParam  {string} types          		举报类型
 * @apiParam  {string} detail         		举报详情
@@ -165,7 +167,7 @@ func UserReportList(ver string) gin.HandlerFunc {
 *		}
 *
 * @apiUse Failed
-* @apiSampleRequest /v0/report
+* @apiSampleRequest /v0/user/report/:id
  */
 func UserReportUpdate(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

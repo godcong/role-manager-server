@@ -14,11 +14,11 @@ const ReportResultObtained = "obtained"
 // Report ...
 type Report struct {
 	Model         `bson:",inline"`
-	MediaID       primitive.ObjectID `json:"media_id"	bson:"media_id"`             //举报视频ID
-	ExoID         primitive.ObjectID `json:"exo_id"	bson:"exo_id"`                 //用户ID
-	Types         string             `json:"types"	bson:"types"`                   //举报类型
-	Detail        string             `json:"detail"	bson:"detail"`                 //举报详情
-	ProcessResult string             `json:"process_result"	bson:"process_result"` //处理结果
+	MediaID       primitive.ObjectID `json:"media_id" bson:"media_id"`             //举报视频ID
+	ExoID         primitive.ObjectID `json:"exo_id" bson:"exo_id"`                 //用户ID
+	Types         string             `json:"types" bson:"types"`                   //举报类型
+	Detail        string             `json:"detail" bson:"detail"`                 //举报详情
+	ProcessResult string             `json:"process_result" bson:"process_result"` //处理结果
 }
 
 // CreateIfNotExist ...

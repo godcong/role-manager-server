@@ -15,6 +15,11 @@ import (
 )
 
 func main() {
+	file, err := os.OpenFile("manager.log", os.O_SYNC|os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	log.SetOutput(file)
 	log.SetFlags(log.Ldate | log.Lshortfile)
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
