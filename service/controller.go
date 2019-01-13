@@ -12,6 +12,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"log"
 	"net/http"
+	"runtime"
 	"strings"
 )
 
@@ -264,6 +265,16 @@ func User(ctx *gin.Context) *model.User {
 	return nil
 }
 
+// Logger ...
+func Logger(ctx *gin.Context) *model.Log {
+	if v, b := ctx.Get("logger"); b {
+		if v0, b := v.(*model.Log); b {
+			return v0
+		}
+	}
+	return nil
+}
+
 // LoginPOST ...
 /**
 * @api {post} /v0/login 用户登录(LoginPOST)
@@ -293,7 +304,6 @@ func LoginPOST(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user, err := ValidateUser(ctx)
 		if err != nil {
-			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
@@ -592,9 +602,23 @@ func success(ctx *gin.Context, detail interface{}) {
 }
 
 func failed(ctx *gin.Context, message string) {
+	logger := Logger(ctx)
+	file, line := Caller(2)
+	logger.Err = fmt.Sprintf("%s %d:[%s]", file, line, message)
+	_ = logger.Update()
 	result(ctx, -1, message, nil)
 }
 
 func nop(ctx *gin.Context, message string) {
 	result(ctx, -2, message, nil)
+}
+
+// Caller ...
+func Caller(depth int) (file string, line int) {
+	_, file, line, ok := runtime.Caller(depth)
+	if !ok {
+		file = "???"
+		line = 0
+	}
+	return
 }

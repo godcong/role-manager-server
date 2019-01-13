@@ -67,7 +67,8 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 		}
 
 		p := model.NewPermission()
-		p.Slug = ctx.GetString("handle")
+		logger := Logger(ctx)
+		p.Slug = logger.Permission
 		err = p.Find()
 		if err != nil {
 			log.Println(err.Error())
@@ -87,8 +88,8 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 	}
 }
 
-// Log ...
-func Log(ver string) gin.HandlerFunc {
+// VisitLog ...
+func VisitLog(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		l := model.NewLog()
 		l.Permission = handleFuncName(ctx)
@@ -105,7 +106,7 @@ func Log(ver string) gin.HandlerFunc {
 		}
 		l.UserID = user.ID
 		err = l.Create()
-		ctx.Set("handle", l.Permission)
+		ctx.Set("logger", l)
 		log.Println("log", *l, err)
 	}
 }

@@ -16,7 +16,7 @@ func Router(eng *gin.Engine) {
 	eng.StaticFS("/doc", st)
 
 	current := "v0"
-	eng.Use(AccessControlAllow, Log(current))
+	eng.Use(AccessControlAllow, VisitLog(current))
 	//eng.Static("doc", "./doc")
 
 	g0 := eng.Group(current)
