@@ -21,7 +21,10 @@ type User struct {
 	Certificate    string             `bson:"certificate"`     //证书
 	PrivateKey     string             `bson:"private_key"`     //私钥
 
-	Token string `bson:"token"`
+	Token        string        `bson:"token"`
+	role         *Role         `bson:"-"`
+	organization *Organization `bson:"-"`
+	permissions  []*Permission `bson:"-"`
 }
 
 // IsExist ...
@@ -79,6 +82,9 @@ func (u *User) ValidatePassword(pwd string) bool {
 
 // Role ...
 func (u *User) Role() (*Role, error) {
+	if u.role != nil {
+		return u.role, nil
+	}
 	ru := NewRoleUser()
 	ru.UserID = u.ID
 	err := ru.Find()
@@ -86,19 +92,34 @@ func (u *User) Role() (*Role, error) {
 		return nil, err
 	}
 	log.Println(*ru)
-	return ru.Role()
+	role, err := ru.Role()
+	if err != nil {
+		return nil, err
+	}
+	u.role = role
+	return role, nil
 }
 
 // Organization ...
 func (u *User) Organization() (*Organization, error) {
+	if u.organization != nil {
+		return u.organization, nil
+	}
 	org := NewOrganization()
 	org.ID = u.OrganizationID
 	err := org.Find()
-	return org, err
+	if err != nil {
+		return nil, err
+	}
+	u.organization = org
+	return org, nil
 }
 
 // Permissions ...
 func (u *User) Permissions() ([]*Permission, error) {
+	if u.permissions != nil {
+		return u.permissions, nil
+	}
 	var ps []*Permission
 	err := Find(NewPermissionUser(), bson.M{
 		"user_id": u.ID,
@@ -115,6 +136,7 @@ func (u *User) Permissions() ([]*Permission, error) {
 		ps = append(ps, p)
 		return nil
 	})
+	u.permissions = ps
 	return ps, err
 }
 

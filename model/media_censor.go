@@ -53,7 +53,7 @@ type ResultData struct {
 type MediaCensor struct {
 	Model      `bson:",inline"`
 	MediaID    primitive.ObjectID `bson:"media_id"`
-	RequestKey string             `json:"request_key"`
+	RequestKey string             `bson:"request_key"`
 	ResultData []*ResultData      `bson:"result_data,omitempty"`
 }
 

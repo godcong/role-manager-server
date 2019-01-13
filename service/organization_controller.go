@@ -85,24 +85,25 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		media.OrganizationID = user.OrganizationID
 		key := util.GenerateRandomString(64)
 		vid := ctx.PostForm("video_object_key")
-		wg := sync.WaitGroup{}
+		wg := &sync.WaitGroup{}
 		wg.Add(2)
-		go ThreadRequest(wg, nil, "localhost:7789/v0/validate/frame",
+		go ThreadRequest(wg, nil, "http://127.0.0.1:7789/v0/validate/frame",
 			url.Values{
 				"name":        []string{vid},
-				"url":         []string{"localhost:7788/v0/media/callback"},
+				"url":         []string{"http://127.0.0.1:7788/v0/media/callback"},
 				"request_key": []string{key},
 			})
 
 		prd := new(model.ResultData)
 		pic := ctx.PostForm("pic_object_key")
-		go ThreadRequest(wg, prd, "",
+		go ThreadRequest(wg, prd, "http://127.0.0.1:7789/v0/validate/pic",
 			url.Values{"name": []string{pic}})
 
 		mc := model.NewMediaCensor()
 		mc.RequestKey = key
 
 		//wait for done
+		log.Println("waiting")
 		wg.Wait()
 
 		mc.ResultData = []*model.ResultData{
@@ -127,7 +128,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 
 // OrgMediaList ...
 /**
-* @api {post} /v0/org/media 视频列表(OrgMediaList)
+* @api {get} /v0/org/media 视频列表(OrgMediaList)
 * @apiName OrgMediaList
 * @apiGroup OrgMedia
 * @apiVersion  0.0.1
@@ -141,30 +142,82 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 *		{
 *		    "code": 0,
 *		    "detail": [
+*		        {
+*		            "ID": "5c3ad24d725ffbe68c733d43",
+*		            "CreatedAt": "2019-01-13T13:53:17.315+08:00",
+*		            "UpdatedAt": "2019-01-13T13:53:17.315+08:00",
+*		            "DeletedAt": null,
+*		            "Version": 1,
+*		            "OrganizationID": "000000000000000000000000",
+*		            "CensorID": "5c3ad24d725ffbe68c733d42",
+*		            "CensorResult": "",
+*		            "Block": false,
+*		            "VIPFree": "true",
+*		            "Photo": "photo1",
+*		            "Name": "name1",
+*		            "Type": "type1",
+*		            "Language": "language1",
+*		            "Output3D": "outpu1",
+*		            "VR": "vr1",
+*		            "Thumb": "thumb1",
+*		            "Introduction": "intro1",
+*		            "Starring": "star1",
+*		            "Director": "dir1",
+*		            "Episode": "epis1",
+*		            "TotalNumber": "total1",
+*		            "IPNSAddress": "ipns",
+*		            "IPFSAddress": "ipfs1",
+*		            "KEYAddress": "key1",
+*		            "Price": "price1",
+*		            "PlayType": "play1",
+*		            "ExpireDate": "ex1"
+*		        },
+*		        {
+*		            "ID": "5c3ad28f63f6c61f001f09af",
+*					...
+*		   		}
+*		    ],
+*		    "message": "success"
+*		}
 *
 * @apiUse Failed
 * @apiSampleRequest /v0/org/media
  */
 func OrgMediaList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		var medias []*model.Media
+		var err error
 		user := User(ctx)
 		media := model.NewMedia()
-		media.OrganizationID = user.OrganizationID
-		medias, err := media.FindByOrg()
+		role, err := user.Role()
 		if err != nil {
 			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
+
+		if role.Slug == model.SlugGenesis {
+			medias, err = media.ALL()
+		} else {
+			media.OrganizationID = user.OrganizationID
+			medias, err = media.FindByOrg()
+		}
+
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+
 		success(ctx, medias)
 		return
 	}
 }
 
 // ThreadRequest ...
-func ThreadRequest(group sync.WaitGroup, data *model.ResultData, uri string, values url.Values) {
+func ThreadRequest(group *sync.WaitGroup, data *model.ResultData, uri string, values url.Values) {
 	defer group.Done()
-	resp, err := http.PostForm(CensorServer+uri, values)
+	resp, err := http.PostForm(uri, values)
 
 	if err != nil {
 		log.Println(uri, values.Encode(), err.Error())
