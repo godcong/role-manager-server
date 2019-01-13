@@ -5,6 +5,7 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/rakyll/statik/fs"
 	"log"
+	"net/http"
 )
 
 // Router ...
@@ -14,6 +15,11 @@ func Router(eng *gin.Engine) {
 		log.Fatal(err)
 	}
 	eng.StaticFS("/doc", st)
+	eng.StaticFS("/webui", st)
+
+	eng.NoRoute(func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusMovedPermanently, "/webui")
+	})
 
 	current := "v0"
 	eng.Use(AccessControlAllow, VisitLog(current))

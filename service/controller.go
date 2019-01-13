@@ -606,16 +606,7 @@ func MediaCallback(ver string) gin.HandlerFunc {
 			err = jsoniter.Unmarshal([]byte(detail), &rd)
 			log.Printf("%+v", rd)
 			if rd != nil {
-				mc.ResultData = []*model.ResultData{
-					mc.ResultData[0], //picture
-					rd[0],            //video
-				}
-				err := mc.Update()
-				if err != nil {
-					log.Println(err)
-					failed(ctx, err.Error())
-					return
-				}
+
 				media, err := mc.Media()
 				if err != nil {
 					log.Println(err)
@@ -624,6 +615,31 @@ func MediaCallback(ver string) gin.HandlerFunc {
 				}
 				media.CensorID = mc.ID
 				err = media.Update()
+				if err != nil {
+					log.Println(err)
+					failed(ctx, err.Error())
+					return
+				}
+
+				mc.ResultData = []*model.ResultData{
+					mc.ResultData[0], //picture
+					rd[0],            //video
+				}
+				mc.Verify = "pass"
+				for _, v := range mc.ResultData {
+					if v.Data != nil && v.Data[0].Results != nil {
+						for _, values := range v.Data[0].Results {
+							if values.Suggestion != "pass" {
+								mc.Verify = values.Scene
+								goto EndLoop
+							}
+						}
+					}
+				}
+
+			EndLoop:
+
+				err = mc.Update()
 				if err != nil {
 					log.Println(err)
 					failed(ctx, err.Error())

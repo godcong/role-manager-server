@@ -97,6 +97,15 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
+
+		if media.CensorResult == "pass" {
+			err = ReleaseIPFS(media)
+			if err != nil {
+				failed(ctx, err.Error())
+				return
+			}
+		}
+
 		success(ctx, media)
 	}
 }
