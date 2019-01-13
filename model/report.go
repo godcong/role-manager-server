@@ -2,7 +2,10 @@ package model
 
 import (
 	"github.com/json-iterator/go"
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
 )
 
 // Report ...
@@ -65,6 +68,23 @@ func (r *Report) UnmarshalJSON(b []byte) error {
 
 func (r *Report) _Name() string {
 	return "report"
+}
+
+// ALL ...
+func (r *Report) ALL() ([]*Report, error) {
+	var orgs []*Report
+	m := bson.M{}
+	err := Find(r, m, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var r Report
+		err := cursor.Decode(&r)
+		if err != nil {
+			return err
+		}
+		orgs = append(orgs, &r)
+		return nil
+	})
+	return orgs, err
 }
 
 // NewReport ...

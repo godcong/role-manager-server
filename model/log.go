@@ -1,6 +1,11 @@
 package model
 
-import "github.com/mongodb/mongo-go-driver/bson/primitive"
+import (
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"log"
+)
 
 // Log ...
 type Log struct {
@@ -43,6 +48,23 @@ func (l *Log) Delete() error {
 // Find ...
 func (l *Log) Find() error {
 	return FindByID(l)
+}
+
+// ALL ...
+func (l *Log) ALL() ([]*Log, error) {
+	var logs []*Log
+	m := bson.M{}
+	err := Find(l, m, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var l Log
+		err := cursor.Decode(&l)
+		if err != nil {
+			return err
+		}
+		logs = append(logs, &l)
+		return nil
+	})
+	return logs, err
 }
 
 func (l *Log) _Name() string {

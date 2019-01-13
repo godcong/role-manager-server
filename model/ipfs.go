@@ -1,13 +1,19 @@
 package model
 
-import "github.com/mongodb/mongo-go-driver/bson/primitive"
+import (
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+)
 
 // IPFS ...
 type IPFS struct {
-	Model   `bson:",inline"`
-	MediaID primitive.ObjectID `json:"media_id"`
-	FileID  string             `json:"file_id"`
-	Status  string             `json:"status"`
+	Model       `bson:",inline"`
+	MediaID     primitive.ObjectID `bson:"media_id"`
+	FileID      string             `bson:"file_id"`
+	IPFSAddress string             `bson:"ipfs_address"`
+	IPNSAddress string             `bson:"ipns_address"`
+	IpnsKey     string             `bson:"ipns_key"`
+	Status      string             `bson:"status"`
 }
 
 // NewIPFS ...
@@ -35,6 +41,13 @@ func (i *IPFS) Update() error {
 // Delete ...
 func (i *IPFS) Delete() error {
 	return DeleteByID(i)
+}
+
+// FindByFileID ...
+func (i *IPFS) FindByFileID() error {
+	return FindOne(i, bson.M{
+		"file_id": i.FileID,
+	})
 }
 
 // Find ...

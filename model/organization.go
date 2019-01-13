@@ -68,14 +68,6 @@ func (o *Organization) ALL() ([]*Organization, error) {
 			return err
 		}
 		orgs = append(orgs, &o)
-		for cursor.Next(mgo.TimeOut()) {
-			var o Organization
-			err := cursor.Decode(&o)
-			if err != nil {
-				return err
-			}
-			orgs = append(orgs, &o)
-		}
 		return nil
 	})
 	return orgs, err

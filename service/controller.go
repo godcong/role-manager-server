@@ -544,6 +544,40 @@ func LogOutput(ver string) gin.HandlerFunc {
 	}
 }
 
+// IPFSCallback ...
+func IPFSCallback(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ipfs := model.NewIPFS()
+		ipfs.FileID = ctx.PostForm("id")
+		err := ipfs.FindByFileID()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		ipfs.IPFSAddress = ctx.PostForm("ipfs")
+		ipfs.IPNSAddress = ctx.PostForm("ipns")
+		ipfs.IpnsKey = ctx.PostForm("ipns_key")
+		log.Println(ipfs, ipfs.IPFSAddress, ipfs)
+		err = ipfs.Update()
+		media := model.NewMedia()
+		media.ID = ipfs.MediaID
+		err = media.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		media.IPNSAddress = ipfs.IPNSAddress
+		media.IPFSAddress = ipfs.IPFSAddress
+		err = media.Update()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, media)
+		return
+	}
+}
+
 // MediaCallback ...
 func MediaCallback(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

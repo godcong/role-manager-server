@@ -123,16 +123,15 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
-
+		var vrd []*model.ResultData
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
-		go ThreadRequest(wg, nil, "/validate/frame",
+		go ThreadRequest(wg, &vrd, "/validate/frame",
 			url.Values{
 				"name":        []string{media.VideoOSSAddress},
 				"url":         []string{"http://127.0.0.1:7788/v0/media/callback"},
 				"request_key": []string{key},
 			})
-
 		var prd []*model.ResultData
 		//pic := ctx.PostForm("picture_oss_address")
 		go ThreadRequest(wg, &prd, "/validate/pic",
@@ -248,9 +247,7 @@ func OrgMediaList(ver string) gin.HandlerFunc {
 // ThreadRequest ...
 func ThreadRequest(group *sync.WaitGroup, data *[]*model.ResultData, uri string, values url.Values) {
 	defer group.Done()
-	if data == nil {
-		return
-	}
+
 	*data = []*model.ResultData{
 		{},
 	}

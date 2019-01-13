@@ -6,7 +6,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 )
 
-// UserReport ...
+// UserReportAdd ...
 /**
 * @api {post} /v0/report 用户举报
 * @apiName Report
@@ -42,7 +42,7 @@ import (
 * @apiUse Failed
 * @apiSampleRequest /v0/report
  */
-func UserReport(ver string) gin.HandlerFunc {
+func UserReportAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		report := model.NewReport()
 
@@ -167,6 +167,37 @@ func UserRoleList(ver string) gin.HandlerFunc {
 			return
 		}
 		success(ctx, role)
+	}
+}
+
+// UserReportList ...
+/**
+* @api {get} /v0/user/report 用户举报(UserReportList)
+* @apiName UserReportList
+* @apiGroup UserReport
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/user/report
+ */
+func UserReportList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		report := model.NewReport()
+		reports, err := report.ALL()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, reports)
 	}
 }
 

@@ -30,10 +30,11 @@ func Router(eng *gin.Engine) {
 	g0.POST("register", UserRegister(current))
 	//组织申请
 	g0.POST("apply", OrganizationApply(current))
-	g0.POST("report", UserReport(current))
+	g0.POST("report", UserReportAdd(current))
 	g0.GET("play", UserPlayList(current))
 	g0.GET("play/:id", UserPlay(current))
 	g0.POST("media/callback", MediaCallback(current))
+	g0.POST("ipfs/callback", IPFSCallback(current))
 
 	v0 := g0.Group("")
 	v0.Use(LogOutput(current), LoginCheck(current), PermissionCheck(current))
@@ -41,6 +42,7 @@ func Router(eng *gin.Engine) {
 	//超级管理员面板
 	//账号、密码、所属组织、角色权限、邮箱、手机号码、授权证书和授权私钥
 	dashboard0 := v0.Group("dashboard")
+	dashboard0.GET("log", DashboardLogList(current))
 
 	dashboard0.GET("permission", DashboardPermissionList(current))
 	dashboard0.POST("permission", DashboardPermissionAdd(current))
@@ -91,6 +93,7 @@ func Router(eng *gin.Engine) {
 	user0.GET("media", UserMedia(current))
 	user0.GET("permission", UserPermissionList(current))
 	user0.GET("role", UserRoleList(current))
+	user0.GET("report", UserReportList(current))
 
 	exo0 := v0.Group("exorcist")
 	exo0.GET("user", ExorcistUserList(current))

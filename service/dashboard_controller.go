@@ -877,3 +877,34 @@ func DashboardUserShow(ver string) gin.HandlerFunc {
 		})
 	}
 }
+
+// DashboardLogList ...
+/**
+* @api {get} /v0/dashboard/log 日志(DashboardLogList)
+* @apiName DashboardLogList
+* @apiGroup DashboardLog
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/log
+ */
+func DashboardLogList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		log := model.NewLog()
+		logs, err := log.ALL()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, logs)
+	}
+}
