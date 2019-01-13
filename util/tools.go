@@ -6,6 +6,7 @@ import (
 	"gopkg.in/square/go-jose.v2/jwt"
 	"io"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"time"
 )
@@ -70,8 +71,12 @@ func GenerateRandomString(size int, kind ...RandomKind) string {
 // UnmarshalJSON ...
 func UnmarshalJSON(reader io.Reader, v interface{}) error {
 	bytes, err := ioutil.ReadAll(reader)
+	log.Println(string(bytes))
 	if err != nil {
 		return err
+	}
+	if bytes == nil {
+		return nil
 	}
 	err = jsoniter.Unmarshal(bytes, v)
 	if err != nil {

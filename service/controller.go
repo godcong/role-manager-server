@@ -580,6 +580,20 @@ func MediaCallback(ver string) gin.HandlerFunc {
 				if err != nil {
 					log.Println(err)
 					failed(ctx, err.Error())
+					return
+				}
+				media, err := mc.Media()
+				if err != nil {
+					log.Println(err)
+					failed(ctx, err.Error())
+					return
+				}
+				media.CensorID = mc.ID
+				err = media.Update()
+				if err != nil {
+					log.Println(err)
+					failed(ctx, err.Error())
+					return
 				}
 			}
 		}

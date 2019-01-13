@@ -15,6 +15,9 @@ import (
 // CensorHost ...
 const CensorHost = "http://127.0.0.1:7789/v0"
 
+// IPFSHost ...
+const IPFSHost = "http://127.0.0.1:7790/v1"
+
 // OrgMediaAdd ...
 /**
 * @api {post} /v0/org/media 视频添加(OrgMediaAdd)
@@ -326,7 +329,7 @@ func OrgMediaCensorList(ver string) gin.HandlerFunc {
 
 // OrgCensorList ...
 /**
-* @api {get} /v0/org/media/:id 视频审核列表(单)(OrgCensorList)
+* @api {get} /v0/org/censor/:id 视频审核列表(单)(OrgCensorList)
 * @apiName OrgCensorList
 * @apiGroup OrgCensor
 * @apiVersion  0.0.1
@@ -412,10 +415,17 @@ func OrgMediaCensorUpdate(ver string) gin.HandlerFunc {
 		media.CensorID = mc.ID
 		err = media.Update()
 		if err != nil {
-			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
+		if media.CensorResult == "pass" {
+			err = ReleaseIPFS(media)
+			if err != nil {
+				failed(ctx, err.Error())
+				return
+			}
+		}
+
 		success(ctx, media)
 	}
 }
@@ -474,10 +484,52 @@ func OrgCensorUpdate(ver string) gin.HandlerFunc {
 		media.CensorID = mc.ID
 		err = media.Update()
 		if err != nil {
-			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
+		if media.CensorResult == "pass" {
+			err = ReleaseIPFS(media)
+			if err != nil {
+				failed(ctx, err.Error())
+				return
+			}
+		}
+
 		success(ctx, media)
 	}
+}
+
+// ReleaseIPFS ...
+func ReleaseIPFS(media *model.Media) error {
+
+	log.Println("key:", media.VideoOSSAddress)
+	response, err := http.PostForm(IPFSHost+"/rd", url.Values{
+		"key": []string{media.VideoOSSAddress},
+	})
+	if err != nil {
+		return err
+	}
+	var mp NodeResult
+	err = util.UnmarshalJSON(response.Body, &mp)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	ipfs := model.NewIPFS()
+	ipfs.FileID = mp.Detail.ID
+	ipfs.MediaID = media.ID
+	err = ipfs.Create()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// NodeResult ...
+type NodeResult struct {
+	Code   int    `json:"code"`
+	Msg    string `json:"msg"`
+	Detail struct {
+		ID string `json:"id"`
+	} `json:"detail"`
 }
