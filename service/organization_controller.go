@@ -221,10 +221,10 @@ func ThreadRequest(group *sync.WaitGroup, data *model.ResultData, uri string, va
 
 	if err != nil {
 		log.Println(uri, values.Encode(), err.Error())
-
 		return
 	}
 	bytes, err := ioutil.ReadAll(resp.Body)
+	log.Println("resp:", string(bytes))
 	if err != nil {
 		log.Println(uri, values.Encode(), err.Error())
 		return
