@@ -339,8 +339,8 @@ func addUser(ctx *gin.Context) (*model.User, error) {
 	user.Username = ctx.PostForm("username")
 	user.Email = ctx.PostForm("email")
 	user.Mobile = ctx.PostForm("mobile")
-	user.IDCardFacade = ctx.PostForm("idCardFacade")
-	user.IDCardObverse = ctx.PostForm("idCardObverse")
+	user.IDCardFacade = ctx.PostForm("id_card_facade")
+	user.IDCardObverse = ctx.PostForm("id_card_obverse")
 	user.OrganizationID = org.ID
 	user.Certificate = ctx.PostForm("certificate")
 	user.PrivateKey = ctx.PostForm("private_key")
