@@ -121,6 +121,33 @@ func OrgMediaCensorUpdate(ver string) gin.HandlerFunc {
 }
 
 // OrgMediaCensorList ...
+/**
+* @api {post} /v0/media/:id/censor 视频审核(OrgMediaCensorList)
+* @apiName OrgMediaCensorList
+* @apiGroup OrgMediaCensor
+* @apiVersion  0.0.1
+*
+* @apiParam  {string} name            名称
+* @apiParam  {string} username        用户名
+* @apiParam  {string} email           邮件
+* @apiParam  {string} mobile          移动电话
+* @apiParam  {string} id_card_facade  身份证(正)
+* @apiParam  {string} id_card_obverse 身份证(反)
+* @apiParam  {string} organization_id 组织ID
+* @apiParam  {string} password        密码
+* @apiParam  {string} certificate     证书
+* @apiParam  {string} private_key     私钥
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/media/:id/censor
+ */
 func OrgMediaCensorList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
