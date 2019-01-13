@@ -8,6 +8,9 @@ import (
 	"log"
 )
 
+// ReportResultObtained ...
+const ReportResultObtained = "obtained"
+
 // Report ...
 type Report struct {
 	Model         `bson:",inline"`
@@ -85,6 +88,14 @@ func (r *Report) ALL() ([]*Report, error) {
 		return nil
 	})
 	return orgs, err
+}
+
+// Media ...
+func (r *Report) Media() (*Media, error) {
+	media := NewMedia()
+	media.ID = r.MediaID
+	err := media.Find()
+	return media, err
 }
 
 // NewReport ...

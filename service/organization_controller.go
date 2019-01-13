@@ -42,15 +42,10 @@ const IPFSHost = "http://127.0.0.1:7790/v1"
 * @apiParam  {string}	director        导演
 * @apiParam  {string}	episode         集数
 * @apiParam  {string}	total_number    总集数
-* @apiParam  {string}	ipns_address    ipns地址
-* @apiParam  {string}	ipfs_address    ipfs地址
 * @apiParam  {string}	key_address     key地址
 * @apiParam  {string}	price           价格
 * @apiParam  {string}	play_type       播放类型(单次,多次)
 * @apiParam  {string}	expire_date     过期时间(48H,24H,0H)
-*
-* @apiParam  {string}	video_oss_address		视频OSS地址
-* @apiParam  {string}	picture_oss_address		图片OSS地址
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
@@ -87,11 +82,11 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 		media.Director = ctx.DefaultPostForm("director", media.Director)
 		media.Episode = ctx.DefaultPostForm("episode", media.Episode)
 		media.TotalNumber = ctx.DefaultPostForm("total_number", media.TotalNumber)
-		media.IPNSAddress = ctx.DefaultPostForm("ipns_address", media.IPNSAddress)
-		media.IPFSAddress = ctx.DefaultPostForm("ipfs_address", media.IPFSAddress)
-		media.VideoOSSAddress = ctx.DefaultPostForm("video_oss_address", media.VideoOSSAddress)
-		media.PictureOSSAddress = []string{ctx.DefaultPostForm("picture_oss_address", media.PictureOSSAddress[0])}
-		media.Photo = media.PictureOSSAddress[0]
+		//media.IPNSAddress = ctx.DefaultPostForm("ipns_address", media.IPNSAddress)
+		//media.IPFSAddress = ctx.DefaultPostForm("ipfs_address", media.IPFSAddress)
+		//media.VideoOSSAddress = ctx.DefaultPostForm("video_oss_address", media.VideoOSSAddress)
+		//media.PictureOSSAddress = []string{ctx.DefaultPostForm("picture_oss_address", media.PictureOSSAddress[0])}
+		//media.Photo = media.PictureOSSAddress[0]
 		media.KEYAddress = ctx.DefaultPostForm("key_address", media.KEYAddress)
 		media.Price = ctx.DefaultPostForm("price", media.Price)
 		media.PlayType = ctx.DefaultPostForm("play_type", media.PlayType)
@@ -127,15 +122,10 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 * @apiParam  {string}	director        导演
 * @apiParam  {string}	episode         集数
 * @apiParam  {string}	total_number    总集数
-* @apiParam  {string}	ipns_address    ipns地址
-* @apiParam  {string}	ipfs_address    ipfs地址
 * @apiParam  {string}	key_address     key地址
 * @apiParam  {string}	price           价格
 * @apiParam  {string}	play_type       播放类型(单次,多次)
 * @apiParam  {string}	expire_date     过期时间(48H,24H,0H)
-*
-* @apiParam  {string}	video_oss_address		视频OSS地址
-* @apiParam  {string}	picture_oss_address		图片OSS地址
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id

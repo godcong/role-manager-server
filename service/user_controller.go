@@ -6,75 +6,6 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 )
 
-// UserReportAdd ...
-/**
-* @api {post} /v0/report 用户举报
-* @apiName Report
-* @apiGroup Default
-* @apiVersion  0.0.1
-*
-* @apiParam  {string} media_id       举报视频ID
-* @apiParam  {string} exo_id         用户ID
-* @apiParam  {string} types          举报类型
-* @apiParam  {string} detail         举报详情
-*
-* @apiUse Success
-* @apiSuccess (detail) {string} id Id
-* @apiSuccess (detail) {string} other 参考返回Example
-* @apiSuccessExample {json} Success-Response:
-*		{
-*		    "code": 0,
-*		    "detail": {
-*		        "ID": "5c39984d90881789f46185ba",
-*		        "CreatedAt": "2019-01-12T15:33:33.8847341+08:00",
-*		        "UpdatedAt": "2019-01-12T15:33:33.8847341+08:00",
-*		        "DeletedAt": null,
-*		        "Version": 1,
-*		        "MediaID": "5c384909078d4d5bd20177be",
-*		        "ExoID": "5c384909078d4d5bd20177be",
-*		        "Types": "ttttt",
-*		        "Detail": "ddddddddddddd",
-*		        "ProcessResult": "commit"
-*		    },
-*		    "message": "success"
-*		}
-*
-* @apiUse Failed
-* @apiSampleRequest /v0/report
- */
-func UserReportAdd(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		report := model.NewReport()
-
-		err := ctx.BindJSON(report)
-		//err := util.UnmarshalJSON(ctx.Request.Body, report)
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-
-		if report.ExoID == primitive.NilObjectID {
-			failed(ctx, "null exo_id")
-			return
-		}
-
-		if report.MediaID == primitive.NilObjectID {
-			failed(ctx, "null media_id")
-			return
-		}
-
-		report.ProcessResult = "commit"
-
-		err = report.Create()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		success(ctx, report)
-		return
-	}
-}
-
 // UserPermissionList ...
 /**
 * @api {get} /v0/user/permission 我的权限(UserPermissionList)
@@ -198,6 +129,147 @@ func UserReportList(ver string) gin.HandlerFunc {
 			return
 		}
 		success(ctx, reports)
+	}
+}
+
+// UserReportUpdate ...
+/**
+* @api {post} /v0/report 用户举报
+* @apiName Report
+* @apiGroup Default
+* @apiVersion  0.0.1
+*
+* @apiParam  {string} types          		举报类型
+* @apiParam  {string} detail         		举报详情
+* @apiParam  {string} process_result        处理结果:"obtained",...
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c39984d90881789f46185ba",
+*		        "CreatedAt": "2019-01-12T15:33:33.8847341+08:00",
+*		        "UpdatedAt": "2019-01-12T15:33:33.8847341+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 1,
+*		        "MediaID": "5c384909078d4d5bd20177be",
+*		        "ExoID": "5c384909078d4d5bd20177be",
+*		        "Types": "ttttt",
+*		        "Detail": "ddddddddddddd",
+*		        "ProcessResult": "finished"
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/report
+ */
+func UserReportUpdate(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		report := model.NewReport()
+		report.ID = model.ID(id)
+		err := report.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		report.Types = ctx.DefaultPostForm("types", report.Types)
+		report.ProcessResult = ctx.DefaultPostForm("process_result", report.ProcessResult)
+		report.Detail = ctx.DefaultPostForm("detail", report.Detail)
+		err = report.Update()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		if report.ProcessResult == model.ReportResultObtained {
+			media, err := report.Media()
+			if err != nil {
+				failed(ctx, err.Error())
+				return
+			}
+			media.Block = true
+			err = media.Update()
+			if err != nil {
+				failed(ctx, err.Error())
+				return
+			}
+		}
+
+		success(ctx, report)
+	}
+}
+
+// UserReportAdd ...
+/**
+* @api {post} /v0/report 用户举报
+* @apiName Report
+* @apiGroup Default
+* @apiVersion  0.0.1
+*
+* @apiParam  {string} media_id       举报视频ID
+* @apiParam  {string} exo_id         用户ID
+* @apiParam  {string} types          举报类型
+* @apiParam  {string} detail         举报详情
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c39984d90881789f46185ba",
+*		        "CreatedAt": "2019-01-12T15:33:33.8847341+08:00",
+*		        "UpdatedAt": "2019-01-12T15:33:33.8847341+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 1,
+*		        "MediaID": "5c384909078d4d5bd20177be",
+*		        "ExoID": "5c384909078d4d5bd20177be",
+*		        "Types": "ttttt",
+*		        "Detail": "ddddddddddddd",
+*		        "ProcessResult": "commit"
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/report
+ */
+func UserReportAdd(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		report := model.NewReport()
+
+		err := ctx.BindJSON(report)
+		//err := util.UnmarshalJSON(ctx.Request.Body, report)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		if report.ExoID == primitive.NilObjectID {
+			failed(ctx, "null exo_id")
+			return
+		}
+
+		if report.MediaID == primitive.NilObjectID {
+			failed(ctx, "null media_id")
+			return
+		}
+
+		report.ProcessResult = "commit"
+
+		err = report.Create()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, report)
+		return
 	}
 }
 

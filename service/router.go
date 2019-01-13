@@ -5,7 +5,6 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/rakyll/statik/fs"
 	"log"
-	"strconv"
 )
 
 // Router ...
@@ -97,6 +96,7 @@ func Router(eng *gin.Engine) {
 	user0.GET("permission", UserPermissionList(current))
 	user0.GET("role", UserRoleList(current))
 	user0.GET("report", UserReportList(current))
+	user0.POST("report/:id", UserReportUpdate(current))
 
 	exo0 := v0.Group("exorcist")
 	exo0.GET("user", ExorcistUserList(current))
