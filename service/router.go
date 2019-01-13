@@ -33,7 +33,7 @@ func Router(eng *gin.Engine) {
 	g0.POST("report", UserReport(current))
 	g0.GET("play", UserPlayList(current))
 	g0.GET("play/:id", UserPlay(current))
-	g0.GET("media/callback", MediaCallback(current))
+	g0.POST("media/callback", MediaCallback(current))
 
 	v0 := g0.Group("")
 	v0.Use(LogOutput(current), LoginCheck(current), PermissionCheck(current))
@@ -152,7 +152,7 @@ func OrgActivation(ver string) gin.HandlerFunc {
 
 // JSON ...
 type JSON struct {
-	Code   int               `json:"code"`
-	Msg    string            `json:"msg"`
-	Detail *model.ResultData `json:"detail,omitempty"`
+	Code    int                 `json:"code"`
+	Message string              `json:"message"`
+	Detail  []*model.ResultData `json:"detail,omitempty"`
 }

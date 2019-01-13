@@ -53,7 +53,35 @@ var CensorServer = "localhost:7789"
 * @apiSuccessExample {json} Success-Response:
 *		{
 *		    "code": 0,
-*		    "detail": [
+*		    "detail": {
+*		        "ID": "5c3ae6907d1ee602d7c619fd",
+*		        "CreatedAt": "2019-01-13T15:19:44.5232093+08:00",
+*		        "UpdatedAt": "2019-01-13T15:19:44.5232093+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 1,
+*		        "MediaID": "000000000000000000000000",
+*		        "RequestKey": "LinEg1ra09YpCbnrCvCP8zNxKzUtXLCZlmp9um13GAJCTdCEcpZ98g1d25xHs1Hu",
+*		        "ResultData": [
+*		            {
+*		                "code": 200,
+*		                "data": [
+*		                    {
+*		                        "code": 200,
+*		                        "dataId": "97cbe645-1703-11e9-8353-00155d33ca2d",
+*		                        "extras": {},
+*		                        "msg": "OK",
+*		                        "results": null,
+*		                        "taskId": "img4$kaWFQe4A97ejz2Q8O8Al-1q4okG",
+*		                        "url": "https://dbipfs.oss-cn-shanghai.aliyuncs.com/2.jpg?Expires=1547450381&OSSAccessKeyId=LTAIeVGE3zRrmiNm&Signature=db%2BxXmgX08y0nSkOrpDhGC%2Fu310%3D"
+*		                    }
+*		                ],
+*		                "msg": "OK",
+*		                "requestId": "27277B1D-847F-408B-B56C-0112267440A9"
+*		            }
+*		        ]
+*		    },
+*		    "message": "success"
+*		}
 *
 * @apiUse Failed
 * @apiSampleRequest /v0/org/media
@@ -94,9 +122,9 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 				"request_key": []string{key},
 			})
 
-		prd := new(model.ResultData)
+		var prd []*model.ResultData
 		pic := ctx.PostForm("pic_object_key")
-		go ThreadRequest(wg, prd, "http://127.0.0.1:7789/v0/validate/pic",
+		go ThreadRequest(wg, &prd, "http://127.0.0.1:7789/v0/validate/pic",
 			url.Values{"name": []string{pic}})
 
 		mc := model.NewMediaCensor()
@@ -107,7 +135,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		wg.Wait()
 
 		mc.ResultData = []*model.ResultData{
-			prd,
+			prd[0],
 		}
 		err := mc.Create()
 		if err != nil {
@@ -215,7 +243,7 @@ func OrgMediaList(ver string) gin.HandlerFunc {
 }
 
 // ThreadRequest ...
-func ThreadRequest(group *sync.WaitGroup, data *model.ResultData, uri string, values url.Values) {
+func ThreadRequest(group *sync.WaitGroup, data *[]*model.ResultData, uri string, values url.Values) {
 	defer group.Done()
 	resp, err := http.PostForm(uri, values)
 
@@ -230,15 +258,21 @@ func ThreadRequest(group *sync.WaitGroup, data *model.ResultData, uri string, va
 		return
 	}
 
+	if bytes == nil {
+		return
+	}
+
 	var json JSON
 	err = jsoniter.Unmarshal(bytes, &json)
 	if err != nil {
 		log.Println(uri, values.Encode(), err.Error())
 		return
 	}
-	if data == nil {
+
+	if json.Detail == nil {
 		return
 	}
-	data = json.Detail
+
+	*data = json.Detail
 
 }

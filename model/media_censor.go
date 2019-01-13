@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
 )
 
 // Frame ...
@@ -51,10 +50,10 @@ type ResultData struct {
 
 // MediaCensor ...
 type MediaCensor struct {
-	Model      `bson:",inline"`
-	MediaID    primitive.ObjectID `bson:"media_id"`
-	RequestKey string             `bson:"request_key"`
-	ResultData []*ResultData      `bson:"result_data,omitempty"`
+	Model `bson:",inline"`
+	//MediaID    primitive.ObjectID `bson:"media_id"`
+	RequestKey string        `bson:"request_key"`
+	ResultData []*ResultData `bson:"result_data,omitempty"`
 }
 
 func (m *MediaCensor) _Name() string {

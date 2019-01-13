@@ -535,23 +535,26 @@ func MediaCallback(ver string) gin.HandlerFunc {
 			return
 		}
 
-		msg := ctx.PostForm("msg")
+		msg := ctx.PostForm("message")
 		log.Println(msg)
 		code := ctx.PostForm("code")
 		log.Println(code)
-
 		detail := ctx.PostForm("detail")
+		log.Println(detail)
 		if detail != "" {
-			var rds []*model.ResultData
-			err = jsoniter.Unmarshal([]byte(detail), &rds)
-			mc.ResultData = []*model.ResultData{
-				mc.ResultData[0], //picture
-			}
-			mc.ResultData = append(mc.ResultData, rds...) //video
-			err := mc.Update()
-			if err != nil {
-				log.Println(err)
-				failed(ctx, err.Error())
+			var rd []*model.ResultData
+			err = jsoniter.Unmarshal([]byte(detail), &rd)
+			log.Printf("%+v", rd)
+			if rd != nil {
+				mc.ResultData = []*model.ResultData{
+					mc.ResultData[0], //picture
+					rd[0],            //video
+				}
+				err := mc.Update()
+				if err != nil {
+					log.Println(err)
+					failed(ctx, err.Error())
+				}
 			}
 		}
 

@@ -101,5 +101,5 @@ func (m *Media) FindByOrg() (medias []*Media, err error) {
 }
 
 func (m *Media) _Name() string {
-	return "media"
+	return "medias"
 }
