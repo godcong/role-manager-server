@@ -12,8 +12,8 @@ import (
 	"sync"
 )
 
-// CensorServer ...
-var CensorServer = "localhost:7789"
+// CensorHost ...
+const CensorHost = "http://127.0.0.1:7789/v0"
 
 // OrgMediaAdd ...
 /**
@@ -117,7 +117,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		vid := ctx.PostForm("video_object_key")
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
-		go ThreadRequest(wg, nil, "http://127.0.0.1:7789/v0/validate/frame",
+		go ThreadRequest(wg, nil, "/validate/frame",
 			url.Values{
 				"name":        []string{vid},
 				"url":         []string{"http://127.0.0.1:7788/v0/media/callback"},
@@ -126,7 +126,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 
 		var prd []*model.ResultData
 		pic := ctx.PostForm("pic_object_key")
-		go ThreadRequest(wg, &prd, "http://127.0.0.1:7789/v0/validate/pic",
+		go ThreadRequest(wg, &prd, "/validate/pic",
 			url.Values{"name": []string{pic}})
 
 		mc := model.NewMediaCensor()
@@ -247,7 +247,7 @@ func OrgMediaList(ver string) gin.HandlerFunc {
 // ThreadRequest ...
 func ThreadRequest(group *sync.WaitGroup, data *[]*model.ResultData, uri string, values url.Values) {
 	defer group.Done()
-	resp, err := http.PostForm(uri, values)
+	resp, err := http.PostForm(CensorHost+uri, values)
 
 	if err != nil {
 		log.Println(uri, values.Encode(), err.Error())
