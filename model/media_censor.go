@@ -52,6 +52,7 @@ type ResultData struct {
 type MediaCensor struct {
 	Model `bson:",inline"`
 	//MediaID    primitive.ObjectID `bson:"media_id"`
+	Verify     string        `bson:"verify"` //人工验证
 	RequestKey string        `bson:"request_key"`
 	ResultData []*ResultData `bson:"result_data,omitempty"`
 }
@@ -90,6 +91,14 @@ func (m *MediaCensor) FindByKey() error {
 	return FindOne(m, bson.M{
 		"request_key": m.RequestKey,
 	})
+}
+
+// Media ...
+func (m *MediaCensor) Media() (*Media, error) {
+	media := NewMedia()
+	media.CensorID = m.ID
+	err := media.Find()
+	return media, err
 }
 
 // NewMediaCensor ...

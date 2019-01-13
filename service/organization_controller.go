@@ -278,3 +278,97 @@ func ThreadRequest(group *sync.WaitGroup, data *[]*model.ResultData, uri string,
 	*data = json.Detail
 
 }
+
+// OrgMediaCensorList ...
+/**
+* @api {get} /v0/media/:id/censor 视频审核列表(OrgMediaCensorList)
+* @apiName OrgMediaCensorList
+* @apiGroup OrgMediaCensor
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/media/:id/censor
+ */
+func OrgMediaCensorList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		mc := model.NewMediaCensor()
+		mc.ID = model.ID(id)
+
+		err := mc.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		success(ctx, mc)
+	}
+}
+
+// OrgMediaCensorUpdate ...
+/**
+* @api {post} /v0/media/:id/censor 视频审核更新(OrgMediaCensorUpdate)
+* @apiName OrgMediaCensorList
+* @apiGroup OrgMediaCensor
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiParam  {string} verify           	验证: 通过(pass),不通过(failed)
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/media/:id/censor
+ */
+func OrgMediaCensorUpdate(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		verify := ctx.PostForm("verify")
+		mc := model.NewMediaCensor()
+		mc.ID = model.ID(id)
+
+		err := mc.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		mc.Verify = verify
+		err = mc.Update()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		media, err := mc.Media()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+		media.CensorResult = verify
+		err = media.Update()
+		if err != nil {
+			log.Println(err)
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, media)
+	}
+}

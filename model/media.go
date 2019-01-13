@@ -83,6 +83,9 @@ func (m *Media) ALL() ([]*Media, error) {
 
 // Find ...
 func (m *Media) Find() error {
+	if m.CensorID != primitive.NilObjectID {
+		return m.FindByCensor()
+	}
 	return FindByID(m)
 }
 
@@ -98,6 +101,14 @@ func (m *Media) FindByOrg() (medias []*Media, err error) {
 		}
 		medias = append(medias, &media)
 		return nil
+	})
+	return
+}
+
+// FindByCensor ...
+func (m *Media) FindByCensor() (err error) {
+	return FindOne(m, bson.M{
+		"censor_id": m.CensorID,
 	})
 	return
 }
