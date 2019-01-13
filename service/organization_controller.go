@@ -105,6 +105,8 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		media.TotalNumber = ctx.PostForm("total_number")
 		media.IPNSAddress = ctx.PostForm("ipns_address")
 		media.IPFSAddress = ctx.PostForm("ipfs_address")
+		media.VideoOSSAddress = ctx.PostForm("video_oss_address")
+		media.PictureOSSAddress = []string{ctx.PostForm("video_oss_address")}
 		media.KEYAddress = ctx.PostForm("key_address")
 		media.Price = ctx.PostForm("price")
 		media.PlayType = ctx.PostForm("play_type")

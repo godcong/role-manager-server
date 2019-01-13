@@ -21,16 +21,22 @@ const VerifyClosed = "closed"
 
 // Organization ...
 type Organization struct {
-	Model       `bson:",inline"`
-	IsDefault   bool   `bson:"is_default"` //是否为默认
-	Verify      string `bson:"verify"`     //验证状态
-	Name        string `bson:"name"`       //商户名称
-	Code        string `bson:"code"`       //社会统一信用代码
-	Contact     string `bson:"contact"`    //商户联系人
-	Position    string `bson:"position"`   //联系人职位
-	Phone       string `bson:"phone"`      //联系人手机号
-	Mailbox     string `bson:"mailbox"`    //联系人邮箱
-	Description string `bson:"description"`
+	Model                  `bson:",inline"`
+	IsDefault              bool   `bson:"is_default"`                //是否为默认
+	Verify                 string `bson:"verify"`                    //验证状态
+	Corporate              string `bson:"corporate"`                 //企业法人
+	CorporateIDCardFacade  string `bson:"corporate_id_card_facade"`  //法人身份证(正)
+	CorporateIDCardObverse string `bson:"corporate_id_card_obverse"` //法人身份证(反)
+	BusinessLicense        string `bson:"business_license"`          //营业执照
+	Name                   string `bson:"name"`                      //商户名称
+	Code                   string `bson:"code"`                      //社会统一信用代码
+	Contact                string `bson:"contact"`                   //商户联系人
+	Position               string `bson:"position"`                  //联系人职位
+	Phone                  string `bson:"phone"`                     //联系人手机号
+	Mailbox                string `bson:"mailbox"`                   //联系人邮箱
+	IDCardFacade           string `bson:"id_card_facade"`            //联系人身份证(正)
+	IDCardObverse          string `bson:"id_card_obverse"`           //联系人身份证(反)
+	Description            string `bson:"description"`               //描述
 }
 
 // NewOrganization ...

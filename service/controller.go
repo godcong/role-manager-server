@@ -39,12 +39,19 @@ const globalSalt = ""
 * @apiGroup Default
 * @apiVersion  0.0.1
 *
-* @apiParam  {string} applyName           	商户名称
-* @apiParam  {string} applyCode       	社会统一信用代码
-* @apiParam  {string} applyContact          	商户联系人
-* @apiParam  {string} applyPosition         	联系人职位
-* @apiParam  {string} applyPhone 	联系人手机号
-* @apiParam  {string} applyMailbox	联系人邮箱
+* @apiParam  {string} applyName           			商户名称
+* @apiParam  {string} applyCode       				社会统一信用代码
+* @apiParam  {string} applyContact          		商户联系人
+* @apiParam  {string} applyBusinessLicense			营业执照
+* @apiParam  {string} applyCorporate				企业法人
+* @apiParam  {string} applyPosition         		联系人职位
+* @apiParam  {string} applyPhone 					联系人手机号
+* @apiParam  {string} applyMailbox					联系人邮箱
+* @apiParam  {string} applyCorporateIDCardFacade	法人身份证(正)
+* @apiParam  {string} applyCorporateIDCardObverse	法人身份证(反)
+* @apiParam  {string} applyIDCardFacade				联系人身份证(正)
+* @apiParam  {string} applyIDCardObverse			联系人身份证(反)
+* @apiParam  {string} [applyDescription]			描述
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
@@ -83,6 +90,15 @@ func OrganizationApply(ver string) gin.HandlerFunc {
 		org.Position = ctx.PostForm("applyPosition")
 		org.Phone = ctx.PostForm("applyPhone")
 		org.Mailbox = ctx.PostForm("applyMailbox")
+
+		org.Corporate = ctx.PostForm("applyCorporate")
+		org.CorporateIDCardFacade = ctx.PostForm("applyCorporateIDCardFacade")
+		org.CorporateIDCardObverse = ctx.PostForm("applyCorporateIDCardObverse")
+		org.BusinessLicense = ctx.PostForm("applyBusinessLicense")
+		org.IDCardFacade = ctx.PostForm("applyIDCardFacade")
+		org.IDCardObverse = ctx.PostForm("applyIDCardObverse")
+		org.Description = ctx.PostForm("applyDescription")
+
 		org.Verify = model.VerifyApplication //申请中
 		err := org.CreateIfNotExist()
 		if err != nil {
