@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"sync"
 )
 
@@ -17,6 +18,93 @@ const CensorHost = "http://127.0.0.1:7789/v0"
 
 // IPFSHost ...
 const IPFSHost = "http://127.0.0.1:7790/v1"
+
+// OrgMediaUpdate ...
+/**
+* @api {post} /v0/org/media/:id 视频更新(OrgMediaUpdate)
+* @apiName OrgMediaUpdate
+* @apiGroup OrgMedia
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiParam  {string} 	block           下架:true,false
+*
+* @apiParam  {string}	vip_free        Vip免费
+* @apiParam  {string}	name            名称
+* @apiParam  {string}	type            类别
+* @apiParam  {string}	language        语言
+* @apiParam  {string}	output_3d       3D
+* @apiParam  {string}	vr              VR
+* @apiParam  {string}	thumb           缩略图
+* @apiParam  {string}	introduction    简介
+* @apiParam  {string}	starring        主演
+* @apiParam  {string}	director        导演
+* @apiParam  {string}	episode         集数
+* @apiParam  {string}	total_number    总集数
+* @apiParam  {string}	ipns_address    ipns地址
+* @apiParam  {string}	ipfs_address    ipfs地址
+* @apiParam  {string}	key_address     key地址
+* @apiParam  {string}	price           价格
+* @apiParam  {string}	play_type       播放类型(单次,多次)
+* @apiParam  {string}	expire_date     过期时间(48H,24H,0H)
+*
+* @apiParam  {string}	video_oss_address		视频OSS地址
+* @apiParam  {string}	picture_oss_address		图片OSS地址
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/org/media/:id
+ */
+func OrgMediaUpdate(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		media := model.NewMedia()
+		media.ID = model.ID(id)
+		err := media.Find()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		b, _ := strconv.ParseBool(ctx.PostForm("block"))
+		media.Block = b
+		media.VIPFree = ctx.DefaultPostForm("vip_free", media.VIPFree)
+
+		media.Name = ctx.DefaultPostForm("name", media.Name)
+		media.Type = ctx.DefaultPostForm("type", media.Type)
+		media.Language = ctx.DefaultPostForm("language", media.Language)
+		media.Output3D = ctx.DefaultPostForm("output_3d", media.Output3D)
+		media.VR = ctx.DefaultPostForm("vr", media.VR)
+		media.Thumb = ctx.DefaultPostForm("thumb", media.Thumb)
+		media.Introduction = ctx.DefaultPostForm("introduction", media.Introduction)
+		media.Starring = ctx.DefaultPostForm("starring", media.Starring)
+		media.Director = ctx.DefaultPostForm("director", media.Director)
+		media.Episode = ctx.DefaultPostForm("episode", media.Episode)
+		media.TotalNumber = ctx.DefaultPostForm("total_number", media.TotalNumber)
+		media.IPNSAddress = ctx.DefaultPostForm("ipns_address", media.IPNSAddress)
+		media.IPFSAddress = ctx.DefaultPostForm("ipfs_address", media.IPFSAddress)
+		media.VideoOSSAddress = ctx.DefaultPostForm("video_oss_address", media.VideoOSSAddress)
+		media.PictureOSSAddress = []string{ctx.DefaultPostForm("picture_oss_address", media.PictureOSSAddress[0])}
+		media.Photo = media.PictureOSSAddress[0]
+		media.KEYAddress = ctx.DefaultPostForm("key_address", media.KEYAddress)
+		media.Price = ctx.DefaultPostForm("price", media.Price)
+		media.PlayType = ctx.DefaultPostForm("play_type", media.PlayType)
+		media.ExpireDate = ctx.DefaultPostForm("expire_date", media.ExpireDate)
+
+		err = media.Update()
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		success(ctx, media)
+	}
+}
 
 // OrgMediaAdd ...
 /**

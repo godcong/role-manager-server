@@ -5,6 +5,7 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/rakyll/statik/fs"
 	"log"
+	"strconv"
 )
 
 // Router ...
@@ -77,6 +78,7 @@ func Router(eng *gin.Engine) {
 
 	org0.GET("media", OrgMediaList(current))
 	org0.POST("media", OrgMediaAdd(current))
+	org0.POST("media/:id", OrgMediaUpdate(current))
 	org0.GET("media/:id/censor", OrgMediaCensorList(current))
 	org0.POST("media/:id/censor", OrgMediaCensorUpdate(current))
 	org0.GET("censor/:id", OrgCensorList(current))
@@ -91,6 +93,7 @@ func Router(eng *gin.Engine) {
 
 	user0 := v0.Group("user")
 	user0.GET("media", UserMedia(current))
+
 	user0.GET("permission", UserPermissionList(current))
 	user0.GET("role", UserRoleList(current))
 	user0.GET("report", UserReportList(current))
