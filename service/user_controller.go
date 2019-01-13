@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
-	"log"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 )
 
 // UserReport ...
@@ -46,23 +46,27 @@ func UserReport(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		report := model.NewReport()
 
-		eid := ctx.PostForm("exo_id")
-		if eid == "" {
+		err := ctx.BindJSON(report)
+		//err := util.UnmarshalJSON(ctx.Request.Body, report)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+
+		if report.ExoID == primitive.NilObjectID {
 			failed(ctx, "null exo_id")
+			return
 		}
-		report.ExoID = model.ID(eid)
-		mid := ctx.PostForm("media_id")
-		if mid == "" {
+
+		if report.MediaID == primitive.NilObjectID {
 			failed(ctx, "null media_id")
+			return
 		}
-		report.MediaID = model.ID(mid)
-		report.Types = ctx.PostForm("types")
-		report.Detail = ctx.PostForm("detail")
+
 		report.ProcessResult = "commit"
 
-		err := report.Create()
+		err = report.Create()
 		if err != nil {
-			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}

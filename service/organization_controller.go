@@ -25,7 +25,6 @@ const CensorHost = "http://127.0.0.1:7789/v0"
 * @apiHeader {string} token user token
 *
 * @apiParam  {string}	vip_free        Vip免费
-* @apiParam  {string}	photo           照片
 * @apiParam  {string}	name            名称
 * @apiParam  {string}	type            类别
 * @apiParam  {string}	language        语言
@@ -44,8 +43,8 @@ const CensorHost = "http://127.0.0.1:7789/v0"
 * @apiParam  {string}	play_type       播放类型(单次,多次)
 * @apiParam  {string}	expire_date     过期时间(48H,24H,0H)
 *
-* @apiParam  {string}	video_object_key  视频OSS地址
-* @apiParam  {string}	pic_object_key    图片OSS地址
+* @apiParam  {string}	video_oss_address		视频OSS地址
+* @apiParam  {string}	picture_oss_address		图片OSS地址
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
@@ -91,7 +90,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		user := User(ctx)
 		media := model.NewMedia()
 		media.VIPFree = ctx.PostForm("vip_free")
-		media.Photo = ctx.PostForm("photo")
+
 		media.Name = ctx.PostForm("name")
 		media.Type = ctx.PostForm("type")
 		media.Language = ctx.PostForm("language")
@@ -106,7 +105,8 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		media.IPNSAddress = ctx.PostForm("ipns_address")
 		media.IPFSAddress = ctx.PostForm("ipfs_address")
 		media.VideoOSSAddress = ctx.PostForm("video_oss_address")
-		media.PictureOSSAddress = []string{ctx.PostForm("video_oss_address")}
+		media.PictureOSSAddress = []string{ctx.PostForm("picture_oss_address")}
+		media.Photo = media.PictureOSSAddress[0]
 		media.KEYAddress = ctx.PostForm("key_address")
 		media.Price = ctx.PostForm("price")
 		media.PlayType = ctx.PostForm("play_type")
@@ -114,7 +114,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 
 		media.OrganizationID = user.OrganizationID
 		key := util.GenerateRandomString(64)
-		vid := ctx.PostForm("video_object_key")
+		//vid := ctx.PostForm("video_oss_address")
 		err := media.Create()
 		if err != nil {
 			failed(ctx, err.Error())
@@ -125,15 +125,15 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		wg.Add(2)
 		go ThreadRequest(wg, nil, "/validate/frame",
 			url.Values{
-				"name":        []string{vid},
+				"name":        []string{media.VideoOSSAddress},
 				"url":         []string{"http://127.0.0.1:7788/v0/media/callback"},
 				"request_key": []string{key},
 			})
 
 		var prd []*model.ResultData
-		pic := ctx.PostForm("pic_object_key")
+		//pic := ctx.PostForm("picture_oss_address")
 		go ThreadRequest(wg, &prd, "/validate/pic",
-			url.Values{"name": []string{pic}})
+			url.Values{"name": []string{media.PictureOSSAddress[0]}})
 
 		//wait for done
 		log.Println("waiting")
@@ -245,6 +245,13 @@ func OrgMediaList(ver string) gin.HandlerFunc {
 // ThreadRequest ...
 func ThreadRequest(group *sync.WaitGroup, data *[]*model.ResultData, uri string, values url.Values) {
 	defer group.Done()
+	if data == nil {
+		return
+	}
+	*data = []*model.ResultData{
+		{},
+	}
+
 	resp, err := http.PostForm(CensorHost+uri, values)
 
 	if err != nil {
