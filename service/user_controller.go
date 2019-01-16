@@ -288,3 +288,16 @@ func UserList(ver string) gin.HandlerFunc {
 
 	}
 }
+
+// UserLoginGet ...
+func UserLoginGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user := User(ctx)
+		if user != nil {
+			failed(ctx, "user not found")
+		}
+		success(ctx, user)
+
+	}
+
+}

@@ -109,19 +109,6 @@ func Router(eng *gin.Engine) {
 
 }
 
-// UserLoginGet ...
-func UserLoginGet(ver string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		user := User(ctx)
-		if user != nil {
-			failed(ctx, "user not found")
-		}
-		success(ctx, user)
-
-	}
-
-}
-
 // OrgActivation ...
 func OrgActivation(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
