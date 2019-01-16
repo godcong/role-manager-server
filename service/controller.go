@@ -11,6 +11,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"log"
+	"math"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -661,6 +662,20 @@ func MediaCallback(ver string) gin.HandlerFunc {
 
 		success(ctx, nil)
 	}
+}
+
+func pages(ctx *gin.Context, order, limit, current, total int64, detail interface{}) {
+	h := gin.H{
+		"code":      0,
+		"message":   "success",
+		"total":     total,
+		"totalPage": int64(math.Ceil(float64(total) / float64(limit))),
+		"order":     order,
+		"limit":     limit,
+		"current":   current,
+		"detail":    detail,
+	}
+	ctx.JSON(http.StatusOK, h)
 }
 
 func result(ctx *gin.Context, code int, message string, detail interface{}) {

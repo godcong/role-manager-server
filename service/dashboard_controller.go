@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
 	"log"
+	"strconv"
 )
 
 // DashboardRoleDelete ...
@@ -901,11 +902,16 @@ func DashboardUserShow(ver string) gin.HandlerFunc {
 func DashboardLogList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		log := model.NewLog()
-		logs, err := log.ALL()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
+		order, _ := strconv.ParseInt(ctx.Query("order"), 10, 64)
+		limit, _ := strconv.ParseInt(ctx.Query("limit"), 10, 64)
+		current, _ := strconv.ParseInt(ctx.Query("current"), 10, 64)
+		if order == 0 {
+			order = -1
 		}
-		success(ctx, logs)
+		if limit == 0 {
+			limit = 50
+		}
+		logs, total := log.Pages(order, limit, current)
+		pages(ctx, order, limit, current, total, logs)
 	}
 }

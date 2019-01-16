@@ -68,6 +68,29 @@ func (l *Log) ALL() ([]*Log, error) {
 	return logs, err
 }
 
+// Pages ...
+func (l *Log) Pages(order, limit, current int64) ([]*Log, int64) {
+	var logs []*Log
+	m := bson.M{}
+
+	i, _ := Count(l, m)
+
+	err := Pages(l, m, order, limit, current, func(cursor mongo.Cursor) error {
+		log.Println(cursor.DecodeBytes())
+		var l Log
+		err := cursor.Decode(&l)
+		if err != nil {
+			return err
+		}
+		logs = append(logs, &l)
+		return nil
+	})
+	if err != nil {
+		return nil, 0
+	}
+	return logs, i
+}
+
 func (l *Log) _Name() string {
 	return "log"
 }

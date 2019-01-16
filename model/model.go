@@ -196,6 +196,34 @@ func Find(m Modeler, v bson.M, dec FindDecodeLoop, ops ...*options.FindOptions) 
 	return find(m, v, dec, true, ops...)
 }
 
+// Pages ...
+func Pages(m Modeler, v bson.M, order, limit, current int64, dec FindDecodeLoop) error {
+	skip := current * limit
+	return Find(m, v, dec, &options.FindOptions{
+		AllowPartialResults: nil,
+		BatchSize:           nil,
+		Collation:           nil,
+		Comment:             nil,
+		CursorType:          nil,
+		Hint:                nil,
+		Limit:               &limit,
+		Max:                 nil,
+		MaxAwaitTime:        nil,
+		MaxTime:             nil,
+		Min:                 nil,
+		NoCursorTimeout:     nil,
+		OplogReplay:         nil,
+		Projection:          nil,
+		ReturnKey:           nil,
+		ShowRecordID:        nil,
+		Skip:                &skip,
+		Snapshot:            nil,
+		Sort: bson.M{
+			"created_at": order,
+		},
+	})
+}
+
 // FindOne ...
 func FindOne(m Modeler, v bson.M, ops ...*options.FindOneOptions) error {
 	SoftDelete(m, &v)
