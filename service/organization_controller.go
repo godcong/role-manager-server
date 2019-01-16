@@ -46,6 +46,7 @@ const IPFSHost = "http://127.0.0.1:7790/v1"
 * @apiParam  {string}	price           价格
 * @apiParam  {string}	play_type       播放类型(单次,多次)
 * @apiParam  {string}	expire_date     过期时间(48H,24H,0H)
+* @apiParam  {string}	censor_result   审核(pass)
 *
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
@@ -91,7 +92,7 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 		media.Price = ctx.DefaultPostForm("price", media.Price)
 		media.PlayType = ctx.DefaultPostForm("play_type", media.PlayType)
 		media.ExpireDate = ctx.DefaultPostForm("expire_date", media.ExpireDate)
-
+		media.CensorResult = ctx.DefaultPostForm("censor_result", media.CensorResult)
 		err = media.Update()
 		if err != nil {
 			failed(ctx, err.Error())
