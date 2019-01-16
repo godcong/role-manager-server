@@ -8,7 +8,7 @@ import (
 // Frame ...
 type Frame struct {
 	URL       string  `json:"url,omitempty"`
-	Offset    int     `json:"offset"`
+	Offset    int64   `json:"offset"`
 	Rate      float64 `json:"rate,omitempty"`
 	SfaceData []struct {
 		Faces []struct {
@@ -53,7 +53,8 @@ type ResultData struct {
 type MediaCensor struct {
 	Model      `bson:",inline"`
 	MediaID    primitive.ObjectID `bson:"media_id"`
-	Verify     string             `bson:"verify"` //人工验证
+	Verify     string             `bson:"verify"` //AI审核结果判断
+	Offset     int64              `bson:"offset"`
 	RequestKey string             `bson:"request_key"`
 	ResultData []*ResultData      `bson:"result_data,omitempty"`
 }

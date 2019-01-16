@@ -638,6 +638,10 @@ func MediaCallback(ver string) gin.HandlerFunc {
 						for _, values := range v.Data[0].Results {
 							if values.Suggestion != "pass" {
 								mc.Verify = values.Scene
+								if values.Frames != nil {
+									mc.Offset = values.Frames[0].Offset
+								}
+
 								goto EndLoop
 							}
 						}

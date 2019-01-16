@@ -11,7 +11,7 @@ import (
 // Router ...
 func Router(eng *gin.Engine) {
 	current := "v0"
-	eng.Use(AccessControlAllow, VisitLog(current))
+
 	st, err := fs.New()
 	if err != nil {
 		log.Fatal(err)
@@ -23,9 +23,8 @@ func Router(eng *gin.Engine) {
 		ctx.Redirect(http.StatusMovedPermanently, "/webui")
 	})
 
-	//eng.Static("doc", "./doc")
-
 	g0 := eng.Group(current)
+	g0.Use(AccessControlAllow, VisitLog(current))
 
 	//登录
 	g0.POST("login", LoginPOST(current))
