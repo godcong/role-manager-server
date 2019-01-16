@@ -102,9 +102,23 @@ func Router(eng *gin.Engine) {
 	user0.GET("role", UserRoleList(current))
 	user0.GET("report", UserReportList(current))
 	user0.POST("report/:id", UserReportUpdate(current))
+	user0.GET("login", UserLoginGet(current))
 
 	exo0 := v0.Group("exorcist")
 	exo0.GET("user", ExorcistUserList(current))
+
+}
+
+// UserLoginGet ...
+func UserLoginGet(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user := User(ctx)
+		if user != nil {
+			failed(ctx, "user not found")
+		}
+		success(ctx, user)
+
+	}
 
 }
 
