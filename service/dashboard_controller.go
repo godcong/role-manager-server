@@ -1,10 +1,11 @@
 package service
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/godcong/role-manager-server/model"
 	"log"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/godcong/role-manager-server/model"
 )
 
 // DashboardRoleDelete ...
@@ -889,6 +890,10 @@ func DashboardUserShow(ver string) gin.HandlerFunc {
 *
 * @apiHeader {string} token user token
 *
+* @apiParam {int} order 1(正序),-1(倒叙),(default:desc)
+* @apiParam {int} limit 每页数
+* @apiParam {int} current 当前页
+*
 * @apiUse Success
 * @apiSuccess (detail) {string} id Id
 * @apiSuccess (detail) {string} other 参考返回Example
@@ -897,7 +902,7 @@ func DashboardUserShow(ver string) gin.HandlerFunc {
 *		}
 *
 * @apiUse Failed
-* @apiSampleRequest /v0/dashboard/log
+* @apiSampleRequest /v0/dashboard/log?order=-1&limit=10&current=20
  */
 func DashboardLogList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
