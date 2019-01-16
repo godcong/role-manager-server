@@ -5,7 +5,7 @@ package main
 import (
 	"fmt"
 	"github.com/godcong/role-manager-server/service"
-
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -19,7 +19,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	log.SetOutput(file)
+
+	log.SetOutput(io.MultiWriter(file, os.Stdout))
 	log.SetFlags(log.Ldate | log.Lshortfile)
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
@@ -29,7 +30,6 @@ func main() {
 	//start
 	go func() {
 		sig := <-sigs
-		//bm.Stop()
 		fmt.Println(sig, "exiting")
 		done <- true
 	}()
