@@ -309,6 +309,8 @@ func LoginPOST(ver string) gin.HandlerFunc {
 			return
 		}
 
+		user.LoginIP = ctx.Request.Header.Get("REMOTE-HOST")
+
 		token, err := ToToken(user)
 
 		if err != nil {
@@ -316,6 +318,8 @@ func LoginPOST(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
+		user.Token = token
+		_ = user.Update()
 
 		success(ctx, gin.H{
 			"token": token,

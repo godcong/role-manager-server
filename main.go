@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	file, err := os.OpenFile("manager.log", os.O_SYNC|os.O_RDWR|os.O_CREATE, os.ModePerm)
+	file, err := os.OpenFile("manager.log", os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}

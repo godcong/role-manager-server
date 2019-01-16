@@ -14,8 +14,9 @@ type Log struct {
 	Method     string             `bson:"method"`
 	URL        string             `bson:"url"`
 	Permission string             `bson:"permission"`
-	Err        string             `json:"err"`
+	Err        string             `bson:"err"`
 	Detail     string             `bson:"detail"`
+	VisitIP    string             `bson:"visit_ip"`
 }
 
 // NewLog ...

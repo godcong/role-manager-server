@@ -109,9 +109,8 @@ func VisitLog(ver string) gin.HandlerFunc {
 			l.Err = err.Error()
 		}
 		l.UserID = user.ID
-		for addr := range ctx.Request.RemoteAddr {
-			log.Println(addr)
-		}
+
+		l.VisitIP = ctx.Request.Header.Get("REMOTE-HOST")
 		err = l.Create()
 		ctx.Set("logger", l)
 		log.Println("log", *l, err)
