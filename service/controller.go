@@ -13,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -332,6 +333,7 @@ func updateUser(ctx *gin.Context) (*model.User, error) {
 		return nil, err
 	}
 
+	user.Block, _ = strconv.ParseBool(ctx.PostForm("block"))
 	if oid := ctx.PostForm("organization_id"); oid != "" {
 		user.OrganizationID = model.ID(oid)
 	}
@@ -346,6 +348,7 @@ func updateUser(ctx *gin.Context) (*model.User, error) {
 	user.IDCardObverse = ctx.DefaultPostForm("id_card_obverse", user.IDCardObverse)
 	user.Certificate = ctx.DefaultPostForm("certificate", user.Certificate)
 	user.PrivateKey = ctx.DefaultPostForm("private_key", user.PrivateKey)
+
 	err = user.Update()
 	if err != nil {
 		return nil, err

@@ -55,7 +55,6 @@ func handleFuncName(ctx *gin.Context) string {
 // PermissionCheck ...
 func PermissionCheck(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
 		user := User(ctx)
 		role, err := user.Role()
 		if err == nil {
@@ -66,9 +65,14 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 			}
 		}
 
+		if user.Block {
+			nop(ctx, "this account has been blocked")
+			return
+		}
+
 		p := model.NewPermission()
-		logger := Logger(ctx)
-		p.Slug = logger.Permission
+		//logger := Logger(ctx)
+		p.Slug = role.Slug
 		err = p.Find()
 		if err != nil {
 			log.Println(err.Error())
@@ -105,6 +109,9 @@ func VisitLog(ver string) gin.HandlerFunc {
 			l.Err = err.Error()
 		}
 		l.UserID = user.ID
+		for addr := range ctx.Request.RemoteAddr {
+			log.Println(addr)
+		}
 		err = l.Create()
 		ctx.Set("logger", l)
 		log.Println("log", *l, err)

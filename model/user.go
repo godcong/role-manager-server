@@ -10,6 +10,7 @@ import (
 // User ...
 type User struct {
 	Model          `bson:",inline"`
+	Block          bool               `bson:"block"`           //禁止访问
 	Name           string             `bson:"name"`            //名称
 	Username       string             `bson:"username"`        //用户名
 	Email          string             `bson:"email"`           //邮件
@@ -20,11 +21,11 @@ type User struct {
 	Password       string             `bson:"password"`        //密码
 	Certificate    string             `bson:"certificate"`     //证书
 	PrivateKey     string             `bson:"private_key"`     //私钥
-
-	Token        string        `bson:"token"`
-	role         *Role         `bson:"-"`
-	organization *Organization `bson:"-"`
-	permissions  []*Permission `bson:"-"`
+	LoginIP        string             `bson:"login_ip"`        //本次登录IP
+	Token          string             `bson:"token"`
+	role           *Role              `bson:"-"`
+	organization   *Organization      `bson:"-"`
+	permissions    []*Permission      `bson:"-"`
 }
 
 // IsExist ...

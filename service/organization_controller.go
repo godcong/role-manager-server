@@ -68,8 +68,7 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
-		b, _ := strconv.ParseBool(ctx.PostForm("block"))
-		media.Block = b
+		media.Block, _ = strconv.ParseBool(ctx.PostForm("block"))
 		media.VIPFree = ctx.DefaultPostForm("vip_free", media.VIPFree)
 
 		media.Name = ctx.DefaultPostForm("name", media.Name)

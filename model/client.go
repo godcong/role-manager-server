@@ -15,13 +15,13 @@ type Prefix bool
 
 // MongoDB ...
 type MongoDB struct {
-	ctx    context.Context
-	host   string
-	prefix string
-	*mongo.Client
-	Interval time.Duration
+	ctx      context.Context
+	host     string
+	prefix   string
 	database string
 	limit    int64
+	*mongo.Client
+	Interval time.Duration
 }
 
 // Limit ...

@@ -677,6 +677,7 @@ func DashboardUserAdd(ver string) gin.HandlerFunc {
 *
 * @apiHeader {string} token user token
 *
+* @apiParam  {bool} block           	禁止访问
 * @apiParam  {string} name           	名称
 * @apiParam  {string} username       	用户名
 * @apiParam  {string} email          	邮件
