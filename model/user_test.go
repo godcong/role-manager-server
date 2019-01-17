@@ -114,3 +114,12 @@ func TestRoleUser_Create(t *testing.T) {
 	e := ru.CreateIfNotExist()
 	t.Log(ru, e)
 }
+
+// TestExorcistUser_Find ...
+func TestExorcistUser_Find(t *testing.T) {
+	user := NewExorcistUser()
+
+	user.ID = ID("5c123bafda9bf30ce9bb3b96")
+	err := user.Find()
+	t.Log(user, err)
+}

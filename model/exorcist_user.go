@@ -42,8 +42,13 @@ type ExorcistUser struct {
 	WeChatAppRefreshToken string    `bson:"weChatAppRefreshToken"`
 	Block                 bool      `bson:"block"`
 	IP                    string    `bson:"ip"`
-	LastLogin             time.Time `json:"lastLogin"`
+	LastLogin             time.Time `bson:"lastLogin"`
 	V                     int       `bson:"__v"`
+}
+
+// NoPrefix ...
+func (u *ExorcistUser) NoPrefix() NoPrefix {
+	return true
 }
 
 // NewExorcistUser ...
@@ -99,22 +104,22 @@ func (u *ExorcistUser) SetID(id primitive.ObjectID) {
 
 // CreateIfNotExist ...
 func (u *ExorcistUser) CreateIfNotExist() error {
-	return nil
+	return CreateIfNotExist(u)
 }
 
 // Create ...
 func (u *ExorcistUser) Create() error {
-	return nil
+	return InsertOne(u)
 }
 
 // Update ...
 func (u *ExorcistUser) Update() error {
-	return nil
+	return UpdateOne(u)
 }
 
 // Delete ...
 func (u *ExorcistUser) Delete() error {
-	return nil
+	return DeleteByID(u)
 }
 
 // All ...
@@ -122,7 +127,7 @@ func (u *ExorcistUser) All() ([]*ExorcistUser, error) {
 
 	var users []*ExorcistUser
 	m := bson.M{}
-	err := FindWithPrefix(u, m, func(cursor mongo.Cursor) error {
+	err := Find(u, m, func(cursor mongo.Cursor) error {
 		log.Println(cursor.DecodeBytes())
 		var u ExorcistUser
 		err := cursor.Decode(&u)
@@ -131,13 +136,13 @@ func (u *ExorcistUser) All() ([]*ExorcistUser, error) {
 		}
 		users = append(users, &u)
 		return nil
-	}, false)
+	})
 	return users, err
 }
 
 // Find ...
 func (u *ExorcistUser) Find() error {
-	return nil
+	return FindByID(u)
 }
 
 // SoftDelete ...

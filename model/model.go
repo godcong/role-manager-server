@@ -91,7 +91,7 @@ type Modeler interface {
 	_Name() string
 	Before
 	After
-
+	NoPrefix() NoPrefix
 	IsExist() bool
 	GetID() primitive.ObjectID
 	SetID(id primitive.ObjectID)
@@ -164,16 +164,10 @@ func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 // FindDecodeLoop ...
 type FindDecodeLoop func(cursor mongo.Cursor) error
 
-func find(m Modeler, v bson.M, dec FindDecodeLoop, prefix bool, ops ...*options.FindOptions) error {
+func find(m Modeler, v bson.M, dec FindDecodeLoop, ops ...*options.FindOptions) error {
 	SoftDelete(m, &v)
 
-	col := C(m._Name())
-	if !prefix {
-		log.Println(prefix)
-		col = C(m._Name(), Prefix(true))
-	}
-	log.Println(col.Name())
-	find, err := col.Find(mgo.TimeOut(), v, ops...)
+	find, err := C(m._Name(), m.NoPrefix()).Find(mgo.TimeOut(), v, ops...)
 	if err != nil {
 		return err
 	}
@@ -186,14 +180,9 @@ func find(m Modeler, v bson.M, dec FindDecodeLoop, prefix bool, ops ...*options.
 	return nil
 }
 
-// FindWithPrefix ...
-func FindWithPrefix(m Modeler, v bson.M, dec FindDecodeLoop, prefix bool, ops ...*options.FindOptions) error {
-	return find(m, v, dec, prefix, ops...)
-}
-
 // Find ...
 func Find(m Modeler, v bson.M, dec FindDecodeLoop, ops ...*options.FindOptions) error {
-	return find(m, v, dec, true, ops...)
+	return find(m, v, dec, ops...)
 }
 
 // Pages ...
@@ -227,7 +216,7 @@ func Pages(m Modeler, v bson.M, order, limit, current int64, dec FindDecodeLoop)
 // FindOne ...
 func FindOne(m Modeler, v bson.M, ops ...*options.FindOneOptions) error {
 	SoftDelete(m, &v)
-	return C(m._Name()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
+	return C(m._Name(), m.NoPrefix()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
 }
 
 // FindByID ...
@@ -236,14 +225,15 @@ func FindByID(m Modeler, ops ...*options.FindOneOptions) error {
 		"_id": m.GetID(),
 	}
 	SoftDelete(m, &v)
-	return C(m._Name()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
+	log.Println(C(m._Name(), m.NoPrefix()).Name())
+	return C(m._Name(), m.NoPrefix()).FindOne(mgo.TimeOut(), v, ops...).Decode(m)
 }
 
 // Count ...
 func Count(m Modeler, v bson.M) (int64, error) {
 	SoftDelete(m, &v)
 	//result := C(m._Name()).FindOne(mgo.TimeOut(), v)
-	return C(m._Name()).Count(mgo.TimeOut(), v)
+	return C(m._Name(), m.NoPrefix()).Count(mgo.TimeOut(), v)
 
 }
 
@@ -320,6 +310,11 @@ func (m *Model) AfterUpdate() {
 // AfterDelete ...
 func (m *Model) AfterDelete() {
 	return
+}
+
+// NoPrefix ...
+func (m *Model) NoPrefix() NoPrefix {
+	return false
 }
 
 // GetID ...
