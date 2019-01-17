@@ -118,7 +118,7 @@ func (m *Media) Censors() (mcs []*MediaCensor, err error) {
 	mc := NewMediaCensor()
 	err = Find(mc, bson.M{
 		"media_id": m.ID,
-		"verify":   "verification",
+		//"verify":   "verification",
 	}, func(cursor mongo.Cursor) error {
 		mc := NewMediaCensor()
 		err := cursor.Decode(mc)

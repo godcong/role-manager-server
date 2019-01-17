@@ -106,6 +106,7 @@ func Router(eng *gin.Engine) {
 
 	exo0 := v0.Group("exorcist")
 	exo0.GET("user", ExorcistUserList(current))
+	exo0.POST("user/:id", ExorcistUserUpdate(current))
 
 }
 

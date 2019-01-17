@@ -40,6 +40,9 @@ type ExorcistUser struct {
 	WeChatAppOpenid       string    `bson:"weChatAppOpenid"`
 	WeChatAppToken        string    `bson:"weChatAppToken"`
 	WeChatAppRefreshToken string    `bson:"weChatAppRefreshToken"`
+	Block                 bool      `bson:"block"`
+	IP                    string    `bson:"ip"`
+	LastLogin             time.Time `json:"lastLogin"`
 	V                     int       `bson:"__v"`
 }
 
