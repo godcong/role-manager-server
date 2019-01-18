@@ -1,5 +1,6 @@
 //go:generate apidoc -i ./service
 //go:generate statik -f -src=./doc
+//go:generate protoc --go_out=plugins=grpc:./proto manager.proto
 package main
 
 import (
