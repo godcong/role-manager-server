@@ -40,7 +40,7 @@ func Result(detail *proto.ManagerReplyDetail) *proto.ManagerReply {
 // NewGRPCServer ...
 func NewGRPCServer() *GRPCServer {
 	return &GRPCServer{
-		Type: DefaultString("", Type),
+		Type: DefaultString("unix", Type),
 		Port: DefaultString("", ":7784"),
 		Path: DefaultString("", "/tmp/manager.sock"),
 	}
