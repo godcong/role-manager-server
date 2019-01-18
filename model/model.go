@@ -115,7 +115,7 @@ func ID(s string) primitive.ObjectID {
 // UpdateOne ...
 func UpdateOne(m Modeler, ops ...*options.UpdateOptions) error {
 	m.BeforeUpdate()
-	result, err := C(m._Name()).UpdateOne(mgo.TimeOut(), bson.M{
+	result, err := C(m._Name(), m.NoPrefix()).UpdateOne(mgo.TimeOut(), bson.M{
 		"_id": m.GetID(),
 	}, bson.M{
 		"$set": m,
@@ -130,7 +130,7 @@ func UpdateOne(m Modeler, ops ...*options.UpdateOptions) error {
 // InsertOne ...
 func InsertOne(m Modeler, ops ...*options.InsertOneOptions) error {
 	m.BeforeInsert()
-	result, err := C(m._Name()).InsertOne(mgo.TimeOut(), m, ops...)
+	result, err := C(m._Name(), m.NoPrefix()).InsertOne(mgo.TimeOut(), m, ops...)
 	if err == nil {
 		if v, b := result.InsertedID.(primitive.ObjectID); b {
 			m.SetID(v)
@@ -151,7 +151,7 @@ func DeleteByID(m Modeler, ops ...*options.DeleteOptions) error {
 		return UpdateOne(m)
 	}
 
-	result, err := C(m._Name()).DeleteOne(mgo.TimeOut(), bson.M{
+	result, err := C(m._Name(), m.NoPrefix()).DeleteOne(mgo.TimeOut(), bson.M{
 		"_id": m.GetID(),
 	}, ops...)
 	if err == nil {

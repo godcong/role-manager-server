@@ -10,8 +10,8 @@ import (
 // DefaultInterval ...
 const DefaultInterval = 30 * time.Second
 
-// Prefix ...
-type Prefix bool
+// NoPrefix ...
+type NoPrefix bool
 
 // MongoDB ...
 type MongoDB struct {
@@ -43,7 +43,14 @@ func init() {
 func newMongoDB() *MongoDB {
 	//ctx, _ := context.WithCancel(context.Background())
 
-	return &MongoDB{}
+	return &MongoDB{
+		ctx:      context.Background(),
+		host:     "mongodb://terrylj:uttuyew1@ds111529.mlab.com:11529/exorcist",
+		prefix:   "rms",
+		Client:   nil,
+		Interval: DefaultInterval,
+		database: "exorcist",
+	}
 }
 
 func defaultDB() *MongoDB {
@@ -105,21 +112,20 @@ func Reconnect() error {
 
 // C return a collection
 func C(name string, values ...interface{}) *mongo.Collection {
-	if NoPrefix(values...) {
+	if !Prefix(values...) {
 		return DB().D().Collection(name)
 	}
 	return DB().D().Collection(mgo.prefix + "_" + name)
 }
 
-// NoPrefix ...
-func NoPrefix(values ...interface{}) bool {
+// Prefix ...
+func Prefix(values ...interface{}) bool {
 	for _, value := range values {
-		switch val := value.(type) {
-		case Prefix:
-			return (bool)(val)
+		if v, b := value.(NoPrefix); b {
+			return !(bool)(v)
 		}
 	}
-	return false
+	return true
 }
 
 // RelateInfo ...
