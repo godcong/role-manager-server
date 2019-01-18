@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.godcong.proto";
+option java_outer_classname = "ManagerServiceProto";
+
+package proto;
+
+service ManagerService {
+    rpc Back (ManagerCallbackRequest) returns (ManagerReply) {
+    }
+}
+
+message ManagerCallbackRequest {
+    string objectKey = 1;
+    string detail =2;
+}
+
+message ManagerReply {
+    int32 code = 1;
+    string message = 2;
+    ManagerReplyDetail detail =3;
+}
+
+message ManagerReplyDetail {
+    string ID = 1;
+    string json = 2;
+}
