@@ -32,6 +32,7 @@ func main() {
 	go func() {
 		sig := <-sigs
 		fmt.Println(sig, "exiting")
+		service.Stop()
 		done <- true
 	}()
 	<-done

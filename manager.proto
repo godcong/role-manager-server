@@ -12,7 +12,7 @@ service ManagerService {
 }
 
 message ManagerCallbackRequest {
-    string objectKey = 1;
+    string ID = 1;
     string detail =2;
 }
 
