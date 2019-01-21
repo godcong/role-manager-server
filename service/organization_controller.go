@@ -5,6 +5,7 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/util"
 	"github.com/json-iterator/go"
+	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,6 +19,12 @@ const CensorHost = "http://127.0.0.1:7789/v0"
 
 // IPFSHost ...
 const IPFSHost = "http://127.0.0.1:7790/v1"
+
+// ValidateFrame ...
+const ValidateFrame = "/validate/frame"
+
+// ValidatePIC ...
+const ValidatePIC = "/validate/pic"
 
 // OrgMediaUpdate ...
 /**
@@ -203,7 +210,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		media.ExpireDate = ctx.PostForm("expire_date")
 
 		media.OrganizationID = user.OrganizationID
-		key := util.GenerateRandomString(64)
+		key := uuid.NewV1().String()
 		//vid := ctx.PostForm("video_oss_address")
 		err := media.Create()
 		if err != nil {
@@ -215,8 +222,8 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		wg.Add(2)
 		go ThreadRequest(wg, &vrd, "/validate/frame",
 			url.Values{
-				"name":        []string{media.VideoOSSAddress},
-				"url":         []string{"http://127.0.0.1:7788/v0/media/callback"},
+				"name": []string{media.VideoOSSAddress},
+				//"url":         []string{"http://127.0.0.1:7788/v0/media/callback"},
 				"request_key": []string{key},
 			})
 		var prd []*model.ResultData

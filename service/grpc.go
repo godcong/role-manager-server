@@ -41,17 +41,35 @@ func Result(detail *proto.ManagerReplyDetail) *proto.ManagerReply {
 func NewGRPCServer() *GRPCServer {
 	return &GRPCServer{
 		Type: DefaultString("unix", Type),
-		Port: DefaultString("", ":7784"),
+		Port: DefaultString("", ":7781"),
 		Path: DefaultString("", "/tmp/manager.sock"),
 	}
 }
 
-// DefaultString ...
-func DefaultString(v, s string) string {
-	if v == "" {
-		return s
+// GRPCClient ...
+type GRPCClient struct {
+	*grpc.ClientConn
+	Type string
+	Port string
+	Path string
+}
+
+// NewNodeGRPC ...
+func NewNodeGRPC() *GRPCClient {
+	return &GRPCClient{
+		Type: DefaultString("unix", Type),
+		Port: DefaultString("", ":7787"),
+		Path: DefaultString("", "/tmp/node.sock"),
 	}
-	return v
+}
+
+// NewCensorGRPC ...
+func NewCensorGRPC() *GRPCClient {
+	return &GRPCClient{
+		Type: DefaultString("unix", Type),
+		Port: DefaultString("", ":7785"),
+		Path: DefaultString("", "/tmp/censor.sock"),
+	}
 }
 
 // Start ...
