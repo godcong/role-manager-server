@@ -1,5 +1,7 @@
 package service
 
+import "github.com/godcong/role-manager-server/config"
+
 // service ...
 type service struct {
 	grpc *GRPCServer
@@ -8,16 +10,16 @@ type service struct {
 
 var server *service
 
-func init() {
-	server = &service{
-		grpc: NewGRPCServer(),
-		rest: NewRestServer(),
-	}
-
-}
-
 // Start ...
 func Start() {
+	cfg := config.Config()
+
+	server = &service{
+		grpc: NewGRPCServer(cfg),
+		rest: NewRestServer(cfg),
+		//queue: NewQueueServer(cfg),
+	}
+
 	server.rest.Start()
 	server.grpc.Start()
 }

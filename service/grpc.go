@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -13,10 +14,11 @@ import (
 
 // GRPCServer ...
 type GRPCServer struct {
+	config *config.Configure
+	server *grpc.Server
 	Type   string
 	Port   string
 	Path   string
-	server *grpc.Server
 }
 
 // Back ...
@@ -38,16 +40,18 @@ func Result(detail *proto.ManagerReplyDetail) *proto.ManagerReply {
 }
 
 // NewGRPCServer ...
-func NewGRPCServer() *GRPCServer {
+func NewGRPCServer(cfg *config.Configure) *GRPCServer {
 	return &GRPCServer{
-		Type: DefaultString("unix", Type),
-		Port: DefaultString("", ":7781"),
-		Path: DefaultString("", "/tmp/manager.sock"),
+		config: cfg,
+		Type:   config.DefaultString("unix", Type),
+		Port:   config.DefaultString("", ":7781"),
+		Path:   config.DefaultString("", "/tmp/manager.sock"),
 	}
 }
 
 // GRPCClient ...
 type GRPCClient struct {
+	config *config.Configure
 	*grpc.ClientConn
 	Type string
 	Port string
@@ -55,28 +59,28 @@ type GRPCClient struct {
 }
 
 // NewNodeGRPC ...
-func NewNodeGRPC() *GRPCClient {
+func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
-		Type: DefaultString("unix", Type),
-		Port: DefaultString("", ":7787"),
-		Path: DefaultString("", "/tmp/node.sock"),
+		config: cfg,
+		Type:   config.DefaultString("unix", Type),
+		Port:   config.DefaultString("", ":7787"),
+		Path:   config.DefaultString("", "/tmp/node.sock"),
 	}
 }
 
 // NewCensorGRPC ...
-func NewCensorGRPC() *GRPCClient {
+func NewCensorGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
-		Type: DefaultString("unix", Type),
-		Port: DefaultString("", ":7785"),
-		Path: DefaultString("", "/tmp/censor.sock"),
+		config: cfg,
+		Type:   config.DefaultString("unix", Type),
+		Port:   config.DefaultString("", ":7785"),
+		Path:   config.DefaultString("", "/tmp/censor.sock"),
 	}
 }
 
 // Start ...
 func (s *GRPCServer) Start() {
-	//if !config.GRPC.Enable {
-	//	return
-	//}
+
 	s.server = grpc.NewServer()
 	var lis net.Listener
 	var port string
