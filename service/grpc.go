@@ -68,6 +68,16 @@ func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
 	}
 }
 
+// NewManagerGRPC ...
+func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
+	return &GRPCClient{
+		config: cfg,
+		Type:   config.DefaultString("unix", Type),
+		Port:   config.DefaultString("", ":7781"),
+		Path:   config.DefaultString("", "/tmp/manager.sock"),
+	}
+}
+
 // NewCensorGRPC ...
 func NewCensorGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
