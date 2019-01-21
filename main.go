@@ -4,7 +4,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/service"
 	"io"
 	"log"
@@ -15,7 +17,10 @@ import (
 	_ "github.com/godcong/role-manager-server/statik"
 )
 
+var configPath = flag.String("path", "config.toml", "load config file from path")
+
 func main() {
+	flag.Parse()
 	file, err := os.OpenFile("manager.log", os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		panic(err)
@@ -23,12 +28,19 @@ func main() {
 
 	log.SetOutput(io.MultiWriter(file, os.Stdout))
 	log.SetFlags(log.Ldate | log.Lshortfile)
+
+	err = config.Initialize(*configPath)
+	if err != nil {
+		panic(err)
+	}
+
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	service.Start()
 	//start
+	service.Start()
+
 	go func() {
 		sig := <-sigs
 		fmt.Println(sig, "exiting")
