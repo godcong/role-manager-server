@@ -642,7 +642,6 @@ func MediaCallback(ver string) gin.HandlerFunc {
 								if values.Frames != nil {
 									mc.Offset = values.Frames[0].Offset
 								}
-
 								goto EndLoop
 							}
 						}

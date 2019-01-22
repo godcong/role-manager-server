@@ -52,10 +52,33 @@ func NewGRPCServer(cfg *config.Configure) *GRPCServer {
 // GRPCClient ...
 type GRPCClient struct {
 	config *config.Configure
-	*grpc.ClientConn
-	Type string
-	Port string
-	Path string
+	Type   string
+	Port   string
+	Addr   string
+}
+
+// Conn ...
+func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
+	var conn *grpc.ClientConn
+	var err error
+
+	if c.Type == "unix" {
+		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithInsecure())
+	} else {
+		conn, err = grpc.Dial(c.Addr, grpc.WithInsecure())
+	}
+
+	return conn, err
+}
+
+// NodeClient ...
+func NodeClient(g *GRPCClient) proto.NodeServiceClient {
+	clientConn, err := g.Conn()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return proto.NewNodeServiceClient(clientConn)
 }
 
 // NewNodeGRPC ...
@@ -64,8 +87,18 @@ func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
 		config: cfg,
 		Type:   config.DefaultString("unix", Type),
 		Port:   config.DefaultString("", ":7787"),
-		Path:   config.DefaultString("", "/tmp/node.sock"),
+		Addr:   config.DefaultString("", "/tmp/node.sock"),
 	}
+}
+
+// ManagerClient ...
+func ManagerClient(g *GRPCClient) proto.ManagerServiceClient {
+	clientConn, err := g.Conn()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return proto.NewManagerServiceClient(clientConn)
 }
 
 // NewManagerGRPC ...
@@ -74,8 +107,18 @@ func NewManagerGRPC(cfg *config.Configure) *GRPCClient {
 		config: cfg,
 		Type:   config.DefaultString("unix", Type),
 		Port:   config.DefaultString("", ":7781"),
-		Path:   config.DefaultString("", "/tmp/manager.sock"),
+		Addr:   config.DefaultString("", "/tmp/manager.sock"),
 	}
+}
+
+// CensorClient ...
+func CensorClient(g *GRPCClient) proto.CensorServiceClient {
+	clientConn, err := g.Conn()
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return proto.NewCensorServiceClient(clientConn)
 }
 
 // NewCensorGRPC ...
@@ -84,7 +127,7 @@ func NewCensorGRPC(cfg *config.Configure) *GRPCClient {
 		config: cfg,
 		Type:   config.DefaultString("unix", Type),
 		Port:   config.DefaultString("", ":7785"),
-		Path:   config.DefaultString("", "/tmp/censor.sock"),
+		Addr:   config.DefaultString("", "/tmp/censor.sock"),
 	}
 }
 

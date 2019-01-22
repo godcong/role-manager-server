@@ -49,18 +49,23 @@ type REST struct {
 
 // Queue ...
 type Queue struct {
-	Type     string `json:"type"`
-	HostPort string `json:"host_port"`
-	Password string `json:"password"`
-	DB       int    `json:"db"`
+	Type     string `toml:"type"`
+	HostPort string `toml:"host_port"`
+	Password string `toml:"password"`
+	DB       int    `toml:"db"`
 }
 
 // HostInfo ...
 type HostInfo struct {
-	Type    string `json:"type"`
+	Type    string `toml:"type"`
 	Address string `toml:"address"`
-	Port    string `json:"port"`
-	Version string `json:"version"`
+	Port    string `toml:"port"`
+	Version string `toml:"version"`
+}
+
+// Requester ...
+type Requester struct {
+	Type string `toml:"type"`
 }
 
 // Configure ...
@@ -72,7 +77,8 @@ type Configure struct {
 	REST   REST     `toml:"rest"`
 	IPFS   IPFS     `toml:"ipfs"`
 
-	Callback Callback `toml:"callback"`
+	Requester Requester `toml:"requester"`
+	Callback  Callback  `toml:"callback"`
 }
 
 var config *Configure

@@ -1,8 +1,11 @@
 package service
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/model"
+	"github.com/godcong/role-manager-server/proto"
 	"github.com/godcong/role-manager-server/util"
 	"github.com/json-iterator/go"
 	"github.com/satori/go.uuid"
@@ -12,6 +15,7 @@ import (
 	"net/url"
 	"strconv"
 	"sync"
+	"time"
 )
 
 // CensorHost ...
@@ -210,37 +214,22 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		media.ExpireDate = ctx.PostForm("expire_date")
 
 		media.OrganizationID = user.OrganizationID
-		key := uuid.NewV1().String()
+
 		//vid := ctx.PostForm("video_oss_address")
 		err := media.Create()
 		if err != nil {
 			failed(ctx, err.Error())
 			return
 		}
-		var vrd []*model.ResultData
-		wg := &sync.WaitGroup{}
-		wg.Add(2)
-		go ThreadRequest(wg, &vrd, "/validate/frame",
-			url.Values{
-				"name": []string{media.VideoOSSAddress},
-				//"url":         []string{"http://127.0.0.1:7788/v0/media/callback"},
-				"request_key": []string{key},
-			})
-		var prd []*model.ResultData
-		//pic := ctx.PostForm("picture_oss_address")
-		go ThreadRequest(wg, &prd, "/validate/pic",
-			url.Values{"name": []string{media.PictureOSSAddress[0]}})
 
-		//wait for done
-		log.Println("waiting")
-		wg.Wait()
+		reqKey := uuid.NewV1().String()
+		var rds []*model.ResultData
+		rds = validateMedia(reqKey, media)
 
 		mc := model.NewMediaCensor()
-		mc.RequestKey = key
+		mc.RequestKey = reqKey
 		mc.MediaID = media.ID
-		mc.ResultData = []*model.ResultData{
-			prd[0],
-		}
+		mc.ResultData = rds
 		err = mc.Create()
 		if err != nil {
 			failed(ctx, err.Error())
@@ -248,6 +237,107 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		}
 		success(ctx, mc)
 	}
+}
+
+func validateMedia(key string, media *model.Media) []*model.ResultData {
+	cfg := config.Config()
+	wg := &sync.WaitGroup{}
+	var vrd []*model.ResultData
+	var prd []*model.ResultData
+	wg.Add(2)
+	if cfg.Requester.Type == "rest" {
+		go httpValidate(wg, &vrd, "/validate/frame",
+			url.Values{
+				"name":        []string{media.VideoOSSAddress},
+				"request_key": []string{key},
+			})
+
+		//pic := ctx.PostForm("picture_oss_address")
+		go httpValidate(wg, &prd, "/validate/pic",
+			url.Values{"name": media.PictureOSSAddress})
+
+	} else {
+		go tcpValidate(wg, &vrd, cfg, &proto.ValidateRequest{
+			ID:           key,
+			ObjectKey:    media.VideoOSSAddress,
+			ValidateType: proto.CensorValidateType_Frame,
+		})
+
+		go tcpValidate(wg, &prd, cfg, &proto.ValidateRequest{
+			ID:           key,
+			ObjectKey:    media.PictureOSSAddress[0],
+			ValidateType: proto.CensorValidateType_JPG,
+		})
+	}
+
+	//wait for done
+	wg.Wait()
+
+	return []*model.ResultData{prd[0]}
+}
+
+func tcpValidate(group *sync.WaitGroup, data *[]*model.ResultData, cfg *config.Configure, req *proto.ValidateRequest) {
+	defer group.Done()
+	censor := NewCensorGRPC(cfg)
+	client := CensorClient(censor)
+	*data = []*model.ResultData{
+		{},
+	}
+
+	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
+	var rds []*model.ResultData
+
+	if client != nil {
+		censorReply, err := client.Validate(timeout, req)
+		if err != nil {
+			return
+		}
+		err = jsoniter.UnmarshalFromString(censorReply.Detail.Json, &rds)
+		if err != nil {
+			return
+		}
+		*data = rds
+	}
+}
+
+// httpValidate ...
+func httpValidate(group *sync.WaitGroup, data *[]*model.ResultData, uri string, values url.Values) {
+	defer group.Done()
+
+	*data = []*model.ResultData{
+		{},
+	}
+
+	resp, err := http.PostForm(CensorHost+uri, values)
+
+	if err != nil {
+		log.Println(uri, values.Encode(), err.Error())
+		return
+	}
+	bytes, err := ioutil.ReadAll(resp.Body)
+	log.Println("resp:", string(bytes))
+	if err != nil {
+		log.Println(uri, values.Encode(), err.Error())
+		return
+	}
+
+	if bytes == nil {
+		return
+	}
+
+	var json JSON
+	err = jsoniter.Unmarshal(bytes, &json)
+	if err != nil {
+		log.Println(uri, values.Encode(), err.Error())
+		return
+	}
+
+	if json.Detail == nil {
+		return
+	}
+
+	*data = json.Detail
+
 }
 
 // OrgMediaList ...
@@ -336,46 +426,6 @@ func OrgMediaList(ver string) gin.HandlerFunc {
 		success(ctx, medias)
 		return
 	}
-}
-
-// ThreadRequest ...
-func ThreadRequest(group *sync.WaitGroup, data *[]*model.ResultData, uri string, values url.Values) {
-	defer group.Done()
-
-	*data = []*model.ResultData{
-		{},
-	}
-
-	resp, err := http.PostForm(CensorHost+uri, values)
-
-	if err != nil {
-		log.Println(uri, values.Encode(), err.Error())
-		return
-	}
-	bytes, err := ioutil.ReadAll(resp.Body)
-	log.Println("resp:", string(bytes))
-	if err != nil {
-		log.Println(uri, values.Encode(), err.Error())
-		return
-	}
-
-	if bytes == nil {
-		return
-	}
-
-	var json JSON
-	err = jsoniter.Unmarshal(bytes, &json)
-	if err != nil {
-		log.Println(uri, values.Encode(), err.Error())
-		return
-	}
-
-	if json.Detail == nil {
-		return
-	}
-
-	*data = json.Detail
-
 }
 
 // OrgMediaCensorList ...
