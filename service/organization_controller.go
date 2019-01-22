@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/model"
@@ -19,10 +20,10 @@ import (
 )
 
 // CensorHost ...
-const CensorHost = "http://127.0.0.1:7789/v0"
+const CensorHost = "http://127.0.0.1"
 
 // IPFSHost ...
-const IPFSHost = "http://127.0.0.1:7790/v1"
+const NodeHost = "http://127.0.0.1"
 
 // ValidateFrame ...
 const ValidateFrame = "/validate/frame"
@@ -246,15 +247,20 @@ func validateMedia(key string, media *model.Media) []*model.ResultData {
 	var prd []*model.ResultData
 	wg.Add(2)
 	if cfg.Requester.Type == "rest" {
-		go httpValidate(wg, &vrd, "/validate/frame",
+		go httpValidate(wg, &vrd, cfg,
 			url.Values{
-				"name":        []string{media.VideoOSSAddress},
-				"request_key": []string{key},
+				"objectKey":     []string{media.VideoOSSAddress},
+				"id":            []string{key},
+				"validate_type": []string{"frame"},
 			})
 
 		//pic := ctx.PostForm("picture_oss_address")
-		go httpValidate(wg, &prd, "/validate/pic",
-			url.Values{"name": media.PictureOSSAddress})
+		go httpValidate(wg, &prd, cfg,
+			url.Values{
+				"objectKey":     media.PictureOSSAddress,
+				"id":            []string{key},
+				"validate_type": []string{"jpg"},
+			})
 
 	} else {
 		go tcpValidate(wg, &vrd, cfg, &proto.ValidateRequest{
@@ -301,23 +307,23 @@ func tcpValidate(group *sync.WaitGroup, data *[]*model.ResultData, cfg *config.C
 }
 
 // httpValidate ...
-func httpValidate(group *sync.WaitGroup, data *[]*model.ResultData, uri string, values url.Values) {
+func httpValidate(group *sync.WaitGroup, data *[]*model.ResultData, cfg *config.Configure, values url.Values) {
 	defer group.Done()
 
 	*data = []*model.ResultData{
 		{},
 	}
 
-	resp, err := http.PostForm(CensorHost+uri, values)
+	host := fmt.Sprintf("%s%s/%s/%s", cfg.Censor.Addr, cfg.Censor.Port, cfg.Censor.Version, "validate")
 
+	resp, err := http.PostForm(host, values)
+	log.Println(host, values.Encode(), err.Error())
 	if err != nil {
-		log.Println(uri, values.Encode(), err.Error())
 		return
 	}
 	bytes, err := ioutil.ReadAll(resp.Body)
 	log.Println("resp:", string(bytes))
 	if err != nil {
-		log.Println(uri, values.Encode(), err.Error())
 		return
 	}
 
@@ -328,7 +334,6 @@ func httpValidate(group *sync.WaitGroup, data *[]*model.ResultData, uri string, 
 	var json JSON
 	err = jsoniter.Unmarshal(bytes, &json)
 	if err != nil {
-		log.Println(uri, values.Encode(), err.Error())
 		return
 	}
 

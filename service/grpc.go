@@ -85,9 +85,9 @@ func NodeClient(g *GRPCClient) proto.NodeServiceClient {
 func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString("unix", Type),
-		Port:   config.DefaultString("", ":7787"),
-		Addr:   config.DefaultString("", "/tmp/node.sock"),
+		Type:   config.DefaultString(cfg.Node.Type, Type),
+		Port:   config.DefaultString(cfg.Node.Port, ":7787"),
+		Addr:   config.DefaultString(cfg.Node.Addr, "/tmp/node.sock"),
 	}
 }
 
@@ -125,9 +125,9 @@ func CensorClient(g *GRPCClient) proto.CensorServiceClient {
 func NewCensorGRPC(cfg *config.Configure) *GRPCClient {
 	return &GRPCClient{
 		config: cfg,
-		Type:   config.DefaultString("unix", Type),
-		Port:   config.DefaultString("", ":7785"),
-		Addr:   config.DefaultString("", "/tmp/censor.sock"),
+		Type:   config.DefaultString(cfg.Censor.Type, Type),
+		Port:   config.DefaultString(cfg.Censor.Port, ":7785"),
+		Addr:   config.DefaultString(cfg.Censor.Addr, "/tmp/censor.sock"),
 	}
 }
 

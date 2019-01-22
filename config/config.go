@@ -69,7 +69,7 @@ type Queue struct {
 // HostInfo ...
 type HostInfo struct {
 	Type    string `toml:"type"`
-	Address string `toml:"address"`
+	Addr    string `toml:"addr"`
 	Port    string `toml:"port"`
 	Version string `toml:"version"`
 }
@@ -83,6 +83,7 @@ type Requester struct {
 type Configure struct {
 	Database Database `toml:"database"`
 	Censor   HostInfo `toml:"censor"`
+	Node     HostInfo `toml:"node"`
 	Media    Media    `toml:"media"`
 	Queue    Queue    `toml:"queue"`
 	GRPC     GRPC     `toml:"grpc"`
