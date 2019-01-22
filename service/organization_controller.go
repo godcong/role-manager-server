@@ -19,18 +19,6 @@ import (
 	"time"
 )
 
-// CensorHost ...
-const CensorHost = "http://127.0.0.1"
-
-// IPFSHost ...
-const NodeHost = "http://127.0.0.1"
-
-// ValidateFrame ...
-const ValidateFrame = "/validate/frame"
-
-// ValidatePIC ...
-const ValidatePIC = "/validate/pic"
-
 // OrgMediaUpdate ...
 /**
 * @api {post} /v0/org/media/:id 视频更新(OrgMediaUpdate)
@@ -110,11 +98,25 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 			return
 		}
 
+		cfg := config.Config()
 		if media.CensorResult == "pass" {
-			err = ReleaseIPFS(media)
-			if err != nil {
-				failed(ctx, err.Error())
-				return
+			if cfg.Requester.Type == "rest" {
+				err = ReleaseIPFS(media)
+				if err != nil {
+					failed(ctx, err.Error())
+					return
+				}
+			} else {
+				node := NewNodeGRPC(cfg)
+				timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
+				client := NodeClient(node)
+				_, err := client.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
+					ObjectKey: media.VideoOSSAddress,
+				})
+				if err != nil {
+					failed(ctx, err.Error())
+					return
+				}
 			}
 		}
 
@@ -249,7 +251,7 @@ func validateMedia(key string, media *model.Media) []*model.ResultData {
 	if cfg.Requester.Type == "rest" {
 		go httpValidate(wg, &vrd, cfg,
 			url.Values{
-				"objectKey":     []string{media.VideoOSSAddress},
+				"object_key":    []string{media.VideoOSSAddress},
 				"id":            []string{key},
 				"validate_type": []string{"frame"},
 			})
@@ -257,7 +259,7 @@ func validateMedia(key string, media *model.Media) []*model.ResultData {
 		//pic := ctx.PostForm("picture_oss_address")
 		go httpValidate(wg, &prd, cfg,
 			url.Values{
-				"objectKey":     media.PictureOSSAddress,
+				"object_key":    media.PictureOSSAddress,
 				"id":            []string{key},
 				"validate_type": []string{"jpg"},
 			})
@@ -316,7 +318,7 @@ func httpValidate(group *sync.WaitGroup, data *[]*model.ResultData, cfg *config.
 
 	host := fmt.Sprintf("%s%s/%s/%s", cfg.Censor.Addr, cfg.Censor.Port, cfg.Censor.Version, "validate")
 
-	resp, err := http.PostForm(host, values)
+	resp, err := http.PostForm(CheckPrefix(host), values)
 	log.Println(host, values.Encode(), err.Error())
 	if err != nil {
 		return
@@ -647,10 +649,12 @@ func OrgCensorUpdate(ver string) gin.HandlerFunc {
 
 // ReleaseIPFS ...
 func ReleaseIPFS(media *model.Media) error {
-
+	cfg := config.Config()
 	log.Println("key:", media.VideoOSSAddress)
-	response, err := http.PostForm(IPFSHost+"/rd", url.Values{
-		"key": []string{media.VideoOSSAddress},
+	host := fmt.Sprintf("%s%s/%s/%s", cfg.Censor.Addr, cfg.Censor.Port, cfg.Censor.Version, "rd")
+
+	response, err := http.PostForm(CheckPrefix(host), url.Values{
+		"object_key": []string{media.VideoOSSAddress},
 	})
 	if err != nil {
 		return err

@@ -552,114 +552,55 @@ func LogOutput(ver string) gin.HandlerFunc {
 	}
 }
 
-// IPFSCallback ...
-func IPFSCallback(ver string) gin.HandlerFunc {
+// NodeCallback ...
+type NodeCallback struct {
+	ID     string `json:"id"`
+	FSInfo struct {
+		Hash string `json:"hash"`
+		Name string `json:"name"`
+		Size string `json:"size"`
+	} `json:"fs_info"`
+	NSInfo struct {
+		Name  string `json:"name"`
+		Value string `json:"value"`
+	} `json:"ns_info"`
+}
+
+// NodeBack ...
+func NodeBack(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ipfs := model.NewIPFS()
-		ipfs.FileID = ctx.PostForm("id")
-		err := ipfs.FindByFileID()
+		var err error
+		var nc NodeCallback
+		err = ctx.BindJSON(&nc)
 		if err != nil {
 			failed(ctx, err.Error())
 			return
 		}
-		ipfs.IPFSAddress = ctx.PostForm("ipfs")
-		ipfs.IPNSAddress = ctx.PostForm("ipns")
-		ipfs.IpnsKey = ctx.PostForm("ipns_key")
-		log.Println(ipfs, ipfs.IPFSAddress, ipfs)
-		err = ipfs.Update()
-		media := model.NewMedia()
-		media.ID = ipfs.MediaID
-		err = media.Find()
+		err = NodeCallbackProcess(nc.ID, &nc)
 		if err != nil {
 			failed(ctx, err.Error())
 			return
 		}
-		media.IPNSAddress = ipfs.IPNSAddress
-		media.IPFSAddress = ipfs.IPFSAddress
-		err = media.Update()
-		if err != nil {
-			failed(ctx, err.Error())
-			return
-		}
-		success(ctx, media)
+		success(ctx, "")
 		return
 	}
 }
 
-// MediaCallback ...
-func MediaCallback(ver string) gin.HandlerFunc {
+// CensorBack ...
+func CensorBack(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		mc := model.NewMediaCensor()
-		mc.RequestKey = ctx.PostForm("request_key")
-		err := mc.FindByKey()
+		id := ctx.PostForm("id")
+		msg := ctx.PostForm("message")
+		code := ctx.PostForm("code")
+		log.Println(msg)
+		log.Println(code)
+		detail := ctx.PostForm("detail")
+		err := CensorCallbackProcess(id, detail)
 		if err != nil {
-			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
-		if mc.ID == primitive.NilObjectID {
-			log.Println("no media")
-			failed(ctx, "no media")
-			return
-		}
-
-		msg := ctx.PostForm("message")
-		log.Println(msg)
-		code := ctx.PostForm("code")
-		log.Println(code)
-		detail := ctx.PostForm("detail")
-		log.Println(detail)
-		if detail != "" {
-			var rd []*model.ResultData
-			err = jsoniter.Unmarshal([]byte(detail), &rd)
-			log.Printf("%+v", rd)
-			if rd != nil {
-
-				media, err := mc.Media()
-				if err != nil {
-					log.Println(err)
-					failed(ctx, err.Error())
-					return
-				}
-				media.CensorID = mc.ID
-				err = media.Update()
-				if err != nil {
-					log.Println(err)
-					failed(ctx, err.Error())
-					return
-				}
-
-				mc.ResultData = []*model.ResultData{
-					mc.ResultData[0], //picture
-					rd[0],            //video
-				}
-				mc.Verify = "pass"
-				for _, v := range mc.ResultData {
-					if v.Data != nil && v.Data[0].Results != nil {
-						for _, values := range v.Data[0].Results {
-							if values.Suggestion != "pass" {
-								mc.Verify = values.Scene
-								if values.Frames != nil {
-									mc.Offset = values.Frames[0].Offset
-								}
-								goto EndLoop
-							}
-						}
-					}
-				}
-
-			EndLoop:
-
-				err = mc.Update()
-				if err != nil {
-					log.Println(err)
-					failed(ctx, err.Error())
-					return
-				}
-			}
-		}
-
-		success(ctx, nil)
+		success(ctx, "")
 	}
 }
 
@@ -710,4 +651,92 @@ func Caller(depth int) (file string, line int) {
 		line = 0
 	}
 	return
+}
+
+// NodeCallbackProcess ...
+func NodeCallbackProcess(id string, cb *NodeCallback) error {
+	var err error
+	ipfs := model.NewIPFS()
+
+	ipfs.FileID = id
+	err = ipfs.FindByFileID()
+	if err != nil {
+
+		return err
+	}
+	ipfs.IPFSAddress = cb.FSInfo.Hash
+	ipfs.IPNSAddress = cb.NSInfo.Value
+	ipfs.IpnsKey = id
+	log.Println(ipfs, ipfs.IPFSAddress, ipfs)
+	err = ipfs.Update()
+	media := model.NewMedia()
+	media.ID = ipfs.MediaID
+	err = media.Find()
+	if err != nil {
+
+		return err
+	}
+	media.IPNSAddress = ipfs.IPNSAddress
+	media.IPFSAddress = ipfs.IPFSAddress
+	err = media.Update()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CensorCallbackProcess ...
+func CensorCallbackProcess(id string, detail string) error {
+	log.Println(id, detail)
+	mc := model.NewMediaCensor()
+	mc.RequestKey = id
+	err := mc.FindByKey()
+	if err != nil {
+		return err
+	}
+	if mc.ID == primitive.NilObjectID {
+		return errors.New("media is not exist")
+	}
+
+	if detail != "" {
+		var rds []*model.ResultData
+		err = jsoniter.Unmarshal([]byte(detail), &rds)
+		log.Printf("%+v", rds)
+		if rds != nil {
+			media, err := mc.Media()
+			if err != nil {
+				return err
+			}
+			media.CensorID = mc.ID
+			err = media.Update()
+			if err != nil {
+				return err
+			}
+
+			mc.ResultData = append(mc.ResultData, rds...)
+
+			mc.Verify = "pass"
+			for _, v := range mc.ResultData {
+				if v.Data != nil && v.Data[0].Results != nil {
+					for _, values := range v.Data[0].Results {
+						if values.Suggestion != "pass" {
+							mc.Verify = values.Scene
+							if values.Frames != nil {
+								mc.Offset = values.Frames[0].Offset
+							}
+							goto EndLoop
+						}
+					}
+				}
+			}
+
+		EndLoop:
+
+			err = mc.Update()
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

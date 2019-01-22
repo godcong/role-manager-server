@@ -38,8 +38,8 @@ func Router(eng *gin.Engine) {
 	g0.POST("report", UserReportAdd(current))
 	g0.GET("play", UserPlayList(current))
 	g0.GET("play/:id", UserPlay(current))
-	g0.POST("media/callback", MediaCallback(current))
-	g0.POST("ipfs/callback", IPFSCallback(current))
+	g0.POST("censor/callback", CensorBack(current))
+	g0.POST("node/callback", NodeBack(current))
 
 	v0 := g0.Group("")
 	v0.Use(LogOutput(current), LoginCheck(current), PermissionCheck(current))

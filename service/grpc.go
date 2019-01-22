@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/proto"
+	"github.com/json-iterator/go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -21,11 +22,34 @@ type GRPCServer struct {
 	Path   string
 }
 
-// Back ...
-func (s *GRPCServer) Back(ctx context.Context, r *proto.ManagerCallbackRequest) (*proto.ManagerReply, error) {
-	log.Printf("%+v", r)
+// NodeBack ...
+func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest) (*proto.ManagerReply, error) {
+	var nc NodeCallback
+	var err error
+
+	err = jsoniter.UnmarshalFromString(req.Detail, &nc)
+	if err != nil {
+		return nil, err
+	}
+
+	err = NodeCallbackProcess(nc.ID, &nc)
+	if err != nil {
+		return nil, err
+	}
 	return Result(&proto.ManagerReplyDetail{
-		ID:   "",
+		ID:   req.ID,
+		Json: "",
+	}), nil
+}
+
+// CensorBack ...
+func (s *GRPCServer) CensorBack(ctx context.Context, req *proto.ManagerCensorRequest) (*proto.ManagerReply, error) {
+	err := CensorCallbackProcess(req.ID, req.Detail)
+	if err != nil {
+		return nil, err
+	}
+	return Result(&proto.ManagerReplyDetail{
+		ID:   req.ID,
 		Json: "",
 	}), nil
 }

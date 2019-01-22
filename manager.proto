@@ -7,11 +7,18 @@ option java_outer_classname = "ManagerServiceProto";
 package proto;
 
 service ManagerService {
-    rpc Back (ManagerCallbackRequest) returns (ManagerReply) {
+    rpc NodeBack (ManagerNodeRequest) returns (ManagerReply) {
+    }
+    rpc CensorBack (ManagerCensorRequest) returns (ManagerReply) {
     }
 }
 
-message ManagerCallbackRequest {
+message ManagerNodeRequest {
+    string ID = 1;
+    string detail =2;
+}
+
+message ManagerCensorRequest {
     string ID = 1;
     string detail =2;
 }
