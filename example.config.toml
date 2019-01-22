@@ -1,5 +1,5 @@
 [database]
-    address = "host"
+    addr = "host"
     port = ":2701"
     username = "uname"
     password = "pass"
