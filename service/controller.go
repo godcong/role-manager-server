@@ -667,7 +667,7 @@ func NodeCallbackProcess(id string, cb *NodeCallback) error {
 	ipfs.IPFSAddress = cb.FSInfo.Hash
 	ipfs.IPNSAddress = cb.NSInfo.Value
 	ipfs.IpnsKey = id
-	log.Println(ipfs, ipfs.IPFSAddress, ipfs)
+	log.Printf("%+v", cb)
 	err = ipfs.Update()
 	media := model.NewMedia()
 	media.ID = ipfs.MediaID
