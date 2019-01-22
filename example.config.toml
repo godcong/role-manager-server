@@ -7,6 +7,15 @@
     prefix = "rms"
 
 [node]
-
-
+    type = "unix" #unix,tcp,http
+    port = ":7787"
+    addr = "/tmp/node.sock"
+    version = "v0"
 [censor]
+    type = "unix" #unix,tcp,http
+    port = ":7785"
+    addr = "/tmp/censor.sock"
+    version = "v0"
+
+[requester]
+    type ="grpc"
