@@ -2,6 +2,8 @@ package model
 
 import (
 	"context"
+	"fmt"
+	"github.com/godcong/role-manager-server/config"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/readpref"
 	"time"
@@ -36,25 +38,34 @@ func (m *MongoDB) SetLimit(limit int64) {
 
 var mgo *MongoDB
 
-func init() {
-	mgo = defaultDB()
+// InitDB ...
+func InitDB(cfg *config.Configure) {
+	mgo = newMongoDB(cfg)
 }
 
-func newMongoDB() *MongoDB {
+func newMongoDB(cfg *config.Configure) *MongoDB {
 	//ctx, _ := context.WithCancel(context.Background())
+
+	host := fmt.Sprintf("mongodb://%s:%s@%s%s/%s",
+		cfg.Database.Username,
+		cfg.Database.Password,
+		cfg.Database.Addr,
+		cfg.Database.Port,
+		cfg.Database.DB,
+	)
 
 	return &MongoDB{
 		ctx:      context.Background(),
-		host:     "mongodb://terrylj:uttuyew1@ds111529.mlab.com:11529/exorcist",
-		prefix:   "rms",
+		host:     host,
+		prefix:   cfg.Database.Prefix,
 		Client:   nil,
 		Interval: DefaultInterval,
-		database: "exorcist",
+		database: cfg.Database.DB,
 	}
 }
 
 func defaultDB() *MongoDB {
-	db := newMongoDB()
+	db := newMongoDB(config.Config())
 	client, err := InitClient(db.ctx, db.host)
 	if err != nil {
 		panic(err)

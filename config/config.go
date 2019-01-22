@@ -6,6 +6,17 @@ import (
 	"os"
 )
 
+// Database ...
+type Database struct {
+	Prefix   string `toml:"prefix"`
+	Type     string `toml:"type"`
+	Addr     string `toml:"addr"`
+	Port     string `toml:"port"`
+	Password string `toml:"password"`
+	Username string `toml:"username"`
+	DB       string `toml:"db"`
+}
+
 // Callback ...
 type Callback struct {
 	Type     string `toml:"type"`
@@ -70,12 +81,13 @@ type Requester struct {
 
 // Configure ...
 type Configure struct {
-	Censor HostInfo `toml:"censor"`
-	Media  Media    `toml:"media"`
-	Queue  Queue    `toml:"queue"`
-	GRPC   GRPC     `toml:"grpc"`
-	REST   REST     `toml:"rest"`
-	IPFS   IPFS     `toml:"ipfs"`
+	Database Database `toml:"database"`
+	Censor   HostInfo `toml:"censor"`
+	Media    Media    `toml:"media"`
+	Queue    Queue    `toml:"queue"`
+	GRPC     GRPC     `toml:"grpc"`
+	REST     REST     `toml:"rest"`
+	IPFS     IPFS     `toml:"ipfs"`
 
 	Requester Requester `toml:"requester"`
 	Callback  Callback  `toml:"callback"`
@@ -88,28 +100,8 @@ func Initialize(filePath ...string) error {
 	if filePath == nil {
 		filePath = []string{"config.toml"}
 	}
-
+	log.Println(filePath)
 	cfg := LoadConfig(filePath[0])
-
-	if !IsExists(cfg.Media.Upload) {
-		err := os.Mkdir(cfg.Media.Upload, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
-	if !IsExists(cfg.Media.Transfer) {
-		err := os.Mkdir(cfg.Media.Transfer, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
-
-	if !IsExists(cfg.Media.KeyDest) {
-		err := os.Mkdir(cfg.Media.KeyDest, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
 
 	config = cfg
 
