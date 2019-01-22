@@ -6,6 +6,7 @@ import (
 	"github.com/godcong/role-manager-server/config"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/readpref"
+	"log"
 	"time"
 )
 
@@ -40,7 +41,13 @@ var mgo *MongoDB
 
 // InitDB ...
 func InitDB(cfg *config.Configure) {
-	mgo = newMongoDB(cfg)
+	mgo = defaultDB(cfg)
+
+	log.Printf("%+v", mgo)
+	err := Ping()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func newMongoDB(cfg *config.Configure) *MongoDB {
@@ -51,7 +58,6 @@ func newMongoDB(cfg *config.Configure) *MongoDB {
 		cfg.Database.Port,
 		cfg.Database.DB,
 	)
-
 	return &MongoDB{
 		ctx:      context.Background(),
 		host:     host,
@@ -62,8 +68,8 @@ func newMongoDB(cfg *config.Configure) *MongoDB {
 	}
 }
 
-func defaultDB() *MongoDB {
-	db := newMongoDB(config.Config())
+func defaultDB(cfg *config.Configure) *MongoDB {
+	db := newMongoDB(cfg)
 	client, err := InitClient(db.ctx, db.host)
 	if err != nil {
 		panic(err)
@@ -84,7 +90,7 @@ func DB() *MongoDB {
 	if mgo != nil {
 		return mgo
 	}
-	return defaultDB()
+	return defaultDB(config.Config())
 }
 
 // D ...
