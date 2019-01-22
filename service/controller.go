@@ -655,6 +655,7 @@ func Caller(depth int) (file string, line int) {
 
 // NodeCallbackProcess ...
 func NodeCallbackProcess(id string, cb *NodeCallback) error {
+	log.Printf("[%s]:%+v\n", id, cb)
 	var err error
 	ipfs := model.NewIPFS()
 
@@ -667,13 +668,12 @@ func NodeCallbackProcess(id string, cb *NodeCallback) error {
 	ipfs.IPFSAddress = cb.FSInfo.Hash
 	ipfs.IPNSAddress = cb.NSInfo.Value
 	ipfs.IpnsKey = id
-	log.Printf("%+v", cb)
+
 	err = ipfs.Update()
 	media := model.NewMedia()
 	media.ID = ipfs.MediaID
 	err = media.Find()
 	if err != nil {
-
 		return err
 	}
 	media.IPNSAddress = ipfs.IPNSAddress
@@ -687,7 +687,7 @@ func NodeCallbackProcess(id string, cb *NodeCallback) error {
 
 // CensorCallbackProcess ...
 func CensorCallbackProcess(id string, detail string) error {
-	log.Println(id, detail)
+	log.Printf("[%s]:%s\n", id, detail)
 	mc := model.NewMediaCensor()
 	mc.RequestKey = id
 	err := mc.FindByKey()
