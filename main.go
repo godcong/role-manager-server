@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/godcong/role-manager-server/config"
+	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/service"
 	"io"
 	"log"
@@ -33,6 +34,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	model.InitDB(config.Config())
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)

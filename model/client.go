@@ -44,8 +44,6 @@ func InitDB(cfg *config.Configure) {
 }
 
 func newMongoDB(cfg *config.Configure) *MongoDB {
-	//ctx, _ := context.WithCancel(context.Background())
-
 	host := fmt.Sprintf("mongodb://%s:%s@%s%s/%s",
 		cfg.Database.Username,
 		cfg.Database.Password,

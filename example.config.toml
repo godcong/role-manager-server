@@ -1,0 +1,12 @@
+[database]
+    address = "host"
+    port = ":2701"
+    username = "uname"
+    password = "pass"
+    db = "db"
+    prefix = "rms"
+
+[node]
+
+
+[censor]
