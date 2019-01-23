@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
-	"github.com/json-iterator/go"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"log"
@@ -586,21 +585,29 @@ func NodeBack(ver string) gin.HandlerFunc {
 	}
 }
 
+// CensorCallback ...
+type CensorCallback struct {
+	ID     string              `json:"id"`
+	Detail []*model.ResultData `json:"detail"`
+}
+
 // CensorBack ...
 func CensorBack(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id := ctx.PostForm("id")
-		msg := ctx.PostForm("message")
-		code := ctx.PostForm("code")
-		log.Println(msg)
-		log.Println(code)
-		detail := ctx.PostForm("detail")
-		err := CensorCallbackProcess(id, detail)
+		var err error
+		var cc CensorCallback
+		err = ctx.BindJSON(&cc)
+		if err != nil {
+			failed(ctx, err.Error())
+			return
+		}
+		err = CensorCallbackProcess(nc.ID, &cc)
 		if err != nil {
 			failed(ctx, err.Error())
 			return
 		}
 		success(ctx, "")
+		return
 	}
 }
 
@@ -686,8 +693,8 @@ func NodeCallbackProcess(id string, cb *NodeCallback) error {
 }
 
 // CensorCallbackProcess ...
-func CensorCallbackProcess(id string, detail string) error {
-	log.Printf("[%s]:%s\n", id, detail)
+func CensorCallbackProcess(id string, detail []*model.ResultData) error {
+	log.Printf("[%s]:%+v\n", id, detail)
 	mc := model.NewMediaCensor()
 	mc.RequestKey = id
 	err := mc.FindByKey()
@@ -698,45 +705,41 @@ func CensorCallbackProcess(id string, detail string) error {
 		return errors.New("media is not exist")
 	}
 
-	if detail != "" {
-		var rds []*model.ResultData
-		err = jsoniter.Unmarshal([]byte(detail), &rds)
-		log.Printf("%+v", rds)
-		if rds != nil {
-			media, err := mc.Media()
-			if err != nil {
-				return err
-			}
-			media.CensorID = mc.ID
-			err = media.Update()
-			if err != nil {
-				return err
-			}
+	if detail != nil {
+		media, err := mc.Media()
+		if err != nil {
+			return err
+		}
+		media.CensorID = mc.ID
+		err = media.Update()
+		if err != nil {
+			return err
+		}
 
-			mc.ResultData = append(mc.ResultData, rds...)
+		mc.ResultData = append(mc.ResultData, detail...)
 
-			mc.Verify = "pass"
-			for _, v := range mc.ResultData {
-				if v.Data != nil && v.Data[0].Results != nil {
-					for _, values := range v.Data[0].Results {
-						if values.Suggestion != "pass" {
-							mc.Verify = values.Scene
-							if values.Frames != nil {
-								mc.Offset = values.Frames[0].Offset
-							}
-							goto EndLoop
+		mc.Verify = "pass"
+		for _, v := range mc.ResultData {
+			if v.Data != nil && v.Data[0].Results != nil {
+				for _, values := range v.Data[0].Results {
+					if values.Suggestion != "pass" {
+						mc.Verify = values.Scene
+						if values.Frames != nil {
+							mc.Offset = values.Frames[0].Offset
 						}
+						goto EndLoop
 					}
 				}
 			}
+		}
 
-		EndLoop:
+	EndLoop:
 
-			err = mc.Update()
-			if err != nil {
-				return err
-			}
+		err = mc.Update()
+		if err != nil {
+			return err
 		}
 	}
+
 	return nil
 }
