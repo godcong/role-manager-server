@@ -44,7 +44,15 @@ func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest
 
 // CensorBack ...
 func (s *GRPCServer) CensorBack(ctx context.Context, req *proto.ManagerCensorRequest) (*proto.ManagerReply, error) {
-	err := CensorCallbackProcess(req.ID, req.Detail)
+	var cc CensorCallback
+	var err error
+
+	err = jsoniter.UnmarshalFromString(req.Detail, &cc)
+	if err != nil {
+		return nil, err
+	}
+
+	err = CensorCallbackProcess(cc.ID, cc.Detail)
 	if err != nil {
 		return nil, err
 	}

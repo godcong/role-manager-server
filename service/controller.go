@@ -601,7 +601,7 @@ func CensorBack(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
-		err = CensorCallbackProcess(nc.ID, &cc)
+		err = CensorCallbackProcess(cc.ID, cc.Detail)
 		if err != nil {
 			failed(ctx, err.Error())
 			return
