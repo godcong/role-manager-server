@@ -16,6 +16,7 @@ require (
 	github.com/pelletier/go-toml v1.2.0
 	github.com/rakyll/statik v0.1.5
 	github.com/satori/go.uuid v1.2.0
+	github.com/sirupsen/logrus v1.3.0
 	github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51 // indirect
 	github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
