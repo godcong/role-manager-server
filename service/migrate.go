@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/mongodb/mongo-go-driver/bson"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 // Migrate ...

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

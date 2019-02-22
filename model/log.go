@@ -4,7 +4,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"log"
+		log "github.com/sirupsen/logrus"
 )
 
 // Log ...
@@ -92,5 +92,5 @@ func (l *Log) Pages(order, limit, current int64) ([]*Log, int64) {
 }
 
 func (l *Log) _Name() string {
-	return "log"
+	return 	log "github.com/sirupsen/logrus"
 }

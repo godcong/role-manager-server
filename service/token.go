@@ -4,7 +4,7 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/util"
 	"github.com/json-iterator/go"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 

@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/pelletier/go-toml"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -125,14 +125,16 @@ func LoadConfig(filePath string) *Configure {
 	var cfg Configure
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
+		log.Error(err)
 		panic(err.Error())
 	}
 	decoder := toml.NewDecoder(openFile)
 	err = decoder.Decode(&cfg)
 	if err != nil {
+		log.Error(err)
 		panic(err.Error())
 	}
-	log.Printf("config: %+v", cfg)
+	log.Infof("config: %+v", cfg)
 	return &cfg
 }
 

@@ -2,11 +2,11 @@ package util
 
 import (
 	"github.com/json-iterator/go"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 	"io"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"time"
 )

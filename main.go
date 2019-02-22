@@ -5,11 +5,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/godcong/go-trait"
 	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/service"
+	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
@@ -38,7 +38,7 @@ func main() {
 
 	go func() {
 		sig := <-sigs
-		fmt.Println(sig, "exiting")
+		logrus.Println(sig, "exiting")
 		service.Stop()
 		done <- true
 	}()

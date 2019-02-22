@@ -1,7 +1,7 @@
 package model
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"testing"
 )
 

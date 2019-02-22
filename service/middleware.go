@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
-	"log"
+		log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -113,7 +113,7 @@ func VisitLog(ver string) gin.HandlerFunc {
 		l.VisitIP = ctx.Request.Header.Get("REMOTE-HOST")
 		err = l.Create()
 		ctx.Set("logger", l)
-		log.Println("log", *l, err)
+		log.Println(	log "github.com/sirupsen/logrus", *l, err)
 	}
 }
 

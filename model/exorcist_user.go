@@ -4,7 +4,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 

@@ -9,7 +9,7 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"math"
 	"net/http"
 	"runtime"

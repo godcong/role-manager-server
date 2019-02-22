@@ -6,7 +6,7 @@ import (
 	"github.com/godcong/role-manager-server/config"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/readpref"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 

@@ -6,9 +6,9 @@ import (
 	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/proto"
 	"github.com/json-iterator/go"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
 	"net"
 	"syscall"
 )
