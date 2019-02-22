@@ -6,11 +6,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/godcong/go-trait"
 	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/service"
-	"io"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -22,15 +21,8 @@ var configPath = flag.String("path", "config.toml", "load config file from path"
 
 func main() {
 	flag.Parse()
-	file, err := os.OpenFile("manager.log", os.O_SYNC|os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
-
-	log.SetOutput(io.MultiWriter(file, os.Stdout))
-	log.SetFlags(log.Ldate | log.Lshortfile)
-
-	err = config.Initialize(*configPath)
+	trait.InitElasticLog("role-manager-server", nil)
+	err := config.Initialize(*configPath)
 	if err != nil {
 		panic(err)
 	}
