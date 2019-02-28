@@ -8,8 +8,8 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/proto"
 	"github.com/godcong/role-manager-server/util"
+	"github.com/google/uuid"
 	"github.com/json-iterator/go"
-	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -111,7 +111,7 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 				timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
 				client := NodeClient(node)
 				_, err := client.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
-					//TODO:add id
+					ID:        uuid.New().String(),
 					ObjectKey: media.VideoOSSAddress,
 				})
 				if err != nil {
@@ -226,7 +226,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 			return
 		}
 
-		reqKey := uuid.NewV1().String()
+		reqKey := uuid.New().String()
 		var rds []*model.ResultData
 		rds = validateMedia(reqKey, media)
 
