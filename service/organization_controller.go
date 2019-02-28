@@ -111,6 +111,7 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 				timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
 				client := NodeClient(node)
 				_, err := client.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
+					//TODO:add id
 					ObjectKey: media.VideoOSSAddress,
 				})
 				if err != nil {

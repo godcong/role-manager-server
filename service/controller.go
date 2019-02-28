@@ -663,7 +663,7 @@ func Caller(depth int) (file string, line int) {
 
 // NodeCallbackProcess ...
 func NodeCallbackProcess(id string, cb *NodeCallback) error {
-	log.Info("[%s]:%+v\n", id, cb)
+	log.Infof("[%s]:%+v\n", id, cb)
 	var err error
 	ipfs := model.NewIPFS()
 

@@ -26,7 +26,7 @@ type GRPCServer struct {
 func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest) (*proto.ManagerReply, error) {
 	var nc NodeCallback
 	var err error
-
+	log.Infof("%+v", req.Detail)
 	err = jsoniter.UnmarshalFromString(req.Detail, &nc)
 	if err != nil {
 		return nil, err
