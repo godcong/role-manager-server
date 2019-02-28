@@ -639,6 +639,7 @@ func success(ctx *gin.Context, detail interface{}) {
 }
 
 func failed(ctx *gin.Context, message string) {
+	log.Error(message)
 	logger := Logger(ctx)
 	file, line := Caller(2)
 	logger.Err = fmt.Sprintf("%s %d:[%s]", file, line, message)
@@ -662,14 +663,14 @@ func Caller(depth int) (file string, line int) {
 
 // NodeCallbackProcess ...
 func NodeCallbackProcess(id string, cb *NodeCallback) error {
-	log.Printf("[%s]:%+v\n", id, cb)
+	log.Info("[%s]:%+v\n", id, cb)
 	var err error
 	ipfs := model.NewIPFS()
 
 	ipfs.FileID = id
 	err = ipfs.FindByFileID()
 	if err != nil {
-
+		log.Error(err)
 		return err
 	}
 	ipfs.IPFSAddress = cb.FSInfo.Hash
@@ -681,12 +682,14 @@ func NodeCallbackProcess(id string, cb *NodeCallback) error {
 	media.ID = ipfs.MediaID
 	err = media.Find()
 	if err != nil {
+		log.Error(err)
 		return err
 	}
 	media.IPNSAddress = ipfs.IPNSAddress
 	media.IPFSAddress = ipfs.IPFSAddress
 	err = media.Update()
 	if err != nil {
+		log.Error(err)
 		return err
 	}
 	return nil

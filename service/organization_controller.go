@@ -603,13 +603,12 @@ func OrgCensorUpdate(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 
-		verify := ctx.PostForm("verify")
+		verify := ctx.PostForm("censor_result")
 		mc := model.NewMediaCensor()
 		mc.ID = model.ID(id)
 
 		err := mc.Find()
 		if err != nil {
-			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
@@ -617,14 +616,12 @@ func OrgCensorUpdate(ver string) gin.HandlerFunc {
 		mc.Verify = verify
 		err = mc.Update()
 		if err != nil {
-			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
 
 		media, err := mc.Media()
 		if err != nil {
-			log.Println(err)
 			failed(ctx, err.Error())
 			return
 		}
@@ -635,6 +632,7 @@ func OrgCensorUpdate(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
+		log.Infof("%+v", media)
 		if media.CensorResult == "pass" {
 			err = ReleaseIPFS(media)
 			if err != nil {

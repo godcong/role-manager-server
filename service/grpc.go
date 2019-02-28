@@ -31,7 +31,7 @@ func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest
 	if err != nil {
 		return nil, err
 	}
-
+	log.Infof("%+v", nc)
 	err = NodeCallbackProcess(nc.ID, &nc)
 	if err != nil {
 		return nil, err
