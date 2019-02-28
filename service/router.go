@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/rakyll/statik/fs"
-		log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -47,7 +47,7 @@ func Router(eng *gin.Engine) {
 	//超级管理员面板
 	//账号、密码、所属组织、角色权限、邮箱、手机号码、授权证书和授权私钥
 	dashboard0 := v0.Group("dashboard")
-	dashboard0.GET(	log "github.com/sirupsen/logrus", DashboardLogList(current))
+	dashboard0.GET("log", DashboardLogList(current))
 
 	dashboard0.GET("permission", DashboardPermissionList(current))
 	dashboard0.POST("permission", DashboardPermissionAdd(current))

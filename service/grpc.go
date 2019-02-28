@@ -97,7 +97,7 @@ func (c *GRPCClient) Conn() (*grpc.ClientConn, error) {
 	if c.Type == "unix" {
 		conn, err = grpc.Dial("passthrough:///unix://"+c.Addr, grpc.WithInsecure())
 	} else {
-		conn, err = grpc.Dial(c.Addr, grpc.WithInsecure())
+		conn, err = grpc.Dial(c.Addr+c.Port, grpc.WithInsecure())
 	}
 
 	return conn, err

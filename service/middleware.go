@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
-		log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -101,19 +101,24 @@ func VisitLog(ver string) gin.HandlerFunc {
 		l.URL = ctx.Request.URL.String()
 		detail, err := GetPostFormString(ctx)
 		if err != nil {
+			log.Error(err)
 			l.Err = err.Error()
 		}
 		l.Detail = detail
 		user, err := decodeUser(ctx)
 		if err != nil {
+			log.Error(err)
 			l.Err = err.Error()
 		}
 		l.UserID = user.ID
 
 		l.VisitIP = ctx.Request.Header.Get("REMOTE-HOST")
 		err = l.Create()
+		if err != nil {
+			log.Error(err)
+		}
 		ctx.Set("logger", l)
-		log.Println(	log "github.com/sirupsen/logrus", *l, err)
+		log.Printf("visit: %+v\n", *l)
 	}
 }
 

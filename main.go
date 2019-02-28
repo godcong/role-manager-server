@@ -17,7 +17,7 @@ import (
 	_ "github.com/godcong/role-manager-server/statik"
 )
 
-var configPath = flag.String("path", "config.toml", "load config file from path")
+var configPath = flag.String("config", "config.toml", "load config file from path")
 
 func main() {
 	flag.Parse()
