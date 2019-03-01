@@ -18,10 +18,14 @@ import (
 )
 
 var configPath = flag.String("config", "config.toml", "load config file from path")
+var elk = flag.Bool("elk", true, "set log to elk")
 
 func main() {
 	flag.Parse()
-	trait.InitElasticLog("role-manager-server", nil)
+	if *elk {
+		trait.InitElasticLog("role-manager-server", nil)
+	}
+
 	err := config.Initialize(*configPath)
 	if err != nil {
 		panic(err)

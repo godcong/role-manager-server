@@ -110,14 +110,18 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 				node := NewNodeGRPC(cfg)
 				timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
 				client := NodeClient(node)
-				_, err := client.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
-					ID:        uuid.New().String(),
+				response, err := client.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
 					ObjectKey: media.VideoOSSAddress,
 				})
 				if err != nil {
 					failed(ctx, err.Error())
 					return
 				}
+
+				ipfs := model.NewIPFS()
+				ipfs.FileID = response.Detail.ID
+				ipfs.MediaID = media.ID
+				err = ipfs.Create()
 			}
 		}
 
