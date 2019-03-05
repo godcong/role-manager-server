@@ -99,7 +99,7 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 		}
 
 		cfg := config.Config()
-		if media.CensorResult == "pass" {
+		if media.Block == false || media.CensorResult == "pass" {
 			if cfg.Requester.Type == "rest" {
 				err = ReleaseIPFS(media)
 				if err != nil {

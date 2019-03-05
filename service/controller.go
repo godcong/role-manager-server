@@ -674,7 +674,7 @@ func NodeCallbackProcess(id string, cb *NodeCallback) error {
 		return err
 	}
 	ipfs.IPFSAddress = cb.FSInfo.Hash
-	ipfs.IPNSAddress = cb.NSInfo.Value
+	ipfs.IPNSAddress = cb.NSInfo.Name
 	ipfs.IpnsKey = id
 
 	err = ipfs.Update()
