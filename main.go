@@ -1,6 +1,7 @@
 //go:generate apidoc -i ./service
 //go:generate statik -f -src=./doc
-//go:generate protoc --go_out=plugins=grpc:./proto manager.proto
+//go:generate protoc --go_out=plugins=grpc:./proto --micro_out=./proto  manager.proto
+
 package main
 
 import (
@@ -18,12 +19,15 @@ import (
 )
 
 var configPath = flag.String("config", "config.toml", "load config file from path")
-var elk = flag.Bool("elk", true, "set log to elk")
+var elk = flag.Bool("elk", false, "set log to elk")
+var logPath = flag.String("log", "logs/manager.log", "set the default log path")
 
 func main() {
 	flag.Parse()
 	if *elk {
 		trait.InitElasticLog("role-manager-server", nil)
+	} else {
+		trait.InitRotateLog(*logPath, nil)
 	}
 
 	err := config.Initialize(*configPath)

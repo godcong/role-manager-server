@@ -17,13 +17,6 @@ type Database struct {
 	DB       string `toml:"db"`
 }
 
-// Callback ...
-type Callback struct {
-	Type     string `toml:"type"`
-	BackType string `toml:"back_type"`
-	BackAddr string `toml:"back_addr"`
-}
-
 // Media ...
 type Media struct {
 	Upload      string `toml:"upload"`        //上传路径
@@ -33,6 +26,11 @@ type Media struct {
 	KeyDest     string `toml:"key_dest"`      //key 文件输出目录
 	KeyFile     string `toml:"key_file"`      //key文件名
 	KeyInfoFile string `toml:"key_info_file"` //keyFile文件名
+}
+
+type ManagerConfig struct {
+	GRPC GRPC `toml:"grpc"`
+	REST REST `toml:"rest"`
 }
 
 // IPFS ...
@@ -91,7 +89,7 @@ type Configure struct {
 	IPFS     IPFS     `toml:"ipfs"`
 
 	Requester Requester `toml:"requester"`
-	Callback  Callback  `toml:"callback"`
+	//Callback  Callback  `toml:"callback"`
 }
 
 var config *Configure

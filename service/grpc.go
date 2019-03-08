@@ -6,61 +6,102 @@ import (
 	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/proto"
 	"github.com/json-iterator/go"
+	"github.com/micro/go-micro"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"net"
 	"syscall"
+	"time"
 )
 
 // GRPCServer ...
 type GRPCServer struct {
-	config *config.Configure
-	server *grpc.Server
-	Type   string
-	Port   string
-	Path   string
+	config  *config.Configure
+	service micro.Service
+	Type    string
+	Port    string
+	Path    string
 }
 
-// NodeBack ...
-func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest) (*proto.ManagerReply, error) {
+func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest, res *proto.ManagerReply) error {
 	var nc NodeCallback
 	var err error
 	log.Infof("%+v", req.Detail)
 	err = jsoniter.UnmarshalFromString(req.Detail, &nc)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	log.Infof("%+v", nc)
 	err = NodeCallbackProcess(nc.ID, &nc)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return Result(&proto.ManagerReplyDetail{
+	res = Result(&proto.ManagerReplyDetail{
 		ID:   req.ID,
 		Json: "",
-	}), nil
+	})
+	return nil
 }
 
-// CensorBack ...
-func (s *GRPCServer) CensorBack(ctx context.Context, req *proto.ManagerCensorRequest) (*proto.ManagerReply, error) {
+func (s *GRPCServer) CensorBack(ctx context.Context, req *proto.ManagerCensorRequest, res *proto.ManagerReply) error {
 	var cc CensorCallback
 	var err error
 
 	err = jsoniter.UnmarshalFromString(req.Detail, &cc)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	err = CensorCallbackProcess(cc.ID, cc.Detail)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return Result(&proto.ManagerReplyDetail{
+	res = Result(&proto.ManagerReplyDetail{
 		ID:   req.ID,
 		Json: "",
-	}), nil
+	})
+	return nil
 }
+
+// NodeBack ...
+//func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest) (*proto.ManagerReply, error) {
+//	var nc NodeCallback
+//	var err error
+//	log.Infof("%+v", req.Detail)
+//	err = jsoniter.UnmarshalFromString(req.Detail, &nc)
+//	if err != nil {
+//		return nil, err
+//	}
+//	log.Infof("%+v", nc)
+//	err = NodeCallbackProcess(nc.ID, &nc)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return Result(&proto.ManagerReplyDetail{
+//		ID:   req.ID,
+//		Json: "",
+//	}), nil
+//}
+
+// CensorBack ...
+//func (s *GRPCServer) CensorBack(ctx context.Context, req *proto.ManagerCensorRequest) (*proto.ManagerReply, error) {
+//	var cc CensorCallback
+//	var err error
+//
+//	err = jsoniter.UnmarshalFromString(req.Detail, &cc)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	err = CensorCallbackProcess(cc.ID, cc.Detail)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return Result(&proto.ManagerReplyDetail{
+//		ID:   req.ID,
+//		Json: "",
+//	}), nil
+//}
 
 // Result ...
 func Result(detail *proto.ManagerReplyDetail) *proto.ManagerReply {
@@ -165,11 +206,16 @@ func NewCensorGRPC(cfg *config.Configure) *GRPCClient {
 
 // Start ...
 func (s *GRPCServer) Start() {
-
-	s.server = grpc.NewServer()
 	var lis net.Listener
 	var port string
 	var err error
+	s.service = micro.NewService(
+		micro.Name("manager"),
+		micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*15),
+		micro.Version("latest"),
+	)
+	s.service.Init()
 	go func() {
 		if s.Type == "unix" {
 			_ = syscall.Unlink(s.Path)
@@ -184,11 +230,10 @@ func (s *GRPCServer) Start() {
 			panic(fmt.Sprintf("failed to listen: %v", err))
 		}
 
-		proto.RegisterManagerServiceServer(s.server, s)
-		// Register reflection service on gRPC server.
-		reflection.Register(s.server)
+		_ = proto.RegisterManagerServiceHandler(s.service.Server(), s)
+
 		log.Printf("Listening and serving TCP on %s\n", port)
-		if err := s.server.Serve(lis); err != nil {
+		if err := s.service.Run(); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
@@ -197,5 +242,5 @@ func (s *GRPCServer) Start() {
 
 // Stop ...
 func (s *GRPCServer) Stop() {
-	s.server.Stop()
+	//s.service.Stop()
 }
