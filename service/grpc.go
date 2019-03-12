@@ -124,10 +124,11 @@ func NewGRPCServer(cfg *config.Configure) *GRPCServer {
 
 // GRPCClient ...
 type GRPCClient struct {
-	config *config.Configure
-	Type   string
-	Port   string
-	Addr   string
+	config  *config.Configure
+	service micro.Service
+	Type    string
+	Port    string
+	Addr    string
 }
 
 // Conn ...
@@ -155,13 +156,16 @@ func NodeClient(g *GRPCClient) proto.NodeServiceClient {
 }
 
 // NewNodeGRPC ...
-func NewNodeGRPC(cfg *config.Configure) *GRPCClient {
-	return &GRPCClient{
-		config: cfg,
-		Type:   config.DefaultString(cfg.Node.Type, Type),
-		Port:   config.DefaultString(cfg.Node.Port, ":7787"),
-		Addr:   config.DefaultString(cfg.Node.Addr, "/tmp/node.sock"),
+func NewNodeGRPC(cfg *config.Configure) proto.NodeService {
+	client := &GRPCClient{
+		service: micro.NewService(),
+		config:  cfg,
+		Type:    config.DefaultString(cfg.Node.Type, Type),
+		Port:    config.DefaultString(cfg.Node.Port, ":7787"),
+		Addr:    config.DefaultString(cfg.Node.Addr, "/tmp/node.sock"),
 	}
+	client.service.Init()
+	return proto.NewNodeService("go.micro.grpc.node", client.service.Client())
 }
 
 // ManagerClient ...

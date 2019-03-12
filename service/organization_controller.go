@@ -100,29 +100,29 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 
 		cfg := config.Config()
 		if media.Block == false || media.CensorResult == "pass" {
-			if cfg.Requester.Type == "rest" {
-				err = ReleaseIPFS(media)
-				if err != nil {
-					failed(ctx, err.Error())
-					return
-				}
-			} else {
-				node := NewNodeGRPC(cfg)
-				timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
-				client := NodeClient(node)
-				response, err := client.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
-					ObjectKey: media.VideoOSSAddress,
-				})
-				if err != nil {
-					failed(ctx, err.Error())
-					return
-				}
-
-				ipfs := model.NewIPFS()
-				ipfs.FileID = response.Detail.ID
-				ipfs.MediaID = media.ID
-				err = ipfs.Create()
+			//if cfg.Requester.Type == "rest" {
+			//	err = ReleaseIPFS(media)
+			//	if err != nil {
+			//		failed(ctx, err.Error())
+			//		return
+			//	}
+			//} else {
+			node := NewNodeGRPC(cfg)
+			timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
+			//client := NodeClient(node)
+			response, err := node.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
+				ObjectKey: media.VideoOSSAddress,
+			})
+			if err != nil {
+				failed(ctx, err.Error())
+				return
 			}
+			log.Println(response)
+			ipfs := model.NewIPFS()
+			ipfs.FileID = response.Detail.ID
+			ipfs.MediaID = media.ID
+			err = ipfs.Create()
+			//}
 		}
 
 		success(ctx, media)
