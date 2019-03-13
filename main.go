@@ -10,12 +10,11 @@ import (
 	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/service"
+	_ "github.com/godcong/role-manager-server/statik"
 	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
-
-	_ "github.com/godcong/role-manager-server/statik"
 )
 
 var configPath = flag.String("config", "config.toml", "load config file from path")
@@ -27,11 +26,7 @@ func main() {
 	if *elk {
 		trait.InitElasticLog("role-manager-server", nil)
 	} else {
-		trait.InitRotateLog(*logPath, &trait.RotateLogOption{
-			Level:        trait.RotateLogDebug,
-			MaxAge:       0,
-			RotationTime: 0,
-		})
+		trait.InitRotateLog(*logPath, nil)
 	}
 
 	err := config.Initialize(*configPath)
