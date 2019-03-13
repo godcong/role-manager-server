@@ -17,6 +17,14 @@ type Database struct {
 	DB       string `toml:"db"`
 }
 
+// REST ...
+type REST struct {
+	Enable bool   `toml:"enable"`
+	Type   string `toml:"type"`
+	Path   string `toml:"path"`
+	Port   string `toml:"port"`
+}
+
 // Media ...
 type Media struct {
 	Upload      string `toml:"upload"`        //上传路径
@@ -52,6 +60,7 @@ type Configure struct {
 	CensorName  string   `toml:"censor_name"`
 	EnableGRPC  bool     `toml:"enable_grpc"`
 	EnableREST  bool     `toml:"enable_rest"`
+	REST        REST     `toml:"rest"`
 	RequestType string   `toml:"request_type"`
 	IPFS        IPFS     `toml:"ipfs"`
 	//Callback  Callback  `toml:"callback"`
