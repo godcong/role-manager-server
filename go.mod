@@ -80,7 +80,6 @@ require (
 	github.com/jefferai/jsonx v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.5
 	github.com/keybase/go-crypto v0.0.0-20181127160227-255a5089e85a // indirect
-	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible
 	github.com/lyft/protoc-gen-validate v0.0.13 // indirect
 	github.com/mattbaird/elastigo v0.0.0-20170123220020-2fe47fd29e4b // indirect
 	github.com/michaelklishin/rabbit-hole v1.5.0 // indirect
@@ -94,7 +93,6 @@ require (
 	github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35 // indirect
 	github.com/pquerna/otp v1.1.0 // indirect
 	github.com/rakyll/statik v0.1.5
-	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/samuel/go-zookeeper v0.0.0-20180130194729-c4fab1ac1bec // indirect
 	github.com/shirou/gopsutil v2.18.12+incompatible // indirect
@@ -115,7 +113,6 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 	gopkg.in/gorethink/gorethink.v4 v4.1.0 // indirect
-	gopkg.in/olivere/elastic.v5 v5.0.79 // indirect
 	gopkg.in/ory-am/dockertest.v2 v2.2.3 // indirect
 	gopkg.in/square/go-jose.v2 v2.2.2
 	layeh.com/radius v0.0.0-20190118135028-0f678f039617 // indirect

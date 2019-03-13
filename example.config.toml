@@ -1,21 +1,46 @@
+[manager]
+  manager_name = ""
+  node_name = ""
+  censor_name = ""
+  enable_grpc = false
+  enable_rest = false
+  request_type = ""
+  [manager.rest]
+    enable = false
+    type = ""
+    path = ""
+    port = ""
+
 [database]
-    addr = "host"
-    port = ":2701"
-    username = "uname"
-    password = "pass"
-    db = "db"
-    prefix = "rms"
+  prefix = ""
+  type = ""
+  addr = ""
+  port = ""
+  password = ""
+  username = ""
+  db = ""
 
-[node]
-    type = "unix" #unix,tcp,http
-    port = ":7787"
-    addr = "/tmp/node.sock"
-    version = "v0"
-[censor]
-    type = "unix" #unix,tcp,http
-    port = ":7785"
-    addr = "/tmp/censor.sock"
-    version = "v0"
+[media]
+  upload = ""
+  transfer = ""
+  m3u8 = ""
+  key_url = ""
+  key_dest = ""
+  key_file = ""
+  key_info_file = ""
 
-[requester]
-    type ="grpc"
+[queue]
+  type = ""
+  host_port = ""
+  password = ""
+  db = 0
+
+[rest]
+  enable = false
+  type = ""
+  path = ""
+  port = ""
+
+[ipfs]
+  host = ""
+  port = ""

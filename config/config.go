@@ -50,20 +50,23 @@ type Queue struct {
 	DB       int    `toml:"db"`
 }
 
+type Manager struct {
+	ManagerName string `toml:"manager_name"`
+	NodeName    string `toml:"node_name"`
+	CensorName  string `toml:"censor_name"`
+	EnableGRPC  bool   `toml:"enable_grpc"`
+	EnableREST  bool   `toml:"enable_rest"`
+	REST        REST   `toml:"rest"`
+	RequestType string `toml:"request_type"`
+}
+
 // Configure ...
 type Configure struct {
-	Database    Database `toml:"database"`
-	Media       Media    `toml:"media"`
-	Queue       Queue    `toml:"queue"`
-	ManagerName string   `toml:"manager_name"`
-	NodeName    string   `toml:"node_name"`
-	CensorName  string   `toml:"censor_name"`
-	EnableGRPC  bool     `toml:"enable_grpc"`
-	EnableREST  bool     `toml:"enable_rest"`
-	REST        REST     `toml:"rest"`
-	RequestType string   `toml:"request_type"`
-	IPFS        IPFS     `toml:"ipfs"`
-	//Callback  Callback  `toml:"callback"`
+	Database Database `toml:"database"`
+	Media    Media    `toml:"media"`
+	Queue    Queue    `toml:"queue"`
+	IPFS     IPFS     `toml:"ipfs"`
+	Manager  Manager  `toml:"manager"`
 }
 
 var config *Configure

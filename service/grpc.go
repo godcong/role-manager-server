@@ -93,24 +93,27 @@ func NewGRPCClient(cfg *config.Configure) *GRPCClient {
 
 // NodeClient ...
 func NodeClient(g *GRPCClient) proto.NodeService {
-	return proto.NewNodeService(g.config.NodeName, g.service.Client())
+	return proto.NewNodeService(g.config.Manager.NodeName, g.service.Client())
 }
 
 // ManagerClient ...
 func ManagerClient(g *GRPCClient) proto.ManagerService {
-	return proto.NewManagerService(g.config.ManagerName, g.service.Client())
+	return proto.NewManagerService(g.config.Manager.ManagerName, g.service.Client())
 }
 
 // CensorClient ...
 func CensorClient(g *GRPCClient) proto.CensorService {
-	return proto.NewCensorService(g.config.CensorName, g.service.Client())
+	return proto.NewCensorService(g.config.Manager.CensorName, g.service.Client())
 }
 
 // Start ...
 func (s *GRPCServer) Start() {
+	if !s.config.Manager.EnableGRPC {
+		return
+	}
 	reg := consul.NewRegistry()
 	s.service = micro.NewService(
-		micro.Name(s.config.ManagerName),
+		micro.Name(s.config.Manager.ManagerName),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
 		micro.Registry(reg),
@@ -127,5 +130,7 @@ func (s *GRPCServer) Start() {
 
 // Stop ...
 func (s *GRPCServer) Stop() {
-	s.service.Server().Stop()
+	if s.service != nil {
+		s.service.Server().Stop()
+	}
 }
