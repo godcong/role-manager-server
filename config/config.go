@@ -28,32 +28,10 @@ type Media struct {
 	KeyInfoFile string `toml:"key_info_file"` //keyFile文件名
 }
 
-type ManagerConfig struct {
-	GRPC GRPC `toml:"grpc"`
-	REST REST `toml:"rest"`
-}
-
 // IPFS ...
 type IPFS struct {
 	Host string `toml:"host"`
 	Port string `toml:"port"`
-}
-
-// GRPC ...
-type GRPC struct {
-	Enable bool   `toml:"enable"`
-	Type   string `toml:"type"`
-	Path   string `toml:"path"`
-	Port   string `toml:"port"`
-}
-
-// REST ...
-type REST struct {
-	Enable  bool   `toml:"enable"`
-	Type    string `toml:"type"`
-	Path    string `toml:"path"`
-	BackURL string `toml:"back_url"`
-	Port    string `toml:"port"`
 }
 
 // Queue ...
@@ -64,31 +42,18 @@ type Queue struct {
 	DB       int    `toml:"db"`
 }
 
-// HostInfo ...
-type HostInfo struct {
-	Type    string `toml:"type"`
-	Addr    string `toml:"addr"`
-	Port    string `toml:"port"`
-	Version string `toml:"version"`
-}
-
-// Requester ...
-type Requester struct {
-	Type string `toml:"type"`
-}
-
 // Configure ...
 type Configure struct {
-	Database Database `toml:"database"`
-	Censor   HostInfo `toml:"censor"`
-	Node     HostInfo `toml:"node"`
-	Media    Media    `toml:"media"`
-	Queue    Queue    `toml:"queue"`
-	GRPC     GRPC     `toml:"grpc"`
-	REST     REST     `toml:"rest"`
-	IPFS     IPFS     `toml:"ipfs"`
-
-	Requester Requester `toml:"requester"`
+	Database    Database `toml:"database"`
+	Media       Media    `toml:"media"`
+	Queue       Queue    `toml:"queue"`
+	ManagerName string   `toml:"manager_name"`
+	NodeName    string   `toml:"node_name"`
+	CensorName  string   `toml:"censor_name"`
+	EnableGRPC  bool     `toml:"enable_grpc"`
+	EnableREST  bool     `toml:"enable_rest"`
+	RequestType string   `toml:"request_type"`
+	IPFS        IPFS     `toml:"ipfs"`
 	//Callback  Callback  `toml:"callback"`
 }
 

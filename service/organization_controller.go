@@ -2,12 +2,10 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/config"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/proto"
-	"github.com/godcong/role-manager-server/util"
 	"github.com/google/uuid"
 	"github.com/json-iterator/go"
 	log "github.com/sirupsen/logrus"
@@ -100,20 +98,12 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 
 		cfg := config.Config()
 		if media.Block == false || media.CensorResult == "pass" {
-			//if cfg.Requester.Type == "rest" {
-			//	err = ReleaseIPFS(media)
-			//	if err != nil {
-			//		failed(ctx, err.Error())
-			//		return
-			//	}
-			//} else {
-			node := NewNodeGRPC(cfg)
+			node := NodeClient(NewGRPCClient(cfg))
 			timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
-			//client := NodeClient(node)
 			response, err := node.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
 				ObjectKey: media.VideoOSSAddress,
 			})
-			fmt.Println(response, err)
+			log.Info(response, err)
 			if err != nil {
 				failed(ctx, err.Error())
 				return
@@ -123,7 +113,6 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 			ipfs.FileID = response.Detail.ID
 			ipfs.MediaID = media.ID
 			err = ipfs.Create()
-			//}
 		}
 
 		success(ctx, media)
@@ -254,35 +243,34 @@ func validateMedia(key string, media *model.Media) []*model.ResultData {
 	var vrd []*model.ResultData
 	var prd []*model.ResultData
 	wg.Add(2)
-	if cfg.Requester.Type == "rest" {
-		go httpValidate(wg, &vrd, cfg,
-			url.Values{
-				"object_key":    []string{media.VideoOSSAddress},
-				"id":            []string{key},
-				"validate_type": []string{"frame"},
-			})
+	//if cfg.RequestType == "rest" {
+	//	go httpValidate(wg, &vrd, cfg,
+	//		url.Values{
+	//			"object_key":    []string{media.VideoOSSAddress},
+	//			"id":            []string{key},
+	//			"validate_type": []string{"frame"},
+	//		})
+	//
+	//	go httpValidate(wg, &prd, cfg,
+	//		url.Values{
+	//			"object_key":    media.PictureOSSAddress,
+	//			"id":            []string{key},
+	//			"validate_type": []string{"jpg"},
+	//		})
+	//
+	//} else {
+	go tcpValidate(wg, &vrd, cfg, &proto.ValidateRequest{
+		ID:           key,
+		ObjectKey:    media.VideoOSSAddress,
+		ValidateType: proto.CensorValidateType_Frame,
+	})
 
-		//pic := ctx.PostForm("picture_oss_address")
-		go httpValidate(wg, &prd, cfg,
-			url.Values{
-				"object_key":    media.PictureOSSAddress,
-				"id":            []string{key},
-				"validate_type": []string{"jpg"},
-			})
-
-	} else {
-		go tcpValidate(wg, &vrd, cfg, &proto.ValidateRequest{
-			ID:           key,
-			ObjectKey:    media.VideoOSSAddress,
-			ValidateType: proto.CensorValidateType_Frame,
-		})
-
-		go tcpValidate(wg, &prd, cfg, &proto.ValidateRequest{
-			ID:           key,
-			ObjectKey:    media.PictureOSSAddress[0],
-			ValidateType: proto.CensorValidateType_JPG,
-		})
-	}
+	go tcpValidate(wg, &prd, cfg, &proto.ValidateRequest{
+		ID:           key,
+		ObjectKey:    media.PictureOSSAddress[0],
+		ValidateType: proto.CensorValidateType_JPG,
+	})
+	//}
 
 	//wait for done
 	wg.Wait()
@@ -292,8 +280,7 @@ func validateMedia(key string, media *model.Media) []*model.ResultData {
 
 func tcpValidate(group *sync.WaitGroup, data *[]*model.ResultData, cfg *config.Configure, req *proto.ValidateRequest) {
 	defer group.Done()
-	censor := NewCensorGRPC(cfg)
-	client := CensorClient(censor)
+	censor := CensorClient(NewGRPCClient(cfg))
 	*data = []*model.ResultData{
 		{},
 	}
@@ -301,8 +288,8 @@ func tcpValidate(group *sync.WaitGroup, data *[]*model.ResultData, cfg *config.C
 	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
 	var rds []*model.ResultData
 
-	if client != nil {
-		censorReply, err := client.Validate(timeout, req)
+	if censor != nil {
+		censorReply, err := censor.Validate(timeout, req)
 		if err != nil {
 			return
 		}
@@ -322,7 +309,8 @@ func httpValidate(group *sync.WaitGroup, data *[]*model.ResultData, cfg *config.
 		{},
 	}
 
-	host := fmt.Sprintf("%s%s/%s/%s", cfg.Censor.Addr, cfg.Censor.Port, cfg.Censor.Version, "validate")
+	//host := fmt.Sprintf("%s%s/%s/%s", cfg.Censor.Addr, cfg.Censor.Port, cfg.Censor.Version, "validate")
+	host := ""
 
 	resp, err := http.PostForm(CheckPrefix(host), values)
 	log.Println(host, values.Encode(), err.Error())
@@ -653,24 +641,23 @@ func OrgCensorUpdate(ver string) gin.HandlerFunc {
 
 // ReleaseIPFS ...
 func ReleaseIPFS(media *model.Media) error {
-	cfg := config.Config()
-	log.Println("key:", media.VideoOSSAddress)
-	host := fmt.Sprintf("%s%s/%s/%s", cfg.Censor.Addr, cfg.Censor.Port, cfg.Censor.Version, "rd")
-
-	response, err := http.PostForm(CheckPrefix(host), url.Values{
-		"object_key": []string{media.VideoOSSAddress},
+	censor := CensorClient(NewGRPCClient(config.Config()))
+	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
+	response, err := censor.Validate(timeout, &proto.ValidateRequest{
+		ObjectKey: media.VideoOSSAddress,
 	})
+	log.Info(response, err)
 	if err != nil {
 		return err
 	}
-	var mp NodeResult
-	err = util.UnmarshalJSON(response.Body, &mp)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
+	//var mp NodeResult
+	//err = jsoniter.UnmarshalFromString(response.Detail.Json, &mp)
+	//if err != nil {
+	//	log.Println(err)
+	//	return err
+	//}
 	ipfs := model.NewIPFS()
-	ipfs.FileID = mp.Detail.ID
+	ipfs.FileID = response.Detail.ID
 	ipfs.MediaID = media.ID
 	err = ipfs.Create()
 	if err != nil {
