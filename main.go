@@ -27,7 +27,11 @@ func main() {
 	if *elk {
 		trait.InitElasticLog("role-manager-server", nil)
 	} else {
-		trait.InitRotateLog(*logPath, nil)
+		trait.InitRotateLog(*logPath, &trait.RotateLogOption{
+			Level:        trait.RotateLogDebug,
+			MaxAge:       0,
+			RotationTime: 0,
+		})
 	}
 
 	err := config.Initialize(*configPath)

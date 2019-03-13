@@ -37,7 +37,7 @@ func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest
 	if err != nil {
 		return err
 	}
-	res = Result(&proto.ManagerReplyDetail{
+	*res = Result(&proto.ManagerReplyDetail{
 		ID:   req.ID,
 		Json: "",
 	})
@@ -57,7 +57,7 @@ func (s *GRPCServer) CensorBack(ctx context.Context, req *proto.ManagerCensorReq
 	if err != nil {
 		return err
 	}
-	res = Result(&proto.ManagerReplyDetail{
+	*res = Result(&proto.ManagerReplyDetail{
 		ID:   req.ID,
 		Json: "",
 	})
@@ -105,8 +105,8 @@ func (s *GRPCServer) CensorBack(ctx context.Context, req *proto.ManagerCensorReq
 //}
 
 // Result ...
-func Result(detail *proto.ManagerReplyDetail) *proto.ManagerReply {
-	return &proto.ManagerReply{
+func Result(detail *proto.ManagerReplyDetail) proto.ManagerReply {
+	return proto.ManagerReply{
 		Code:    0,
 		Message: "success",
 		Detail:  detail,
@@ -222,7 +222,6 @@ func (s *GRPCServer) Start() {
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
 		micro.Registry(reg),
-		micro.Version("latest"),
 	)
 	s.service.Init()
 	go func() {
