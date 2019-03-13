@@ -7,6 +7,7 @@ import (
 	"github.com/godcong/role-manager-server/proto"
 	"github.com/json-iterator/go"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry/consul"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
@@ -157,12 +158,14 @@ func NodeClient(g *GRPCClient) proto.NodeServiceClient {
 
 // NewNodeGRPC ...
 func NewNodeGRPC(cfg *config.Configure) proto.NodeService {
+	reg := consul.NewRegistry()
 	client := &GRPCClient{
-		service: micro.NewService(),
-		config:  cfg,
-		Type:    config.DefaultString(cfg.Node.Type, Type),
-		Port:    config.DefaultString(cfg.Node.Port, ":7787"),
-		Addr:    config.DefaultString(cfg.Node.Addr, "/tmp/node.sock"),
+		service: micro.NewService(
+			micro.Registry(reg)),
+		config: cfg,
+		Type:   config.DefaultString(cfg.Node.Type, Type),
+		Port:   config.DefaultString(cfg.Node.Port, ":7787"),
+		Addr:   config.DefaultString(cfg.Node.Addr, "/tmp/node.sock"),
 	}
 	client.service.Init()
 	return proto.NewNodeService("go.micro.grpc.node", client.service.Client())
@@ -213,10 +216,12 @@ func (s *GRPCServer) Start() {
 	var lis net.Listener
 	var port string
 	var err error
+	reg := consul.NewRegistry()
 	s.service = micro.NewService(
-		micro.Name("manager"),
+		micro.Name("go.micro.grpc.manager"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*15),
+		micro.Registry(reg),
 		micro.Version("latest"),
 	)
 	s.service.Init()

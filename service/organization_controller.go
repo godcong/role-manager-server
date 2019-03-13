@@ -113,11 +113,12 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 			response, err := node.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
 				ObjectKey: media.VideoOSSAddress,
 			})
+			fmt.Println(response, err)
 			if err != nil {
 				failed(ctx, err.Error())
 				return
 			}
-			log.Println(response)
+
 			ipfs := model.NewIPFS()
 			ipfs.FileID = response.Detail.ID
 			ipfs.MediaID = media.ID
