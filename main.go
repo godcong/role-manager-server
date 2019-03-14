@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 var configPath = flag.String("config", "config.toml", "load config file from path")
@@ -24,9 +25,9 @@ var logPath = flag.String("log", "logs/manager.log", "set the default log path")
 func main() {
 	flag.Parse()
 	if *elk {
-		trait.InitElasticLog("role-manager-server", nil)
+		trait.InitElasticLog("role-manager-server")
 	} else {
-		trait.InitRotateLog(*logPath, nil)
+		trait.InitRotateLog(*logPath, trait.RotateLogLevel(trait.RotateLogDebug), trait.RotationTime(1*time.Hour))
 	}
 
 	err := config.Initialize(*configPath)
