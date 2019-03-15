@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -61,9 +62,9 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 		id := ctx.Param("id")
 		media := model.NewMedia()
 		media.ID = model.ID(id)
-		err := media.Find()
-		if err != nil {
-			failed(ctx, err.Error())
+		e := media.Find()
+		if e != nil {
+			failed(ctx, e.Error())
 			return
 		}
 		media.Block, _ = strconv.ParseBool(ctx.PostForm("block"))
@@ -90,34 +91,51 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 		media.PlayType = ctx.DefaultPostForm("play_type", media.PlayType)
 		media.ExpireDate = ctx.DefaultPostForm("expire_date", media.ExpireDate)
 		media.CensorResult = ctx.DefaultPostForm("censor_result", media.CensorResult)
-		err = media.Update()
-		if err != nil {
-			failed(ctx, err.Error())
+		cfg := config.Config()
+		media.KeyAddress = replaceRuleAddress(cfg, media.ID.Hex())
+		e = media.Update()
+		if e != nil {
+			failed(ctx, e.Error())
 			return
 		}
 
-		cfg := config.Config()
 		if media.Block == false || media.CensorResult == "pass" {
-			node := NodeClient(NewGRPCClient(cfg))
-			timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
-			response, err := node.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
-				ObjectKey: media.VideoOSSAddress,
-				KeyURL:    media.KeyAddress,
-			})
-			log.Info(response, err)
-			if err != nil {
-				failed(ctx, err.Error())
+			e = SendToNodeProcessGRPC(cfg, media)
+			if e != nil {
+				failed(ctx, e.Error())
 				return
 			}
 
-			ipfs := model.NewIPFS()
-			ipfs.FileID = response.Detail.ID
-			ipfs.MediaID = media.ID
-			err = ipfs.Create()
 		}
 
 		success(ctx, media)
 	}
+}
+
+func replaceRuleAddress(cfg *config.Configure, target string) string {
+	uri := strings.Replace(cfg.Manager.KeyAddressRule, ":id", target, -1)
+	return cfg.Manager.Host + uri
+}
+
+func SendToNodeProcessGRPC(cfg *config.Configure, media *model.Media) error {
+	node := NodeClient(NewGRPCClient(cfg))
+	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
+	response, e := node.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
+		ObjectKey: media.VideoOSSAddress,
+		KeyURL:    media.KeyAddress,
+	})
+	log.Info(response, e)
+	if e != nil {
+		return e
+	}
+	ipfs := model.NewIPFS()
+	ipfs.FileID = response.Detail.ID
+	ipfs.MediaID = media.ID
+	e = ipfs.Create()
+	if e != nil {
+		return e
+	}
+	return nil
 }
 
 // OrgMediaAdd ...

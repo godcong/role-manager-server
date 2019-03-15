@@ -99,20 +99,20 @@ func IsExists(name string) bool {
 
 // LoadConfig ...
 func LoadConfig(filePath string) *Configure {
-	var cfg Configure
+	cfg := DefaultConfigure()
 	openFile, err := os.OpenFile(filePath, os.O_RDONLY|os.O_SYNC, os.ModePerm)
 	if err != nil {
 		log.Error(err)
 		panic(err.Error())
 	}
 	decoder := toml.NewDecoder(openFile)
-	err = decoder.Decode(&cfg)
+	err = decoder.Decode(cfg)
 	if err != nil {
 		log.Error(err)
 		panic(err.Error())
 	}
 	log.Infof("config: %+v", cfg)
-	return &cfg
+	return cfg
 }
 
 // Config ...
