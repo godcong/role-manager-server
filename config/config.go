@@ -51,22 +51,24 @@ type Queue struct {
 }
 
 type Manager struct {
-	ManagerName string `toml:"manager_name"`
-	NodeName    string `toml:"node_name"`
-	CensorName  string `toml:"censor_name"`
-	EnableGRPC  bool   `toml:"enable_grpc"`
-	EnableREST  bool   `toml:"enable_rest"`
-	REST        REST   `toml:"rest"`
-	RequestType string `toml:"request_type"`
+	ManagerName    string `toml:"manager_name"`
+	NodeName       string `toml:"node_name"`
+	CensorName     string `toml:"censor_name"`
+	EnableGRPC     bool   `toml:"enable_grpc"`
+	EnableREST     bool   `toml:"enable_rest"`
+	REST           REST   `toml:"rest"`
+	RequestType    string `toml:"request_type"`
+	KeyAddressRule string `toml:"key_address_rule"`
+	Host           string `toml:"host"`
 }
 
 // Configure ...
 type Configure struct {
 	Database Database `toml:"database"`
-	Media    Media    `toml:"media"`
-	Queue    Queue    `toml:"queue"`
-	IPFS     IPFS     `toml:"ipfs"`
-	Manager  Manager  `toml:"manager"`
+	//Media    Media    `toml:"media"`
+	Queue   Queue   `toml:"queue"`
+	IPFS    IPFS    `toml:"ipfs"`
+	Manager Manager `toml:"manager"`
 }
 
 var config *Configure
@@ -127,4 +129,28 @@ func DefaultString(v, def string) string {
 		return def
 	}
 	return v
+}
+
+func DefaultConfigure() *Configure {
+	return &Configure{
+		Database: Database{},
+		Queue:    Queue{},
+		IPFS:     IPFS{},
+		Manager: Manager{
+			ManagerName: "godcong.grpc.manager",
+			NodeName:    "godcong.grpc.node",
+			CensorName:  "godcong.grpc.censor",
+			EnableGRPC:  true,
+			EnableREST:  true,
+			REST: REST{
+				Enable: true,
+				Type:   "",
+				Path:   "",
+				Port:   ":7780",
+			},
+			RequestType:    "grpc",
+			Host:           "http://localhost:8080",
+			KeyAddressRule: "/api/video/:id/auth",
+		},
+	}
 }

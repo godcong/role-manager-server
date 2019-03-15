@@ -85,7 +85,7 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 		//media.VideoOSSAddress = ctx.DefaultPostForm("video_oss_address", media.VideoOSSAddress)
 		//media.PictureOSSAddress = []string{ctx.DefaultPostForm("picture_oss_address", media.PictureOSSAddress[0])}
 		//media.Photo = media.PictureOSSAddress[0]
-		media.KEYAddress = ctx.DefaultPostForm("key_address", media.KEYAddress)
+		media.KeyAddress = ctx.DefaultPostForm("key_address", media.KeyAddress)
 		media.Price = ctx.DefaultPostForm("price", media.Price)
 		media.PlayType = ctx.DefaultPostForm("play_type", media.PlayType)
 		media.ExpireDate = ctx.DefaultPostForm("expire_date", media.ExpireDate)
@@ -102,6 +102,7 @@ func OrgMediaUpdate(ver string) gin.HandlerFunc {
 			timeout, _ := context.WithTimeout(context.Background(), time.Second*5)
 			response, err := node.RemoteDownload(timeout, &proto.RemoteDownloadRequest{
 				ObjectKey: media.VideoOSSAddress,
+				KeyURL:    media.KeyAddress,
 			})
 			log.Info(response, err)
 			if err != nil {
@@ -206,7 +207,7 @@ func OrgMediaAdd(ver string) gin.HandlerFunc {
 		media.VideoOSSAddress = ctx.PostForm("video_oss_address")
 		media.PictureOSSAddress = []string{ctx.PostForm("picture_oss_address")}
 		media.Photo = media.PictureOSSAddress[0]
-		media.KEYAddress = ctx.PostForm("key_address")
+		media.KeyAddress = ctx.PostForm("key_address")
 		media.Price = ctx.PostForm("price")
 		media.PlayType = ctx.PostForm("play_type")
 		media.ExpireDate = ctx.PostForm("expire_date")
@@ -382,7 +383,7 @@ func httpValidate(group *sync.WaitGroup, data *[]*model.ResultData, cfg *config.
 *		            "TotalNumber": "total1",
 *		            "IPNSAddress": "ipns",
 *		            "IPFSAddress": "ipfs1",
-*		            "KEYAddress": "key1",
+*		            "KeyAddress": "key1",
 *		            "Price": "price1",
 *		            "PlayType": "play1",
 *		            "ExpireDate": "ex1"

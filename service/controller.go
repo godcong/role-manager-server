@@ -563,6 +563,7 @@ type NodeCallback struct {
 		Name  string `json:"name"`
 		Value string `json:"value"`
 	} `json:"ns_info"`
+	Key string
 }
 
 // NodeBack ...
@@ -680,6 +681,7 @@ func NodeCallbackProcess(id string, cb *NodeCallback) error {
 	err = ipfs.Update()
 	media := model.NewMedia()
 	media.ID = ipfs.MediaID
+
 	err = media.Find()
 	if err != nil {
 		log.Error(err)
@@ -687,6 +689,7 @@ func NodeCallbackProcess(id string, cb *NodeCallback) error {
 	}
 	media.IPNSAddress = ipfs.IPNSAddress
 	media.IPFSAddress = ipfs.IPFSAddress
+	media.Key = cb.Key
 	err = media.Update()
 	if err != nil {
 		log.Error(err)

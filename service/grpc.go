@@ -114,8 +114,8 @@ func (s *GRPCServer) Start() {
 	reg := consul.NewRegistry()
 	s.service = micro.NewService(
 		micro.Name(s.config.Manager.ManagerName),
-		micro.RegisterTTL(time.Second*30),
-		micro.RegisterInterval(time.Second*15),
+		micro.RegisterTTL(time.Second*15),
+		micro.RegisterInterval(time.Second*5),
 		micro.Registry(reg),
 	)
 	s.service.Init()

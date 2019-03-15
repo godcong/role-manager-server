@@ -31,7 +31,8 @@ type Media struct {
 	IPFSAddress       string             `bson:"ipfs_address"`        //ipfs地址
 	VideoOSSAddress   string             `bson:"video_oss_address"`   //视频oss地址
 	PictureOSSAddress []string           `bson:"picture_oss_address"` //图片oss地址
-	KEYAddress        string             `bson:"key_address"`         //key地址
+	Key               string             `bson:"key"`                 //m3u8加密key
+	KeyAddress        string             `bson:"key_address"`         //key地址
 	Price             string             `bson:"price"`               //价格
 	PlayType          string             `bson:"play_type"`           //播放类型(单次,多次)
 	ExpireDate        string             `bson:"expire_date"`         //过期时间(48H,24H,0H)
