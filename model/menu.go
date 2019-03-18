@@ -25,7 +25,7 @@ func NewMenu() *Menu {
 	}
 }
 func (m *Menu) _Name() string {
-	return "medias"
+	return "menus"
 }
 
 // CreateIfNotExist ...
