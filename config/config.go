@@ -65,10 +65,9 @@ type Manager struct {
 // Configure ...
 type Configure struct {
 	Database Database `toml:"database"`
-	//Media    Media    `toml:"media"`
-	Queue   Queue   `toml:"queue"`
-	IPFS    IPFS    `toml:"ipfs"`
-	Manager Manager `toml:"manager"`
+	Queue    Queue    `toml:"queue"`
+	IPFS     IPFS     `toml:"ipfs"`
+	Manager  Manager  `toml:"manager"`
 }
 
 var config *Configure
