@@ -76,6 +76,90 @@ func Permissions() []*model.Permission {
 	p.Name = "更新权限"
 	p.Description = "更新权限"
 	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "admin.organization.list"
+	p.Name = "组织列表"
+	p.Description = "组织列表"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "admin.organization.add"
+	p.Name = "添加组织管理用户"
+	p.Description = "添加组织管理用户"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "admin.organization.update"
+	p.Name = "更新组织"
+	p.Description = "更新组织"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "admin.organization.delete"
+	p.Name = "删除组织"
+	p.Description = "删除组织"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "org.media.list"
+	p.Name = "视频列表"
+	p.Description = "视频列表"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "org.media.add"
+	p.Name = "视频添加"
+	p.Description = "视频添加"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "org.media.update"
+	p.Name = "视频更新"
+	p.Description = "视频更新"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "org.media.update"
+	p.Name = "视频更新"
+	p.Description = "视频更新"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "user.media.list"
+	p.Name = "用户视频列表"
+	p.Description = "用户视频列表"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "user.permission.list"
+	p.Name = "用户权限列表"
+	p.Description = "用户权限列表"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "user.role.list"
+	p.Name = "用户角色列表"
+	p.Description = "用户角色列表"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "user.report.list"
+	p.Name = "用户举报列表"
+	p.Description = "用户举报列表"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "exorcist.user.list"
+	p.Name = "用户列表"
+	p.Description = "用户列表"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "exorcist.user.update"
+	p.Name = "更新用户"
+	p.Description = "更新用户"
+	permissions = append(permissions, p)
 	//p = model.NewPermission()
 	//p.Slug = "dashboard.user.delete"
 	//p.Name = "管理用户信息"

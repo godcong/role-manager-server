@@ -275,8 +275,8 @@ func UserReportAdd(ver string) gin.HandlerFunc {
 	}
 }
 
-// UserMedia ...
-func UserMedia(ver string) gin.HandlerFunc {
+// UserMediaList ...
+func UserMediaList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 	}

@@ -97,7 +97,7 @@ func Router(eng *gin.Engine) {
 	//monitor0.GET("list", MonitorList(current))
 
 	user0 := v0.Group("user")
-	user0.GET("media", UserMedia(current))
+	user0.GET("media", UserMediaList(current))
 
 	user0.GET("permission", UserPermissionList(current))
 	user0.GET("role", UserRoleList(current))
