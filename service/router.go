@@ -10,6 +10,7 @@ import (
 
 // Router ...
 func Router(eng *gin.Engine) {
+	prefix := "api"
 	current := "v0"
 
 	st, err := fs.New()
@@ -22,7 +23,7 @@ func Router(eng *gin.Engine) {
 	eng.NoRoute(func(ctx *gin.Context) {
 		ctx.Redirect(http.StatusMovedPermanently, "/webui")
 	})
-
+	_ = prefix
 	g0 := eng.Group(current)
 	g0.Use(AccessControlAllow, VisitLog(current))
 
@@ -92,8 +93,8 @@ func Router(eng *gin.Engine) {
 	//org0.POST("upload", OrgUpload(current))
 
 	//监督
-	monitor0 := v0.Group("monitor")
-	monitor0.GET("list", MonitorList(current))
+	//monitor0 := v0.Group("monitor")
+	//monitor0.GET("list", MonitorList(current))
 
 	user0 := v0.Group("user")
 	user0.GET("media", UserMedia(current))

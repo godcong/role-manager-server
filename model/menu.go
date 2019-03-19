@@ -19,6 +19,7 @@ type Menu struct {
 	Sort        string             `bson:"sort"`        //排序
 }
 
+// Find ...
 func (m *Menu) Find() error {
 	return FindByID(m)
 }

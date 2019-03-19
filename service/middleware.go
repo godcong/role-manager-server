@@ -56,7 +56,7 @@ func handleFuncName(ctx *gin.Context) string {
 // PermissionCheck ...
 func PermissionCheck(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		permission.ParseContext(ctx)
+		per := permission.ParseContext(ctx)
 		user := User(ctx)
 		role, err := user.Role()
 		if err == nil {
@@ -74,7 +74,7 @@ func PermissionCheck(ver string) gin.HandlerFunc {
 
 		p := model.NewPermission()
 		//logger := Logger(ctx)
-		p.Slug = role.Slug
+		p.Slug = per.Slug()
 		err = p.Find()
 		if err != nil {
 			log.Println(err.Error())
