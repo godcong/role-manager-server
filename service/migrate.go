@@ -19,6 +19,7 @@ func createRoles() {
 		model.NewOrgRole(),
 		model.NewMonitorRole(),
 		model.NewGodRole(),
+		model.NewMenu(),
 	}
 
 	for _, m := range models {
