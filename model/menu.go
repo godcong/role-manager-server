@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"log"
@@ -16,6 +17,10 @@ type Menu struct {
 	Active      string             `bson:"active"`      //菜单高亮地址
 	Description string             `bson:"description"` //描述
 	Sort        string             `bson:"sort"`        //排序
+}
+
+func (m *Menu) Find() error {
+	return FindByID(m)
 }
 
 // NewMenu ...

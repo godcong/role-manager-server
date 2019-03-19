@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
+	"github.com/godcong/role-manager-server/permission"
 	log "github.com/sirupsen/logrus"
 	"strings"
 )
@@ -55,6 +56,7 @@ func handleFuncName(ctx *gin.Context) string {
 // PermissionCheck ...
 func PermissionCheck(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		permission.ParseContext(ctx)
 		user := User(ctx)
 		role, err := user.Role()
 		if err == nil {
