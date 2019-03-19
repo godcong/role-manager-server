@@ -30,6 +30,24 @@ func Permissions() []*model.Permission {
 	permissions = append(permissions, p)
 
 	p = model.NewPermission()
+	p.Slug = "dashboard.permission.add"
+	p.Name = "添加权限"
+	p.Description = "添加权限"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "dashboard.permission.update"
+	p.Name = "更新权限"
+	p.Description = "更新权限"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "dashboard.permission.delete"
+	p.Name = "删除权限"
+	p.Description = "删除权限"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
 	p.Slug = "dashboard.user.list"
 	p.Name = "管理用户列表"
 	p.Description = "管理用户列表"

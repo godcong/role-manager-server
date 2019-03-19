@@ -11,7 +11,7 @@ import (
 	"github.com/godcong/role-manager-server/model"
 	"github.com/godcong/role-manager-server/service"
 	_ "github.com/godcong/role-manager-server/statik"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
@@ -46,7 +46,7 @@ func main() {
 
 	go func() {
 		sig := <-sigs
-		logrus.Println(sig, "exiting")
+		log.Println(sig, "exiting")
 		service.Stop()
 		done <- true
 	}()
