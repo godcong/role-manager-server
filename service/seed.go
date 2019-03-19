@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/Sirupsen/logrus"
 	"github.com/godcong/role-manager-server/model"
+	"github.com/sirupsen/logrus"
 )
 
 func Seed() {
@@ -53,6 +53,29 @@ func Permissions() []*model.Permission {
 	p.Description = "删除管理用户"
 	permissions = append(permissions, p)
 
+	p = model.NewPermission()
+	p.Slug = "dashboard.role.list"
+	p.Name = "角色列表"
+	p.Description = "角色列表"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "dashboard.role.add"
+	p.Name = "添加角色权限"
+	p.Description = "添加角色权限"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "dashboard.role.delete"
+	p.Name = "删除权限"
+	p.Description = "删除权限"
+	permissions = append(permissions, p)
+
+	p = model.NewPermission()
+	p.Slug = "dashboard.role.update"
+	p.Name = "更新权限"
+	p.Description = "更新权限"
+	permissions = append(permissions, p)
 	//p = model.NewPermission()
 	//p.Slug = "dashboard.user.delete"
 	//p.Name = "管理用户信息"
