@@ -53,5 +53,12 @@ func Permissions() []*model.Permission {
 	p.Description = "删除管理用户"
 	permissions = append(permissions, p)
 
+	//p = model.NewPermission()
+	//p.Slug = "dashboard.user.delete"
+	//p.Name = "管理用户信息"
+	//p.Description = "管理用户信息"
+	//permissions = append(permissions, p)
+
 	logrus.Info(permissions)
+	return permissions
 }
