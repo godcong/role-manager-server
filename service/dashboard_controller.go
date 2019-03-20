@@ -1036,13 +1036,14 @@ func DashboardMenuUpdate(ver string) gin.HandlerFunc {
 			return
 		}
 		menu.PID = model.ID(ctx.GetString("pid"))
-		menu.Name = ctx.GetString("name")
-		menu.Icon = ctx.GetString("icon")
-		menu.Slug = ctx.GetString("slug")
-		menu.URL = ctx.GetString("url")
-		menu.Active = ctx.GetString("active")
-		menu.Description = ctx.GetString("description")
-		menu.Sort = ctx.GetInt("sort")
+		menu.Name = ctx.PostForm("name")
+		menu.Icon = ctx.PostForm("icon")
+		menu.Slug = ctx.PostForm("slug")
+		menu.URL = ctx.PostForm("url")
+		menu.Active = ctx.PostForm("active")
+		menu.Description = ctx.PostForm("description")
+		i, _ := strconv.ParseInt(ctx.PostForm("sort"), 10, 32)
+		menu.Sort = int(i)
 
 		e = model.UpdateOne(menu)
 		if e != nil {
