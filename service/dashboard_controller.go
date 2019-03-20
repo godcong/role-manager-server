@@ -920,3 +920,50 @@ func DashboardLogList(ver string) gin.HandlerFunc {
 		pages(ctx, order, limit, current, total, logs)
 	}
 }
+
+// DashboardMenuList ...
+/**
+* @api {get} /v0/dashboard/menu 菜单(DashboardMenuList)
+* @apiName DashboardMenuList
+* @apiGroup DashboardMenu
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/menu
+ */
+func DashboardMenuList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		menu := model.NewMenu()
+		menus, e := menu.ALL()
+		if e != nil {
+			Error(ctx, e)
+			return
+		}
+		success(ctx, menus)
+	}
+}
+
+func DashboardMenuUpdate(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+func DashboardMenuDelete(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+	}
+}
+
+func DashboardMenuAdd(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+	}
+}

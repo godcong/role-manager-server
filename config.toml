@@ -1,0 +1,22 @@
+[database]
+    addr = "ds111529.mlab.com"
+    port = ":11529"
+    username = "terrylj"
+    password = "uttuyew1"
+    db = "exorcist"
+    prefix = "rms"
+
+[manager]
+    manager_name = "godcong.grpc.manager"
+    censor_name = "godcong.grpc.censor"
+    node_name = "godcong.grpc.node"
+    key_address_rule = "/api/video/:id/auth"
+    host = "http://localhost:8080"
+    enable_grpc = true
+    enable_rest = true
+    request_type = "grpc"
+  [manager.rest]
+    enable = false
+    type = ""
+    path = ""
+    port = ":7780"

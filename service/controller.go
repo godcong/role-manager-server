@@ -635,6 +635,15 @@ func result(ctx *gin.Context, code int, message string, detail interface{}) {
 	ctx.JSON(http.StatusOK, h)
 }
 
+func Error(ctx *gin.Context, e error) {
+	log.Error(e)
+	logger := Logger(ctx)
+	file, line := Caller(2)
+	logger.Err = fmt.Sprintf("%s %d:[%s]", file, line, e.Error())
+	_ = logger.Update()
+	result(ctx, -1, e.Error(), nil)
+}
+
 func success(ctx *gin.Context, detail interface{}) {
 	result(ctx, 0, "success", detail)
 }

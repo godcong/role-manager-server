@@ -122,7 +122,7 @@ func (u *ExorcistUser) Delete() error {
 	return DeleteByID(u)
 }
 
-// All ...
+// ALL ...
 func (u *ExorcistUser) All() ([]*ExorcistUser, error) {
 
 	var users []*ExorcistUser
