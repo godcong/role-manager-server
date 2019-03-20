@@ -17,6 +17,7 @@ type GRPCServer struct {
 	service micro.Service
 }
 
+// NodeBack ...
 func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest, res *proto.ManagerReply) error {
 	var nc NodeCallback
 	var err error
@@ -37,6 +38,7 @@ func (s *GRPCServer) NodeBack(ctx context.Context, req *proto.ManagerNodeRequest
 	return nil
 }
 
+// CensorBack ...
 func (s *GRPCServer) CensorBack(ctx context.Context, req *proto.ManagerCensorRequest, res *proto.ManagerReply) error {
 	var cc CensorCallback
 	var err error

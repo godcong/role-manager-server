@@ -881,6 +881,53 @@ func DashboardUserShow(ver string) gin.HandlerFunc {
 	}
 }
 
+// DashboardUserRoleAdd ...
+/**
+* @api {post} /v0/dashboard/user/:id/role 添加用户角色(DashboardUserRoleAdd)
+* @apiName DashboardUserRoleAdd
+* @apiGroup DashboardUserRole
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiParam  {string} permission_id		权限ID
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c35a4481afae2f7afac1a2c",
+*		        "CreatedAt": "2019-01-09T15:35:36.44+08:00",
+*		        "UpdatedAt": "2019-01-09T15:44:18.4474311+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 4,
+*		        "Name": "列表权限",
+*		        "Slug": "DashboardPermissionList",
+*		        "Description": "列表权限",
+*		        "PermissionModel": ""
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/role/:id/permission
+ */
+func DashboardUserRoleAdd(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
+// DashboardUserPermissionAdd ...
+func DashboardUserPermissionAdd(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
 // DashboardLogList ...
 /**
 * @api {get} /v0/dashboard/log 日志(DashboardLogList)

@@ -635,6 +635,7 @@ func result(ctx *gin.Context, code int, message string, detail interface{}) {
 	ctx.JSON(http.StatusOK, h)
 }
 
+// Error ...
 func Error(ctx *gin.Context, e error) {
 	log.Error(e)
 	logger := Logger(ctx)

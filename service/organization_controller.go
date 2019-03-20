@@ -117,6 +117,7 @@ func replaceRuleAddress(cfg *config.Configure, target string) string {
 	return cfg.Manager.Host + uri
 }
 
+// SendToNodeProcessGRPC ...
 func SendToNodeProcessGRPC(cfg *config.Configure, media *model.Media) error {
 	node := NodeClient(NewGRPCClient(cfg))
 	timeout, _ := context.WithTimeout(context.Background(), time.Second*5)

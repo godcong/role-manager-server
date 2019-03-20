@@ -5,15 +5,24 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Seed ...
 func Seed() {
-	for _, v := range Permissions() {
+	//for _, v := range Permissions() {
+	//	e := model.InsertOne(v)
+	//	if e != nil {
+	//		return
+	//	}
+	//}
+	for _, v := range Menus() {
 		e := model.InsertOne(v)
 		if e != nil {
 			return
 		}
 	}
+
 }
 
+// Menus ...
 func Menus() []*model.Menu {
 	var menus []*model.Menu
 	var m *model.Menu
@@ -27,6 +36,7 @@ func Menus() []*model.Menu {
 	return menus
 }
 
+// Permissions ...
 func Permissions() []*model.Permission {
 	var permissions []*model.Permission
 	var p *model.Permission
