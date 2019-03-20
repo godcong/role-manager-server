@@ -137,3 +137,10 @@ func (p *Permission) Users() ([]*User, error) {
 	})
 	return users, err
 }
+func (p *Permission) Menu() (*Menu, error) {
+	menu := NewMenu()
+	err := FindOne(menu, bson.M{
+		"slug": p.Slug,
+	})
+	return menu, err
+}

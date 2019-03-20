@@ -26,6 +26,7 @@ type User struct {
 	role           *Role              `bson:"-"`
 	organization   *Organization      `bson:"-"`
 	permissions    []*Permission      `bson:"-"`
+	menus          []*Menu            `bson:"menus"`
 }
 
 // IsExist ...
@@ -114,6 +115,33 @@ func (u *User) Organization() (*Organization, error) {
 	}
 	u.organization = org
 	return org, nil
+}
+
+func (u *User) Menus() ([]*Menu, error) {
+	if u.menus != nil {
+		return u.menus, nil
+	}
+	var ms []*Menu
+	err := Find(NewPermissionUser(), bson.M{
+		"user_id": u.ID,
+	}, func(cursor mongo.Cursor) error {
+		pu := NewPermissionUser()
+		err := cursor.Decode(pu)
+		if err != nil {
+			return err
+		}
+		p, err := pu.Permission()
+		if err != nil {
+			return err
+		}
+		menu, err := p.Menu()
+		if err != nil {
+			return err
+		}
+		ms = append(ms, menu)
+		return nil
+	})
+	return ms, err
 }
 
 // Permissions ...

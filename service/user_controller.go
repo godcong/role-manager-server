@@ -278,6 +278,12 @@ func UserReportAdd(ver string) gin.HandlerFunc {
 func UserMenuList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user := User(ctx)
+		menus, e := user.Menus()
+		if e != nil {
+			Error(ctx, e)
+			return
+		}
+		success(ctx, menus)
 	}
 }
 
