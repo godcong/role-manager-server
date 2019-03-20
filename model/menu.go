@@ -13,10 +13,10 @@ type Menu struct {
 	Name        string             `bson:"name"`        //菜单名称
 	Icon        string             `bson:"icon"`        //图标
 	Slug        string             `bson:"slug"`        //菜单对应的权限
-	Url         string             `bson:"url"`         //菜单链接地址
+	URL         string             `bson:"url"`         //菜单链接地址
 	Active      string             `bson:"active"`      //菜单高亮地址
 	Description string             `bson:"description"` //描述
-	Sort        string             `bson:"sort"`        //排序
+	Sort        int                `bson:"sort"`        //排序
 }
 
 // Find ...

@@ -952,14 +952,63 @@ func DashboardMenuList(ver string) gin.HandlerFunc {
 	}
 }
 
+// DashboardMenuUpdate ...
+/**
+* @api {post} /v0/dashboard/menu/:id 菜单(DashboardMenuUpdate)
+* @apiName DashboardMenuUpdate
+* @apiGroup DashboardMenu
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/menu/{id}
+ */
 func DashboardMenuUpdate(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		//PID         primitive.ObjectID `bson:"pid"`         //菜单关系
+		//Name        string             `bson:"name"`        //菜单名称
+		//Icon        string             `bson:"icon"`        //图标
+		//Slug        string             `bson:"slug"`        //菜单对应的权限
+		//URL         string             `bson:"url"`         //菜单链接地址
+		//Active      string             `bson:"active"`      //菜单高亮地址
+		//Description string             `bson:"description"` //描述
+		//Sort        string             `bson:"sort"`        //排序
+		menu := model.NewMenu()
+		menu.ID = model.ID(ctx.Param("id"))
+		e := menu.Find()
+		if e != nil {
+			Error(ctx, e)
+			return
+		}
+		menu.PID = model.ID(ctx.GetString("pid"))
+		menu.Name = ctx.GetString("name")
+		menu.Icon = ctx.GetString("icon")
+		menu.Slug = ctx.GetString("slug")
+		menu.URL = ctx.GetString("url")
+		menu.Active = ctx.GetString("active")
+		menu.Description = ctx.GetString("description")
+		menu.Sort = ctx.GetInt("sort")
 
+		e = model.UpdateOne(menu)
+		if e != nil {
+			Error(ctx, e)
+			return
+		}
+		success(ctx, menu)
 	}
 }
 
 func DashboardMenuDelete(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
 	}
 }
 
