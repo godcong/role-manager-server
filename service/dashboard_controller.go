@@ -1008,11 +1008,39 @@ func DashboardMenuUpdate(ver string) gin.HandlerFunc {
 
 func DashboardMenuDelete(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
+		menu := model.NewMenu()
+		menu.ID = model.ID(ctx.Param("id"))
+		e := menu.Find()
+		if e != nil {
+			Error(ctx, e)
+			return
+		}
+		e = model.DeleteByID(menu)
+		if e != nil {
+			Error(ctx, e)
+			return
+		}
+		success(ctx, menu)
 	}
 }
 
 func DashboardMenuAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		menu := model.NewMenu()
+		menu.PID = model.ID(ctx.GetString("pid"))
+		menu.Name = ctx.GetString("name")
+		menu.Icon = ctx.GetString("icon")
+		menu.Slug = ctx.GetString("slug")
+		menu.URL = ctx.GetString("url")
+		menu.Active = ctx.GetString("active")
+		menu.Description = ctx.GetString("description")
+		menu.Sort = ctx.GetInt("sort")
+
+		e := model.InsertOne(menu)
+		if e != nil {
+			Error(ctx, e)
+			return
+		}
+		success(ctx, menu)
 	}
 }
