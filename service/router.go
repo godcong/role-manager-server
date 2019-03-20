@@ -50,6 +50,11 @@ func Router(eng *gin.Engine) {
 	dashboard0 := v0.Group("dashboard")
 	dashboard0.GET("log", DashboardLogList(current))
 
+	dashboard0.GET("menu", DashboardMenuList(current))
+	dashboard0.POST("menu", DashboardMenuAdd(current))
+	dashboard0.POST("menu/:id", DashboardMenuUpdate(current))
+	dashboard0.DELETE("menu/:id", DashboardMenuDelete(current))
+
 	dashboard0.GET("permission", DashboardPermissionList(current))
 	dashboard0.POST("permission", DashboardPermissionAdd(current))
 	dashboard0.POST("permission/:id", DashboardPermissionUpdate(current))
