@@ -275,6 +275,12 @@ func UserReportAdd(ver string) gin.HandlerFunc {
 	}
 }
 
+func UserMenuList(ver string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user := User(ctx)
+	}
+}
+
 // UserMediaList ...
 func UserMediaList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
