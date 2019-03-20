@@ -1006,6 +1006,25 @@ func DashboardMenuUpdate(ver string) gin.HandlerFunc {
 	}
 }
 
+// DashboardMenuDelete ...
+/**
+* @api {delete} /v0/dashboard/menu/:id 菜单(DashboardMenuUpdate)
+* @apiName DashboardMenuDelete
+* @apiGroup DashboardMenu
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/menu/{id}
+ */
 func DashboardMenuDelete(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		menu := model.NewMenu()
@@ -1024,6 +1043,25 @@ func DashboardMenuDelete(ver string) gin.HandlerFunc {
 	}
 }
 
+// DashboardMenuAdd ...
+/**
+* @api {post} /v0/dashboard/menu 菜单(DashboardMenuUpdate)
+* @apiName DashboardMenuAdd
+* @apiGroup DashboardMenu
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/menu
+ */
 func DashboardMenuAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		menu := model.NewMenu()
