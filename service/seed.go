@@ -14,6 +14,19 @@ func Seed() {
 	}
 }
 
+func Menus() []*model.Menu {
+	var menus []*model.Menu
+	var m *model.Menu
+	m = model.NewMenu()
+	m.Slug = "org.media.list"
+	m.Name = "商户面板"
+	m.Description = "商户面板"
+	m.Active = "slideOrgHome"
+	menus = append(menus, m)
+
+	return menus
+}
+
 func Permissions() []*model.Permission {
 	var permissions []*model.Permission
 	var p *model.Permission
