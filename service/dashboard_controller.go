@@ -287,7 +287,7 @@ func DashboardRolePermissionAdd(ver string) gin.HandlerFunc {
 			failed(ctx, err.Error())
 			return
 		}
-		pid := ctx.PostForm("permission_id")
+		pid := ctx.Param("pid")
 		p := model.NewPermission()
 		p.ID = model.ID(pid)
 		err = p.Find()
@@ -883,7 +883,7 @@ func DashboardUserShow(ver string) gin.HandlerFunc {
 
 // DashboardUserRoleAdd ...
 /**
-* @api {post} /v0/dashboard/user/:id/role 添加用户角色(DashboardUserRoleAdd)
+* @api {post} /v0/dashboard/user/:id/role/:rid 添加用户角色(DashboardUserRoleAdd)
 * @apiName DashboardUserRoleAdd
 * @apiGroup DashboardUserRole
 * @apiVersion  0.0.1
@@ -913,18 +913,121 @@ func DashboardUserShow(ver string) gin.HandlerFunc {
 *		}
 *
 * @apiUse Failed
-* @apiSampleRequest /v0/dashboard/role/:id/permission
+* @apiSampleRequest /v0/dashboard/user/:id/role/:rid
  */
 func DashboardUserRoleAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		user := model.NewUser()
+		user.ID = model.ID(id)
+		e := user.Find()
+		if e != nil {
+			failed(ctx, e.Error())
+			return
+		}
+		pid := ctx.Param("rid")
+		r := model.NewRole()
+		r.ID = model.ID(pid)
+		e = r.Find()
+		if e != nil {
+			failed(ctx, e.Error())
+			return
+		}
 
+		e = model.Transaction(func() error {
+			pr := model.NewRoleUser()
+			pr.SetRole(r)
+			pr.SetUser(user)
+			e = pr.CreateIfNotExist()
+			if e != nil {
+				return e
+			}
+			return nil
+		})
+		if e != nil {
+			failed(ctx, e.Error())
+			return
+		}
+
+		success(ctx, gin.H{
+			"user": user,
+			"role": r,
+		})
 	}
 }
 
 // DashboardUserPermissionAdd ...
+/**
+* @api {post} /v0/dashboard/user/:id/permission/:pid 添加用户角色(DashboardUserPermissionAdd)
+* @apiName DashboardUserPermissionAdd
+* @apiGroup DashboardUserPermission
+* @apiVersion  0.0.1
+*
+* @apiHeader {string} token user token
+*
+* @apiParam  {string} permission_id		权限ID
+*
+* @apiUse Success
+* @apiSuccess (detail) {string} id Id
+* @apiSuccess (detail) {string} other 参考返回Example
+* @apiSuccessExample {json} Success-Response:
+*		{
+*		    "code": 0,
+*		    "detail": {
+*		        "ID": "5c35a4481afae2f7afac1a2c",
+*		        "CreatedAt": "2019-01-09T15:35:36.44+08:00",
+*		        "UpdatedAt": "2019-01-09T15:44:18.4474311+08:00",
+*		        "DeletedAt": null,
+*		        "Version": 4,
+*		        "Name": "列表权限",
+*		        "Slug": "DashboardPermissionList",
+*		        "Description": "列表权限",
+*		        "PermissionModel": ""
+*		    },
+*		    "message": "success"
+*		}
+*
+* @apiUse Failed
+* @apiSampleRequest /v0/dashboard/user/:id/permission/:pid
+ */
 func DashboardUserPermissionAdd(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		user := model.NewUser()
+		user.ID = model.ID(id)
+		e := user.Find()
+		if e != nil {
+			failed(ctx, e.Error())
+			return
+		}
+		pid := ctx.Param("pid")
+		p := model.NewPermission()
+		p.ID = model.ID(pid)
+		e = p.Find()
+		if e != nil {
+			failed(ctx, e.Error())
+			return
+		}
 
+		e = model.Transaction(func() error {
+			pr := model.NewPermissionUser()
+			pr.SetPermission(p)
+			pr.SetUser(user)
+			e = pr.CreateIfNotExist()
+			if e != nil {
+				return e
+			}
+			return nil
+		})
+		if e != nil {
+			failed(ctx, e.Error())
+			return
+		}
+
+		success(ctx, gin.H{
+			"user":       user,
+			"permission": p,
+		})
 	}
 }
 
