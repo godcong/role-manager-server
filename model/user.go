@@ -194,8 +194,8 @@ func (u *User) CheckPermission(permission *Permission) error {
 	return nil
 }
 
-// ALL ...
-func (u *User) ALL() ([]*User, error) {
+// All ...
+func (u *User) All() ([]*User, error) {
 	var users []*User
 	m := bson.M{}
 	err := Find(u, m, func(cursor mongo.Cursor) error {

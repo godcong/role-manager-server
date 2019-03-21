@@ -56,8 +56,8 @@ func (o *Organization) IsExist() bool {
 	})
 }
 
-// ALL ...
-func (o *Organization) ALL() ([]*Organization, error) {
+// All ...
+func (o *Organization) All() ([]*Organization, error) {
 	var orgs []*Organization
 	m := bson.M{}
 	err := Find(o, m, func(cursor mongo.Cursor) error {

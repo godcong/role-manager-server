@@ -432,7 +432,7 @@ func OrgMediaList(ver string) gin.HandlerFunc {
 		}
 
 		if role.Slug == model.SlugGenesis {
-			medias, err = media.ALL()
+			medias, err = media.All()
 		} else {
 			media.OrganizationID = user.OrganizationID
 			medias, err = media.FindByOrg()

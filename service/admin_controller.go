@@ -115,7 +115,7 @@ func AdminOrganizationUpdate(ver string) gin.HandlerFunc {
 func AdminOrganizationList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		org := model.NewOrganization()
-		organizations, err := org.ALL()
+		organizations, err := org.All()
 		if err != nil {
 			failed(ctx, err.Error())
 			return

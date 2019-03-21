@@ -123,7 +123,7 @@ func UserRoleList(ver string) gin.HandlerFunc {
 func UserReportList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		report := model.NewReport()
-		reports, err := report.ALL()
+		reports, err := report.All()
 		if err != nil {
 			failed(ctx, err.Error())
 			return

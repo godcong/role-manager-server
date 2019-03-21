@@ -55,8 +55,8 @@ func (m *Menu) Delete() error {
 	return DeleteByID(m)
 }
 
-// ALL ...
-func (m *Menu) ALL() ([]*Menu, error) {
+// All ...
+func (m *Menu) All() ([]*Menu, error) {
 	var Menus []*Menu
 	b := bson.M{}
 	err := Find(m, b, func(cursor mongo.Cursor) error {

@@ -51,8 +51,8 @@ func (l *Log) Find() error {
 	return FindByID(l)
 }
 
-// ALL ...
-func (l *Log) ALL() ([]*Log, error) {
+// All ...
+func (l *Log) All() ([]*Log, error) {
 	var logs []*Log
 	m := bson.M{}
 	err := Find(l, m, func(cursor mongo.Cursor) error {

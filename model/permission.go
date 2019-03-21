@@ -73,8 +73,8 @@ func (p *Permission) Find() error {
 	})
 }
 
-// ALL ...
-func (p *Permission) ALL() ([]*Permission, error) {
+// All ...
+func (p *Permission) All() ([]*Permission, error) {
 	var permissions []*Permission
 	m := bson.M{}
 	err := Find(p, m, func(cursor mongo.Cursor) error {

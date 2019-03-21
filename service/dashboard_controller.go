@@ -181,7 +181,7 @@ func DashboardRoleAdd(ver string) gin.HandlerFunc {
 func DashboardRoleList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		r := model.NewRole()
-		roles, err := r.ALL()
+		roles, err := r.All()
 		if err != nil {
 			failed(ctx, err.Error())
 			return
@@ -554,7 +554,7 @@ func DashboardPermissionAdd(ver string) gin.HandlerFunc {
 func DashboardPermissionList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		p := model.NewPermission()
-		permissions, err := p.ALL()
+		permissions, err := p.All()
 		if err != nil {
 			failed(ctx, err.Error())
 			return
@@ -597,7 +597,7 @@ func DashboardPermissionList(ver string) gin.HandlerFunc {
 func DashboardUserList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user := model.NewUser()
-		users, err := user.ALL()
+		users, err := user.All()
 		if err != nil {
 			failed(ctx, err.Error())
 			return
@@ -1093,7 +1093,7 @@ func DashboardLogList(ver string) gin.HandlerFunc {
 func DashboardMenuList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		menu := model.NewMenu()
-		menus, e := menu.ALL()
+		menus, e := menu.All()
 		if e != nil {
 			Error(ctx, e)
 			return

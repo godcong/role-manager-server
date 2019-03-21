@@ -65,8 +65,8 @@ func (m *Media) Delete() error {
 	return DeleteByID(m)
 }
 
-// ALL ...
-func (m *Media) ALL() ([]*Media, error) {
+// All ...
+func (m *Media) All() ([]*Media, error) {
 	var medias []*Media
 	b := bson.M{}
 	err := Find(m, b, func(cursor mongo.Cursor) error {

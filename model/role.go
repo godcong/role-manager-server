@@ -76,8 +76,8 @@ func (r *Role) Find() error {
 	})
 }
 
-// ALL ...
-func (r *Role) ALL() ([]*Role, error) {
+// All ...
+func (r *Role) All() ([]*Role, error) {
 	var roles []*Role
 	m := bson.M{}
 	err := Find(r, m, func(cursor mongo.Cursor) error {

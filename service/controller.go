@@ -181,7 +181,7 @@ func UserPlay(ver string) gin.HandlerFunc {
 func UserPlayList(s string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		media := model.NewMedia()
-		media.ALL()
+		media.All()
 		success(ctx, "")
 	}
 }

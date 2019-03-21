@@ -73,8 +73,8 @@ func (r *Report) _Name() string {
 	return "report"
 }
 
-// ALL ...
-func (r *Report) ALL() ([]*Report, error) {
+// All ...
+func (r *Report) All() ([]*Report, error) {
 	var orgs []*Report
 	m := bson.M{}
 	err := Find(r, m, func(cursor mongo.Cursor) error {
