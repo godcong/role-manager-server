@@ -118,6 +118,14 @@ func (u *User) Organization() (*Organization, error) {
 }
 
 // Menus ...
+func (u *User) SetMenu(menus []*Menu) {
+	u.Menus = menus
+}
+
+// GetMenu ...
+func (u *User) GetMenu() []*Menu {
+	return u.Menus
+}
 
 func (u *User) m() ([]*Menu, error) {
 	//TODO:
