@@ -127,33 +127,50 @@ func (u *User) GetMenu() []*Menu {
 	return u.Menus
 }
 
-func (u *User) m() ([]*Menu, error) {
-	//TODO:
-	//	if u.menus != nil {
-	//		return u.menus, nil
-	//	}
-	//	var ms []*Menu
-	//	err := Find(NewPermissionUser(), bson.M{
-	//		"user_id": u.ID,
-	//	}, func(cursor mongo.Cursor) error {
-	//		pu := NewPermissionUser()
-	//		err := cursor.Decode(pu)
-	//		if err != nil {
-	//			return err
-	//		}
-	//		p, err := pu.Permission()
-	//		if err != nil {
-	//			return err
-	//		}
-	//		menu, err := p.Menu()
-	//		if err != nil {
-	//			return err
-	//		}
-	//		ms = append(ms, menu)
-	//		return nil
-	//	})
-	//	return ms, err
-	return nil, nil
+// ClearMenu ...
+func (u *User) ClearMenu() {
+	u.Menus = nil
+}
+
+// CacheMenu ...
+func (u *User) CacheMenu() error {
+	u.ClearMenu()
+	_, e := u.FindMenu()
+	if e != nil {
+		return e
+	}
+	e = UpdateOne(u)
+	if e != nil {
+		return e
+	}
+	return nil
+}
+
+// FindMenu ...
+func (u *User) FindMenu() ([]*Menu, error) {
+	if u.Menus != nil {
+		return u.Menus, nil
+	}
+	err := Find(NewPermissionUser(), bson.M{
+		"user_id": u.ID,
+	}, func(cursor mongo.Cursor) error {
+		pu := NewPermissionUser()
+		err := cursor.Decode(pu)
+		if err != nil {
+			return err
+		}
+		p, err := pu.Permission()
+		if err != nil {
+			return err
+		}
+		menu, err := p.Menu()
+		if err != nil {
+			return err
+		}
+		u.Menus = append(u.Menus, menu)
+		return nil
+	})
+	return u.Menus, err
 }
 
 // Permissions ...

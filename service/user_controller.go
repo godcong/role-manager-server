@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/godcong/role-manager-server/model"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	log "github.com/sirupsen/logrus"
 )
 
 // UserPermissionList ...
@@ -279,12 +280,29 @@ func UserReportAdd(ver string) gin.HandlerFunc {
 func UserMenuList(ver string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user := User(ctx)
-		menus, e := user.Menus()
+		e := model.FindByID(user)
 		if e != nil {
 			Error(ctx, e)
 			return
 		}
-		success(ctx, menus)
+		log.Infof("%+v", user.Menus)
+
+		if user.Menus == nil {
+			_, e := user.FindMenu()
+			if e != nil {
+				log.Error(e)
+			}
+		}
+
+		go func() {
+			log.Info("update cache")
+			e := user.CacheMenu()
+			if e != nil {
+				log.Error(e)
+			}
+		}()
+
+		success(ctx, user.Menus)
 	}
 }
 
