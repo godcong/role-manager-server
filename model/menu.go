@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+// Menu ...
 type Menu struct {
 	Model       `bson:",inline"`
 	PID         primitive.ObjectID `bson:"pid"`         //菜单关系

@@ -117,7 +117,7 @@ func (u *User) Organization() (*Organization, error) {
 	return org, nil
 }
 
-// Menus ...
+// SetMenu ...
 func (u *User) SetMenu(menus []*Menu) {
 	u.Menus = menus
 }
