@@ -1159,7 +1159,7 @@ func DashboardMenuUpdate(ver string) gin.HandlerFunc {
 
 // DashboardMenuDelete ...
 /**
-* @api {delete} /v0/dashboard/menu/:id 菜单(DashboardMenuUpdate)
+* @api {delete} /v0/dashboard/menu/:id 菜单(DashboardMenuDelete)
 * @apiName DashboardMenuDelete
 * @apiGroup DashboardMenu
 * @apiVersion  0.0.1
@@ -1196,7 +1196,7 @@ func DashboardMenuDelete(ver string) gin.HandlerFunc {
 
 // DashboardMenuAdd ...
 /**
-* @api {post} /v0/dashboard/menu 菜单(DashboardMenuUpdate)
+* @api {post} /v0/dashboard/menu 菜单(DashboardMenuAdd)
 * @apiName DashboardMenuAdd
 * @apiGroup DashboardMenu
 * @apiVersion  0.0.1
